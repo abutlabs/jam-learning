@@ -6,6 +6,10 @@
   "total": 406,
   "traces": 1000
  },
+ "code_notice": {
+  "match": "(lib|conformance|jamnp|bin)/[a-z_0-9]+\\.ml|In [Ll]asair|lasair.s (code|source)",
+  "html": "<div class=\"callout-title\">This lesson shows lasair's code</div><p>lasair is a JAM Prize implementation. If you are building one yourself, the Prize rules ask you to declare any JAM-implementation code you view (rule 7). <a href=\"index.html#prize-rules\">More</a>.</p>"
+ },
  "tracks": [
   {
    "id": "00-introduction",

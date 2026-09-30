@@ -423,8 +423,13 @@ async function loadLesson(lessonPath) {
             const chapterId = lessonPath.split('/')[1];
             quizLink = `<p class="exam-quiz-link"><a href="exam.html?chapter=${chapterId}">&#9654; Test yourself on this chapter</a></p>`;
         }
+        // A course can flag lessons that show implementation code (course.json code_notice:
+        // {match, html}): Learning Lasair does, for the JAM Prize's clean-room rules
+        const notice = window.LearningLasair.COURSE_STRUCTURE.code_notice;
+        const codeNotice = notice && new RegExp(notice.match).test(content)
+            ? `<div class="callout callout-info code-notice">${notice.html}</div>` : '';
         // Render markdown with video embed at top
-        lessonBody.innerHTML = videoEmbed + quizLink + marked.parse(content);
+        lessonBody.innerHTML = codeNotice + videoEmbed + quizLink + marked.parse(content);
 
         // Apply syntax highlighting to any missed blocks
         document.querySelectorAll('pre code').forEach((block) => {
