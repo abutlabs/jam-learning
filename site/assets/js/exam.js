@@ -603,13 +603,13 @@
     $("mock-result").classList.remove("hidden");
     $("mock-result").innerHTML = `
       <div class="exam-done">
-        <h3>Mock complete · ${rec.minutes} min · ${rec.pass ? '<span class="grade-P">no F: would pass</span>' : '<span class="grade-F">an F: would not pass</span>'}</h3>
+        <h3>Run-through complete · ${rec.minutes} min · ${rec.pass ? '<span class="grade-P">no F in any portion</span>' : '<span class="grade-F">an F in a portion: revisit it</span>'}</h3>
         <table class="exam-table">
           <tr><th>Portion</th><th>Drawn</th><th>Grade</th></tr>
           ${mock.portions.map((p) => `<tr><td>${p.key}</td><td>${p.lessons.map((id) => esc(chapterById(id).title)).join(", ")}</td><td class="grade-${mock.grades[p.key]}"><b>${mock.grades[p.key]}</b></td></tr>`).join("")}
         </table>
-        <p>Recorded in the ledger. Export it and paste into <code>docs/notes/exam/LEDGER.md</code>.</p>
-        <button class="exam-btn primary" id="mock-again">New mock</button>
+        <p>Recorded in your ledger (this browser only). Export it from the Ledger tab to keep it.</p>
+        <button class="exam-btn primary" id="mock-again">New run-through</button>
       </div>`;
     $("mock-again").addEventListener("click", () => {
       $("mock-result").classList.add("hidden");
@@ -698,7 +698,7 @@
       const blob = new Blob([ledgerMarkdown()], { type: "text/markdown" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `exam-ledger-${new Date().toISOString().slice(0, 10)}.md`;
+      a.download = `m1-understanding-ledger-${new Date().toISOString().slice(0, 10)}.md`;
       a.click();
       URL.revokeObjectURL(a.href);
     });

@@ -258,7 +258,7 @@ With floor:
   → Ensures total never exceeds G_core
 ```
 
-This is conservative - we might "lose" a tiny bit of gas to rounding, but we'll never accidentally exceed the core's gas budget. (GP 0.8.0 needs no rounding here: a service's gas and the block budget are sums of whole gas amounts.)
+This is conservative - we might "lose" a tiny bit of gas to rounding, but we'll never accidentally exceed the core's gas budget. (GP 0.8.0's accumulation budget needs no rounding: it is built from whole gas amounts without any division.)
 
 ## Privileged Services
 

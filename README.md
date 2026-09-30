@@ -36,6 +36,7 @@ exercises/lasair/             standalone dune projects for the lasair course
 browser/                      the source of the in-browser OCaml toplevel (site/assets/js/toplevel.js)
 tools/check.py                the checks a change must pass (links, lesson lists, public-site rules)
 tools/build.sh                check, copy, stamp: what the Pages workflow runs
+tools/test_browser.py         the interactive flows in real Chrome: M1 Understanding, offline, phone width
 tools/lasair/                 builders of the lasair section's data (M1 Understanding, the explorers)
 ```
 

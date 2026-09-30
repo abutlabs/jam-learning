@@ -96,21 +96,21 @@ and the merge in Δ* (eq. `accpar`) takes ι' from the delegator's post-state, e
 
 (** Output from single-service accumulation *)
 type acc_output = {
-  post_state: partial_state;    (** e - Modified partial state *)
-  deferred_xfers: deferred_transfer list;  (** t - New deferred transfers *)
-  yield: hash option;           (** y - Accumulation output hash *)
-  gas_used: int64;              (** u - Gas consumed *)
-  provisions: (int * bytes) list;  (** p - Preimage provisions *)
+  post_state: partial_state;    (** Modified state *)
+  deferred_xfers: deferred_transfer list;  (** New deferred transfers *)
+  yield: hash option;           (** Accumulation output commitment *)
+  gas_used: int64;              (** Gas consumed *)
+  provisions: (int * bytes) list;  (** Preimage provisions *)
 }
 
-(** Partial state captures mutable components *)
+(** Partial state for accumulation *)
 type partial_state = {
-  accounts: (int * Accounts.service_account) list;  (** s - Service accounts *)
-  staging_set: Cores.validator_set;     (** v - Upcoming validators *)
-  auth_queues: Authorization.auth_queue array;  (** c - Per-core auth queues *)
-  manager: int;             (** p[0] - Manager service ID *)
-  assigners: int array;     (** p[1] - Per-core assigner services *)
-  delegator: int;           (** p[2] - Delegator service ID *)
+  accounts: (int * Accounts.service_account) list;  (** Service accounts *)
+  staging_set: Cores.validator_set;     (** Upcoming validators *)
+  auth_queues: Authorization.auth_queue array;  (** Per-core auth queues *)
+  manager: int;             (** Manager service ID *)
+  assigners: int array;     (** Per-core assigner services *)
+  delegator: int;           (** Delegator service ID *)
   registrar: int;           (** Registrar service ID *)
   always_accumulators: (int * int64) list;  (** Services with free gas *)
 }
@@ -146,7 +146,9 @@ The sender pays the "postage" from their own gas budget.
 
 </div>
 
-When the recipient's Accumulate runs, its balance is first credited with the amounts of all transfers addressed to it, and the transfers' gas is added to its gas limit (appendix B.4, eq. `accinvocation`). A recipient without code still receives the balance.
+In GP 0.8.0 that postage is part of the sender's bill: the `transfer` host call costs 575 gas plus, when the transfer succeeds, the gas it forwards (appendix B.7, with the price constant in appendix I.4.5).
+
+When the recipient's Accumulate runs, its balance is first credited with the amounts of all transfers addressed to it (appendix B.4, eq. `accinvocation`), and the transfers' gas is added to its gas limit (section 12.2, eq. `accone`). A recipient without code still receives the balance.
 
 <div class="lasair-connection">
 
@@ -239,10 +241,14 @@ check(i) = i                                                   if no service has
 after each new:  i* = check(S + (i - S + 42) mod (2^32 - S - 2^8))
 ```
 
-So an id collision never makes a block invalid: `check` moves to the next free id. The
-Graypaper says the hash makes the id "almost certainly unique" within one service's
-accumulation, and `check` covers the rest (accounts across services and time). Only the
-registrar may ask for a particular id, and only below S.
+So a new id never lands on a service that already exists: `check` steps past it. Two
+services creating services in the same round are a different case. Each derives its ids
+from its own hash and checks them only against the state before the round, so in
+principle both could pick the same new id. The Graypaper calls this highly unlikely and
+rules that if it happens, **the block is invalid** (pvm_invocations.tex, the note after the
+check function; accumulation.tex, the note after accpar). No service can predict the id
+sequence ahead of time, so none can arrange a collision to hurt the block author. Only
+the registrar may ask for a particular id, and only below S.
 
 lasair once moved i on from the raw value instead of the checked id; the official
 fuzzer's first GP 0.8.0 batch caught it.
@@ -286,13 +292,13 @@ For each service d that received transfers:
 This invokes the service's on_transfer entry point for each transfer.
 ```
 
-In GP 0.8.0 there is no F_T and no `on_transfer`. The outer function Δ₊ runs accumulation in rounds: the transfers created in one round become inputs of the next round, where each recipient s is accumulated with those transfers (plus any remaining work-reports for it), with the transfers' gas added to its limit. Δ₊ repeats until there is nothing left to process or the block's gas runs out.
+In GP 0.8.0 there is no F_T and no `on_transfer`. The outer function Δ₊ runs accumulation in rounds: the transfers created in one round become inputs of the next round, where each recipient s is accumulated with those transfers (plus any remaining work-reports for it), with the transfers' gas added to its limit. Each round's budget check counts the gas of the transfers it delivers as well as the reports it takes (and, in the first round, the always-accumulate allowances χ_Z). The next round's budget is g* = g + (gas of the transfers just created) − (gas used), so the gas a sender forwarded is set aside for delivery. Δ₊ repeats until a round has nothing to do: no transfers to deliver and no remaining report that fits in the gas left.
 
 <div class="lasair-connection">
 
 ### In Lasair: Transfer Collection
 
-lasair runs these rounds in `accumulate_sequentially` (`conformance/stf_guarantees.ml`): each round is one Δ* over the reports that fit, and "its deferred transfers integrate in the NEXT round". It also counts, per destination service, the transfers each round processed, for the GP 0.8.0 service statistics (Graypaper PR #502).
+lasair runs these rounds in `accumulate_sequentially` (`conformance/stf_guarantees.ml`): each round is one Δ* over the reports that fit (`affordable_prefix`, which first sets aside the incoming transfers' gas and, in the first round only, the always-accumulate gas), and the transfers it creates, with g* = g + their gas − gas used, go to the next round. It also counts, per destination service, the transfers each round processed, for the GP 0.8.0 service statistics (Graypaper PR #502).
 
 </div>
 
