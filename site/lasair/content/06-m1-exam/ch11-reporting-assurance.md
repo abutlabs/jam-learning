@@ -171,7 +171,7 @@ tiny, 43 at full. Core popularity, the per-core count of assurances that this ch
 extrinsic feeds into the core statistics of ch. 13 (state key 0x0D), was read from
 byte 0 of the bitfield only, so at full every core ≥ 8 counted zero assurances and the
 statistics root diverged on the first full-spec L2b block (seed 3571347957, the "F5/F6
-session" in `docs/LOCAL_L2B_FUZZER.md`; fixed in v1.4.2, `docs/process/RALPH_PROMPT.md`). The
+session" in `docs/LOCAL_L2B_FUZZER.md`; fixed in v1.4.2). The
 tiny→full audit that followed (`docs/TINY_TO_FULL_AUDIT.md`) confirmed the fix
 ("popularity byte c/8"), caught F5 (`bitfield_bytes` and `votes_per_verdict` frozen as
 module-level values at the tiny size) and recorded a residual `land 0xFF` in

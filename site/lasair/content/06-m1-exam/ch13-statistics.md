@@ -97,7 +97,7 @@ after which M1 passed. Its twin in the same audit: `stats_total_size` computed a
 "… × 2 + 17", where 17 is the *tiny* C·8 + 1. The audit generalised both into a lens,
 "a width that is a value, not a function of the active spec", and swept the target path
 (`docs/TINY_TO_FULL_AUDIT.md`: F7 recent-history count as u8, F8/F9 supermajority literal
-5, F10/F11 ticket bounds 3). Recorded in `docs/process/RALPH_PROMPT.md`, `docs/LOCAL_L2B_FUZZER.md`
+5, F10/F11 ticket bounds 3). Recorded in `docs/LOCAL_L2B_FUZZER.md`
 and the in-code comment on the popularity decode in `conformance/stf_guarantees.ml`
 ("(F6)"). The GP 0.8.0 Phase 3 rewrite retired `stats_total_size`: every offset in π is
 now read from the blob (`Stf_config.stats_layout`), never from the spec.

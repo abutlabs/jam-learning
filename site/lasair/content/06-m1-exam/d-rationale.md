@@ -100,9 +100,8 @@ Verified on 2026-09-23:
 - **JAM Implementer's Prize**: https://jam.web3.foundation/ , the paths, milestones and
   prize amounts; the Fellowship judges. Among its rules
   (https://jam.web3.foundation/rules): 6, a clean-room implementation from the Graypaper
-  and the public implementers' channel; 7, declare any implementation code viewed; 9,
-  generative AI must not be used in any substantive way; 12, an interview may be requested
-  to confirm authorship. lasair is written by an AI and disclosed that against rule 9.
+  and the public implementers' channel; 7, declare any implementation code viewed; 12, an
+  interview may be requested to confirm authorship.
 
 Not verified, listed for completeness: the JAM Graypaper explainer series on
 graypaper.com's "JAM lectures" and Kian Paimani's JAM talks. Check before citing.

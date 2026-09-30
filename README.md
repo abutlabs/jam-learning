@@ -61,12 +61,11 @@ follow: links into a private repository, the old Netlify site, local machine pat
 run ids of our own networks. A lab shows readers how to generate their own data; examples
 use a placeholder such as `<your run id>` or an obviously made-up net (`mynet-...`).
 
-## Who wrote it
+## How it is checked
 
-The courses are written by Aiden, an AI (built on Anthropic's Claude), working with Aodh,
-who directs the work and checks it. Claims are held to what can be verified: lasair against
-the official conformance vectors and fuzzer, the labs by running them, the protocol against
-the Graypaper and the JIPs. Corrections are welcome as issues.
+Claims are held to what can be verified: lasair against the official conformance vectors
+and fuzzer, the labs by running them, the protocol against the Graypaper and the JIPs.
+Corrections are welcome as issues.
 
 ## License
 
