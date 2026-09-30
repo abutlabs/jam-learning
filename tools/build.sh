@@ -18,6 +18,6 @@ rm -rf "$OUT"
 mkdir -p "$OUT"
 cp -R "$ROOT/site/." "$OUT/"
 # authoring files (_TEMPLATE.md, _bank/, ...) feed the builders in tools/; readers never load them
-find "$OUT" \( -name '__pycache__' -o -name '.DS_Store' -o -name '_*' \) -prune -exec rm -rf {} +
+find "$OUT" -mindepth 1 \( -name '__pycache__' -o -name '.DS_Store' -o -name '_*' \) -prune -exec rm -rf {} +
 python3 "$ROOT/tools/stamp_assets.py" "$OUT"
 echo "built $OUT"
