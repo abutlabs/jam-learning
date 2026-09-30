@@ -17,6 +17,7 @@
 
     // [label, target from the site root, pages (from the site root) that highlight it]
     var LINKS = [
+        ['Build together', 'together/index.html', /^together\//],
         ['Lasair', 'lasair/index.html', /^lasair\/(index\.html|lesson\.html)?$/],
         ['Observability', 'observability/index.html', /^observability\//],
         ['M1 Understanding', 'lasair/exam.html', /^lasair\/exam\.html$/],

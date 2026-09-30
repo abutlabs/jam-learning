@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Run jamswap, an order-book exchange that runs as a JAM service, on mixed-client test nets; bring your own client or service; watch it all on one observability stack.">
+    <title>Build JAM Together — Mixed Nets and Shared Services</title>
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <nav id="site-nav" class="top-nav" aria-label="Main navigation"></nav>
+    <script src="../assets/js/nav.js"></script>
+
+    <main class="landing" id="main">
+        <section class="hero">
+            <h1>Build JAM<br>Together.</h1>
+            <p class="hero-subtitle">
+                JAM is many clients running many services. Neither is proven until they run
+                together. Start a test net of any mix of clients, run a real JAM service on it,
+                and read a verdict every client team can check: one head, shared finality, and
+                the service's state byte-identical on every node.
+            </p>
+            <a href="lesson.html?lesson=00-start/01-why-build-together" class="cta-button">Start here</a>
+            <a href="lesson.html?lesson=03-bring-your-client/01-join-a-net" class="cta-button cta-secondary">Bring your client</a>
+        </section>
+
+        <section class="about">
+            <h2>Where it runs today</h2>
+            <p><strong><code>lasair6</code></strong>: six lasair validators, GRANDPA finality, the
+            exchange on top, and JIP-3 telemetry from every node.</p>
+            <p><strong><code>pj6</code></strong>: six PolkaJam validators and no lasair; the exchange
+            deploys its service at runtime through the chain's Bootstrap service.</p>
+            <p><strong><code>lasair-pj</code></strong>: three lasair and three PolkaJam validators on
+            one chain, one GRANDPA; the exchange's state is byte-identical on both clients.</p>
+            <p>Each passes jamswap's soak: one head, finality advancing everywhere with the same
+            hash, trades settling, the service's state identical on every node. Both clients pass
+            the one-command JIP-2 check the exchange needs from a node.</p>
+        </section>
+
+        <section class="tracks">
+            <h2>Tracks</h2>
+            <div id="tracks-main">
+                <noscript><p>Enable JavaScript to see the tracks, or browse the
+                <a href="https://github.com/abutlabs/jam-learning/tree/main/site/together/content">lesson sources on GitHub</a>.</p></noscript>
+            </div>
+        </section>
+
+        <section class="about">
+            <h2>The pieces</h2>
+            <p>
+                <a href="https://github.com/abutlabs/jamswap" target="_blank" rel="noopener">jamswap</a>:
+                an order-book exchange that runs as a JAM service, and the harness that runs it on
+                nets of any mix of clients. Its
+                <a href="https://github.com/abutlabs/jamswap/blob/main/docs/COLLABORATE.md" target="_blank" rel="noopener">collaboration guide</a>
+                is the short version of this section.
+            </p>
+            <p>
+                <a href="https://github.com/abutlabs/observability" target="_blank" rel="noopener">observability</a>:
+                the stack every net reports into (MIT). <a href="../observability/index.html">Learning
+                Observability</a> teaches reading it.
+            </p>
+            <p>
+                The standards between clients: the <a href="https://graypaper.com" target="_blank" rel="noopener">Graypaper</a>,
+                JAMNP-S, and the <a href="https://github.com/polkadot-fellows/JIPs" target="_blank" rel="noopener">JIPs</a>
+                (node RPC, telemetry, chain specs, keys). jamswap is a JAM <em>service</em>: running it or
+                reading its code is outside the JAM Prize's clean-room rules, which cover
+                implementation code.
+            </p>
+        </section>
+    </main>
+    <footer>
+        <p>Written by Aiden, an AI, with Aodh, and checked against the Graypaper, the JIPs and
+        running code · <a href="https://github.com/abutlabs/jam-learning">jam-learning on GitHub</a> · corrections welcome as issues · MIT license</p>
+    </footer>
+    <script src="../assets/js/app.js"></script>
+</body>
+</html>

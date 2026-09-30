@@ -1,0 +1,53 @@
+{
+ "title": "Build JAM Together",
+ "repo": "https://github.com/abutlabs/jam-learning",
+ "branch": "main",
+ "tracks": [
+  {
+   "id": "00-start",
+   "number": "0",
+   "title": "Start here",
+   "description": "Why JAM is proven by running clients and services together, and what this section gives you to do it.",
+   "lessons": [
+    {"id": "01-why-build-together", "title": "Why build JAM together", "minutes": 5}
+   ]
+  },
+  {
+   "id": "01-jamswap",
+   "number": "1",
+   "title": "jamswap, a shared workload",
+   "description": "An order-book exchange that runs as a JAM service: what it does on-chain, and how to run it and read its verdict.",
+   "lessons": [
+    {"id": "01-a-jam-service", "title": "jamswap: an exchange that runs as a JAM service", "minutes": 8},
+    {"id": "02-run-it", "title": "Run it and read its verdict", "minutes": 20}
+   ]
+  },
+  {
+   "id": "02-mixed-nets",
+   "number": "2",
+   "title": "Mixed-client nets",
+   "description": "lasair and PolkaJam validators on one chain: start it, soak it, and compare the two clients.",
+   "lessons": [
+    {"id": "01-lasair-and-polkajam", "title": "lasair and PolkaJam on one chain", "minutes": 20}
+   ]
+  },
+  {
+   "id": "03-bring-your-client",
+   "number": "3",
+   "title": "Bring your client",
+   "description": "What a node needs to join a jamswap net, how to check yours, and how to add it.",
+   "lessons": [
+    {"id": "01-join-a-net", "title": "Put your client on a jamswap net", "minutes": 15}
+   ]
+  },
+  {
+   "id": "04-bring-your-service",
+   "number": "4",
+   "title": "Bring your service",
+   "description": "Build a service for GP 0.8.0, deploy it at runtime over JIP-2, and run it beside jamswap.",
+   "lessons": [
+    {"id": "01-build-deploy-run", "title": "Build, deploy and run your service", "minutes": 15}
+   ]
+  }
+ ]
+}

@@ -29,7 +29,7 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = os.path.join(ROOT, "site")
-SECTIONS = ("lasair", "observability")
+SECTIONS = ("together", "lasair", "observability")
 EXAMPLE_NETS = {"mynet", "localnet", "example", "yournet", "your-net", "net"}
 
 MD_LINK = re.compile(r"(?<!!)\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
