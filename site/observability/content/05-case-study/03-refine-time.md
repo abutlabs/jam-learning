@@ -82,6 +82,8 @@ Two more panels on this dashboard would help, and this run does not have them:
 - The **work-package lifecycle** dashboard's stage timings and outcomes by `last_stage`
   came later still, with lasair's `jam_*` telemetry.
 
+lasair 2.1.3, the image jamswap runs now, exports both, so your own runs have them.
+
 This is normal. An investigation often ends by adding the measurement that would have made
 it shorter.
 

@@ -172,10 +172,18 @@ docker start lasair6-lm1-1
 
 A purple `start` mark appears, and `lm1` itself catches up within seconds: its own log
 (`./dex logs lm1` from the jamswap checkout) shows it importing and finalizing again. Yet
-the dashboards keep showing it at the slot where it died, and One head stays red. Why? The
-stack sees a lasair node through the reader beside it (lesson 2.2), and in the lasair build
-jamswap runs (2.1.2) a reader whose node went away does not reconnect. Restart the reader
-too:
+One head stays red. Why? A lasair node reaches the stack by three paths (lesson 2.2): its
+own `/metrics`, its JIP-3 stream, and its JIP-2 reader. Ask Explore for all three at once:
+
+```
+max by (node, source) (jam_best_slot{net="lasair6", run_id="<your run id>", node=~"lm0|lm1"})
+```
+
+`lm1`'s own metrics (the series without a `source`) and its `source="jip3"` series are back
+level with `lm0` within seconds, but its `source="jip2"` series is stuck at the slot where
+the node died: in lasair 2.1.3, the image jamswap runs, a reader whose node went away does
+not reconnect (a known lasair bug). Two paths say "recovered", one says "stuck", and the
+disagreement is the clue. Restart the reader:
 
 ```sh
 docker restart lasair6-reader1-1

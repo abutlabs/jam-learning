@@ -65,13 +65,15 @@ query against PolkaJam's telemetry.
 
 ## What you should find
 
-Run the count on your own `lasair-pj`. With the published lasair 2.1.2, expect both
-findings. On the author's run of 2026-09-29, *Bad incoming stream protocol 153* came from
-two of the three PolkaJam nodes within a minute of the start, and *Invalid guarantee: No
-signature from peer eecgw…* within four minutes of turning the load on, naming the same
-peer as on 2026-09-28 (the peers are the dev validators, the same on every jamswap
-network). lasair's later builds change the behaviour behind both; they are not published
-as an image yet, so the complaints are still yours to see.
+Run the count on your own `lasair-pj`. Both findings were made with lasair 2.1.2; on it,
+expect both. On the author's run of 2026-09-29, *Bad incoming stream protocol 153*
+came from two of the three PolkaJam nodes within a minute of the start, and *Invalid
+guarantee: No signature from peer eecgw…* within four minutes of turning the load on,
+naming the same peer as on 2026-09-28 (the peers are the dev validators, the same on every
+jamswap network). lasair's later builds change the behaviour behind both, and 2.1.3, the
+image jamswap runs now, is one of them. To see the complaints yourself, start the network
+on 2.1.2 (`LASAIR_IMAGE=ghcr.io/abutlabs/lasair:2.1.2 ./dex up NET=lasair-pj`); then try
+the default, 2.1.3, and compare the counts.
 
 That run also showed a reason the 2026-09-28 one did not: *Chain error: Invalid epoch index
 763782, current is 0*, once from each PolkaJam node in the same second, 23 seconds after

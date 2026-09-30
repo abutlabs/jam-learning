@@ -36,10 +36,11 @@ telemetry on shows 2 (JIP-3 and JIP-2). Versions come from the node's own metric
 JIP-3 node information; JIP-2 cannot tell, so a JIP-2-only node has an empty version.
 Click a row for Node detail (lesson 3.6).
 
-On your `lasair6` run, each lasair node shows **paths 2** and an empty version: `jip2` (the
-reader beside it) and `metrics`, which here is jamswap's netwatch, a checker that exports
-`jam_*` series for every node it reads. The lasair image jamswap runs (2.1.2) exports no
-`jam_*` names of its own.
+On your `lasair6` run, each lasair node shows **paths 3** and version `2.1.3`, GP `0.8.0`:
+`jip2` (the reader beside it), `jip3` (its own telemetry) and `metrics`, which here is the
+node's own `/metrics` and jamswap's netwatch, a checker that exports `jam_*` series for
+every node it reads. (On lasair 2.1.2, which exports no `jam_*` names of its own and sends
+no JIP-3, the same rows show paths 2 and an empty version.)
 
 ### The panels below
 
@@ -107,9 +108,10 @@ importing it) to each later stage, as `jam_block_stage_seconds{stage}` (lesson 2
   waiting for finality.
 
 A time to finality that grows run after run, or a stage that stops appearing, is where to
-look. The row is empty for nodes that send no JIP-3: on `lasair6` with the published lasair
-image, all six. On `lasair-pj` (lesson 6.1) the three PolkaJam nodes fill it, since they
-send every event it needs.
+look. The row is empty for nodes that send no JIP-3. On your networks every node sends
+it: lasair 2.1.3 and PolkaJam both send every event the row needs, so all six nodes fill
+it on `lasair6` and on `lasair-pj` (lesson 6.1). (lasair 2.1.2 sent none: on a net
+started on it, only PolkaJam nodes fill the row.)
 
 ## Reading them together
 

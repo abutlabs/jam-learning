@@ -134,16 +134,17 @@ apart, dashboards to see the shape, PromQL to get the numbers, logs for the sing
 
 ## Reproduce it yourself
 
-The failure is yours to reproduce, with public images only. jamswap still runs lasair
-2.1.2, the build from before the fix, and
+The failure is yours to reproduce, with public images only. lasair 2.1.2, the build from
+before the fix, is still published, and
 [lab 4](lesson.html?lesson=exercises/lab-4-replay-the-case-study) walks you through it:
-start `lasair6` with load, slow its first guarantor down with `docker update --cpus`, and
-watch the same chain of evidence appear on your own dashboards, from refine time to
+start `lasair6` on it with load, slow its first guarantor down with `docker update --cpus`,
+and watch the same chain of evidence appear on your own dashboards, from refine time to
 expired packages to a growing mempool, while Chain health stays green. Then answer this
 track's questions with your own run id.
 
-The proof is the one step you cannot repeat yet: the build with the faster PVM is not
-published as an image. When it is, the same soak with `LASAIR_IMAGE` set to it is the
-proof run, and the Soak runs table puts your two runs side by side.
+The proof you can try too: lasair 2.1.3, the image jamswap runs by default now, contains
+the faster PVM. Run the same soak (`soak/run lasair6 3600`) once with
+`LASAIR_IMAGE=ghcr.io/abutlabs/lasair:2.1.2` and once on the default, everything else
+the same, and the Soak runs table puts your two runs side by side.
 
 Next: [lasair and PolkaJam on one chain](lesson.html?lesson=06-mixed-networks/01-lasair-and-polkajam)

@@ -107,10 +107,10 @@ minute. Authoring, co-signing (CE-134), distributing guarantees (CE-135), guaran
 
 It reads lasair's older metric names (`lasair_blocks_authored_total`,
 `lasair_guarantor_refine_seconds`, `lasair_ce133_expired_total`...), which older and newer
-builds both export, so it works on lasair 2.1.2, the image jamswap runs. That made it the
-case study's main lasair view. One exception: the anchor-age panel reads
-`lasair_ce133_anchor_age_slots`, a metric added during the case study itself, so 2.1.2 has
-no anchor-age data.
+builds both export, so it works on lasair 2.1.2, the build of the case study, as well as
+on 2.1.3, the image jamswap runs. That made it the case study's main lasair view. One
+exception: the anchor-age panel reads `lasair_ce133_anchor_age_slots`, a metric added
+during the case study itself, so 2.1.2 has no anchor-age data (2.1.3 has).
 
 ## Memory (`obs-memory`)
 
@@ -129,13 +129,15 @@ The slope needs time to settle: ignore it for the first half hour of a run.
 
 ## Their answers, in Explore, on your own run
 
-lasair builds from before the `jam_*` work, such as 2.1.2, export only `lasair_*` names:
-on the lasair dashboards, validator duties and Memory would work in full (except the
-anchor-age panel), and the others only in their panels that read `lasair_*` names. Every
-panel is a query, so you do not need the dashboards to ask their questions. Start
-`lasair6` with load (`./dex up`, then `./dex load`), let it run ten minutes, open
-**Explore** in your Grafana with the *Prometheus* datasource, and set `RUN` in these
-queries to your run id (`./obs current lasair6`):
+lasair 2.1.3, the image jamswap runs, exports both the `jam_*` names and lasair's own, so
+your nodes export what these dashboards read (a counter that never moved appears once it
+does). Builds from before the `jam_*` work, such as 2.1.2, export only `lasair_*` names:
+there validator duties and Memory would work in full, except the anchor-age panel, and the
+others only in their panels that read `lasair_*` names. Every panel is a query, so you do
+not need the dashboards to ask their questions. Start `lasair6` with load (`./dex up`,
+then `./dex load`), let it run ten minutes, open **Explore** in your Grafana with the
+*Prometheus* datasource, and set `RUN` in these queries to your run id
+(`./obs current lasair6`):
 
 | Question (the panel it comes from) | Query |
 |---|---|
@@ -144,6 +146,7 @@ queries to your run id (`./obs current lasair6`):
 | How many work-items does each node guarantee per minute? (*CE-133 guaranteed*) | `sum by (node) (60 * rate(lasair_ce133_guaranteed_total{run_id="RUN"}[5m]))` |
 | How many guarantees land in blocks? (*CE-135 included*) | `sum by (node) (60 * rate(lasair_ce135_included_total{run_id="RUN"}[5m]))` |
 | Are packages expiring? (*Packages expired, per 10 min*) | `sum by (node) (increase(lasair_ce133_expired_total{run_id="RUN"}[10m]))` |
+| How old are packages' anchors when they arrive? (*Package anchor age on arrival*) | `histogram_quantile(0.5, sum by (node, le) (rate(jam_wp_anchor_age_slots_bucket{run_id="RUN"}[10m])))` |
 | Is every node authoring? (*Blocks authored*) | `60 * rate(lasair_blocks_authored_total{run_id="RUN"}[2m])` |
 | Is the guarantor falling behind? (*guarantor queue*) | `lasair_ce133_queue_depth{run_id="RUN"}` |
 | Is memory bounded? (*RSS per node*, Memory) | `lasair_mem_rss_bytes{run_id="RUN"}` |

@@ -192,9 +192,11 @@ Blocks each node imported per minute, for one run.
 60 * rate(jam_blocks_imported_total{net="$net",run_id="$run_id"}[2m])
 ```
 
-On lasair builds without the `jam_*` names, such as the 2.1.2 that jamswap runs, use
-`lasair_blocks_imported_total`. (On the case study's failing run: about 17 per node per
-minute half an hour in.)
+A lasair 2.1.3 node reports it twice, from its own `/metrics` and through JIP-3 (with
+`source="jip3"`); `max by (node, client) (...)` around the query keeps one line per node,
+as in A2. On lasair builds without the `jam_*` names, such as 2.1.2, use
+`lasair_blocks_imported_total`. (On the case study's failing run, on 2.1.2: about 17 per
+node per minute half an hour in.)
 
 </details>
 
@@ -265,9 +267,9 @@ histogram_quantile(0.5, sum by (le) (increase(jam_wp_stage_seconds_bucket{net="$
 
 `increase(...[$__range])` counts observations over the whole dashboard range instead of a
 moving window; `stage="refined"` picks lasair's stage (lesson 2.1: other sources use other
-stage names). (The work-package lifecycle dashboard's bars.) It needs a lasair build newer
-than the published 2.1.2; on your networks, the PolkaJam nodes of `lasair-pj` report
-JIP-3's stages instead (`stage="refine"`).
+stage names). (The work-package lifecycle dashboard's bars.) lasair 2.1.3 exports it
+(2.1.2 does not). The series the JIP-3 receiver derives, for PolkaJam nodes and for
+lasair's own JIP-3 alike, use JIP-3's stages instead (`stage="refine"`).
 
 </details>
 
@@ -284,8 +286,9 @@ histogram_quantile(0.5, sum by (le, client) (increase(jam_block_stage_seconds_bu
 
 The same shape as C5, on the block-stage histogram the JIP-3 receiver derives (lesson 2.3):
 the `finalized` stage is each node's time from first seeing a block to finalizing it.
-Chain health's *Time to finality, median* stat is this without `client`. On `lasair-pj` it
-answers for `polkajam` only (7 to 13 seconds on the author's run of 2026-09-29, depending
-on the range): lasair 2.1.2 sends no JIP-3.
+Chain health's *Time to finality, median* stat is this without `client`. With lasair 2.1.3
+sending JIP-3, it answers for every client on your networks: on a fresh `lasair6`, a few
+seconds. On the author's `lasair-pj` run of 2026-09-29 it answered for `polkajam` only (7
+to 13 seconds, depending on the range): lasair 2.1.2 sends no JIP-3.
 
 </details>

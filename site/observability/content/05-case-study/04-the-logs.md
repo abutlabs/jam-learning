@@ -22,8 +22,8 @@ expiry on every node:
 {net="lasair6", run_id="<run>", client="lasair"} |= "EXPIRED"
 ```
 
-or, on lasair builds newer than the published 2.1.2 with `LASAIR_LOG_FORMAT=json` on the
-nodes, filtered on fields:
+or, with `LASAIR_LOG_FORMAT=json` on the nodes (lasair 2.1.3 has it; jamswap's networks
+do not set it; 2.1.2 writes plain lines only), filtered on fields:
 
 ```logql
 {net="lasair6", run_id="<run>"} |= "EXPIRED" | json | component="ce133"

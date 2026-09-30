@@ -94,7 +94,7 @@ Then, from the observability checkout, run `./obs status` again. A line for your
 appears between the services and netjoin, in this shape:
 
 ```text
-lasair6        <your run id>         builder 1/1 up  dex 1/1 up  jip2 nodes 6  lasair 6/6 up  netwatch 1/1 up
+lasair6        <your run id>         builder 1/1 up  dex 1/1 up  jip2 nodes 6  jip3 nodes 6  lasair 6/6 up  netwatch 1/1 up
 netjoin      alloy on 1 network(s), jip2-exporter on 1 network(s), jip3-receiver on 1 network(s)
 ```
 

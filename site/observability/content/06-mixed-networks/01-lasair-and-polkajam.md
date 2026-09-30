@@ -19,49 +19,51 @@ from the jamswap checkout:
 
 The first time, `up` builds a PolkaJam image on your machine: the build downloads
 PolkaJam's public release (pinned by version and checksum) and wraps it. Because the stack
-is running, `up` also points the PolkaJam nodes' JIP-3 telemetry at it
-(`--telemetry obs-jip3:9910`). Start the stack first: a network started without it runs
-without telemetry until you take it down and up again.
+is running, `up` also points every node's JIP-3 telemetry at it (PolkaJam's
+`--telemetry obs-jip3:9910`, lasair's `LASAIR_TELEMETRY`). Start the stack first: a
+network started without it runs without telemetry until you take it down and up again.
 
 | Nodes | Client | How it reports |
 |---|---|---|
-| `lm0`, `lm1`, `lm2` | lasair 2.1.2 | its own `/metrics` (scraped; `lasair_*` names on this build), JIP-2 through a reader beside it, its container output |
+| `lm0`, `lm1`, `lm2` | lasair 2.1.3 | its own `/metrics` (scraped; `jam_*` and `lasair_*` names), JIP-3 telemetry, JIP-2 through a reader beside it, its container output |
 | `pj3`, `pj4`, `pj5` | PolkaJam 0.1.29 | JIP-3 telemetry, its JIP-2 RPC, its container output |
 
 PolkaJam serves no `/metrics`. Its only telemetry option is a JIP-3 push endpoint, so the
 stack sees it through the JIP-3 receiver (events, and the metrics derived from them) and
-the JIP-2 exporter (slots and block hashes). lasair is scraped directly, and each lasair
-node has a reader, a small JIP-2 server labelled with `org.abutlabs.obs.jip2.node`, so
-the JIP-2 exporter compares all six nodes. On top runs the DEX.
+the JIP-2 exporter (slots and block hashes). lasair is scraped directly and pushes JIP-3
+as well, and each lasair node has a reader, a small JIP-2 server labelled with
+`org.abutlabs.obs.jip2.node`, so the JIP-2 exporter compares all six nodes. On top runs
+the DEX.
 
 ## Analyse: what the platform dashboards show
 
 `./obs status` lists the run with every path, in this shape:
 
 ```text
-lasair-pj      <your run id>       builder 1/1 up  dex 1/1 up  jip2 nodes 6  jip3 nodes 3  lasair 3/3 up  netwatch 1/1 up
+lasair-pj      <your run id>       builder 1/1 up  dex 1/1 up  jip2 nodes 6  jip3 nodes 6  lasair 3/3 up  netwatch 1/1 up
 ```
 
 On the **Network overview**, six rows and 2 clients. The *paths* column tells you how each
-node is seen: **3** for a PolkaJam node (JIP-3, JIP-2, and jamswap's netwatch, which counts
-as `metrics`), **2** for a lasair 2.1.2 node (JIP-2 and netwatch; its own metrics carry
-only `lasair_*` names). The *version* column reads `0.1.29`, GP `0.8.0`, for the PolkaJam
-nodes, from their JIP-3 node information message, and is empty for the lasair nodes:
-JIP-2 cannot tell, and this lasair build exports no `jam_node_info`.
+node is seen: **3** for every node, JIP-3, JIP-2 and `metrics` (jamswap's netwatch counts
+as `metrics`, and a lasair node's own `/metrics` too). The *version* column reads
+`0.1.29`, GP `0.8.0`, for the PolkaJam nodes and `2.1.3`, GP `0.8.0`, for the lasair
+nodes, from each node's JIP-3 node information message (and lasair's own
+`jam_node_info`). On lasair 2.1.2, which sent no JIP-3 and exported no `jam_*` names, the
+lasair rows showed paths 2 and an empty version.
 
 On **Chain health**, the one-head check is the JIP-2 exporter comparing **block hashes**
 across all six nodes at the common slot, whatever client each runs. This is the view no
 single client can give you: lasair knows its own head, PolkaJam knows its own, and only a
 collector that asks both can say they are the same block.
 
-Chain health's **Block life** row, empty on `lasair6`, fills here: the PolkaJam nodes send
-every event it needs, so all five stages appear, from `authored` to `finalized`. On the
-author's run (2026-09-29), the median time to finality moved between 7 and 13 seconds
-over its first twenty minutes, with the other four stages within a few hundredths of a
-second of a block first being seen: nearly all of a block's life is waiting for
-finality. Watch *Time to finality
-per node* for the three PolkaJam lines, and compare runs: a time to finality that grows
-from run to run is a regression, whichever client caused it.
+Chain health's **Block life** row fills here as it does on `lasair6`: both clients send
+every event it needs, so all five stages appear, from `authored` to `finalized`, for all
+six nodes. On the author's run (2026-09-29, on lasair 2.1.2, when only the PolkaJam nodes
+sent JIP-3), the median time to finality moved between 7 and 13 seconds over its first
+twenty minutes, with the other four stages within a few hundredths of a second of a block
+first being seen: nearly all of a block's life is waiting for finality. Watch *Time to
+finality per node* for the nodes of both clients, and compare runs: a time to finality
+that grows from run to run is a regression, whichever client caused it.
 
 ## What is fair to compare across clients
 

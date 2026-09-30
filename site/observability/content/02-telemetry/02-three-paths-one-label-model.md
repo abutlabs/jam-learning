@@ -77,13 +77,15 @@ validator they describe, so their series land on `lm0`, not on the proxy:
 ```yaml
       org.abutlabs.obs.job: reader
       org.abutlabs.obs.client: lasair
-      org.abutlabs.obs.jip2: "19990"
+      org.abutlabs.obs.jip2: "19800"
       org.abutlabs.obs.jip2.node: lm0
       org.abutlabs.obs.jip2.client: lasair
 ```
 
 `./dex up` sets `OBS_RUN_ID`, and the node label defaults to the compose service name.
-Nothing else is needed: the stack finds the whole network by these labels.
+Nothing else is needed: the stack finds the whole network by these labels. (JIP-3 needs no
+label of its own: each validator's environment has `LASAIR_TELEMETRY: "${OBS_JIP3:-}"`,
+and `./dex up` sets `OBS_JIP3` to the stack's receiver when the stack is up.)
 
 ## How Alloy turns labels into targets
 

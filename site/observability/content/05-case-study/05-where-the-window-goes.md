@@ -67,9 +67,9 @@ enough, so the same load passes. The window is the same; the guarantor time is n
 ## Seeing the budget directly
 
 This run could not show the budget on a dashboard: its nodes exported neither anchor age
-nor stage times. lasair builds since then do (none of them is a published image yet, so
-your `lasair6` on 2.1.2 cannot show these either), and lasair's **work-package lifecycle**
-dashboard (`lasair-wp`, lesson 3.4) reads them:
+nor stage times. lasair builds since then do (among them 2.1.3, the image jamswap runs
+now, so the queries below work on your own `lasair6`), and lasair's
+**work-package lifecycle** dashboard (`lasair-wp`, lesson 3.4) reads them:
 
 - **Package anchor age on arrival (slots) · window = 8**: term 1, in slots (for seconds,
   multiply by the slot pace; see the loose end below).

@@ -54,7 +54,7 @@ git clone https://github.com/abutlabs/jamswap
 [jamswap](https://github.com/abutlabs/jamswap) is a DEX on JAM, and it defines the networks
 this course runs: `lasair6` (six lasair validators), `lasair-pj` (three lasair and three
 PolkaJam) and `pj6` (six PolkaJam). Its lasair nodes run the published image
-`ghcr.io/abutlabs/lasair:2.1.2`; its PolkaJam nodes are built on your machine from
+`ghcr.io/abutlabs/lasair:2.1.3`; its PolkaJam nodes are built on your machine from
 PolkaJam's public release.
 
 Side by side matters twice: `./obs up` mounts every sibling checkout's
@@ -113,21 +113,22 @@ From the jamswap checkout, `./dex link` prints the same links for the current ru
 
 ## What your nodes report
 
-The lasair image jamswap runs, 2.1.2, is from before lasair adopted the common `jam_*`
-names and its JIP-3 telemetry sender. So on your networks:
+The lasair image jamswap runs, 2.1.3, reports through every path the stack reads. So on
+your networks:
 
-- a lasair node's own `/metrics` carries only `lasair_*` names (`lasair_slot`,
-  `lasair_finalized_slot`, `lasair_guarantor_refine_seconds`, ...);
-- its `jam_*` series (best and finalized slot, the hash comparison) come from the JIP-2
-  path: every lasair node has a *reader* beside it that serves JIP-2, which the stack polls
-  (lesson 2.2), and jamswap's `netwatch` exports them too;
-- it sends no JIP-3 telemetry, so panels built on JIP-3, such as Chain health's *Block
-  life*, stay empty for lasair nodes and fill for PolkaJam nodes (track 6).
+- a lasair node's own `/metrics` carries the common `jam_*` names (`jam_best_slot`,
+  `jam_finalized_slot`, `jam_peers`, ...) and lasair's own `lasair_*` names
+  (`lasair_guarantor_refine_seconds`, ...);
+- every lasair node has a *reader* beside it that serves JIP-2, which the stack polls
+  (lesson 2.2), and jamswap's `netwatch` exports `jam_*` series for every node too;
+- it sends JIP-3 telemetry to the stack (jamswap gives every lasair node the stack's JIP-3
+  address, as it does every PolkaJam node), so panels built on JIP-3, such as Chain
+  health's *Block life*, fill for lasair and PolkaJam nodes alike (track 6).
 
-Newer lasair builds export the `jam_*` names as well, keep the old names as aliases, and
-send JIP-3; they are not published as an image yet. Where it matters, a lesson names both,
-for example `jam_wp_anchor_age_slots`, which newer lasair builds also export under its
-older name `lasair_ce133_anchor_age_slots` (2.1.2 has neither).
+Older lasair builds, such as 2.1.2, the build of the case study in track 5, export only
+`lasair_*` names and send no JIP-3. Where it matters, a lesson names both, for example
+`jam_wp_anchor_age_slots`, which lasair also exports under its older name
+`lasair_ce133_anchor_age_slots` (2.1.3 has both; 2.1.2 has neither).
 
 ## Checking yourself
 

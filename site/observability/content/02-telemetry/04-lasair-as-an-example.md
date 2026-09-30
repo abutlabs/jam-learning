@@ -6,11 +6,11 @@ metrics, one log line per event on stdout, and optional JIP-3 telemetry. Its ref
 the tour you need to diagnose it, and to read its dashboards where you have them.
 
 One thing first, because it decides what you will see. The lasair image that jamswap's
-networks run, and so the one on your machine, is the published `ghcr.io/abutlabs/lasair:2.1.2`.
-It predates most of what this lesson describes: the `jam_*` names, the work-package
-outcomes, JSON logs and the JIP-3 sender came in later builds, which are not published as
-an image yet. Each section below says what 2.1.2 has. To see for yourself, with `lasair6`
-up, list every lasair metric your nodes export, in Explore:
+networks run, and so the one on your machine, is the published `ghcr.io/abutlabs/lasair:2.1.3`.
+It has what this lesson describes: the `jam_*` names, the work-package outcomes, JSON logs
+and the JIP-3 sender. (2.1.2, the build of the case study in track 5, predates them.) To
+see for yourself, with `lasair6` up, list every lasair metric your nodes export, in
+Explore:
 
 ```promql
 count by (__name__) ({__name__=~"lasair_.*", run_id="<your run id>"})
@@ -21,11 +21,10 @@ count by (__name__) ({__name__=~"lasair_.*", run_id="<your run id>"})
 Start a node with `--metrics-port P` (containers use 9615). Any HTTP request to that port
 returns every metric; there is no other path to learn.
 
-Newer lasair builds export the whole `jam_*` set, and then a great deal more under
-`lasair_`, grouped by what the node is doing. 2.1.2 exports about half of the metrics named
-below; the query above lists yours. Among those it lacks: the work-package outcomes and
-in-flight count, refine items and gas per second, the log-line counter and the JIP-3
-sender's metrics. (A counter that never moved may also be missing until it does.)
+lasair exports the whole `jam_*` set, and then a great deal more under `lasair_` (over two
+hundred names in 2.1.3), grouped by what the node is doing; the query above lists yours.
+(A metric may be missing until it first has a value: a counter that never moved, for
+example, or `lasair_store_blocks` on a node without durable storage.)
 
 | Family | A few of its metrics |
 |---|---|
@@ -43,14 +42,13 @@ sender's metrics. (A counter that never moved may also be missing until it does.
 
 Two of them deserve a closer look, because the case study depends on them.
 
-**`lasair_wp_outcomes_total{outcome, reason, last_stage}`** (newer builds) records how
-every work-package
-ended: `accumulated`, `expired` (reason `anchor_too_old` or `lookup_anchor_too_old`),
-`abandoned`, `dropped`, `refused` at intake, and so on. `last_stage` is the furthest stage
-it reached. So `outcome="expired", last_stage="refined"` reads: *refined, but never
-guaranteed in time*.
+**`lasair_wp_outcomes_total{outcome, reason, last_stage}`** records how every
+work-package ended: `accumulated`, `expired` (reason `anchor_too_old` or
+`lookup_anchor_too_old`), `abandoned`, `dropped`, `refused` at intake, and so on.
+`last_stage` is the furthest stage it reached. So `outcome="expired", last_stage="refined"`
+reads: *refined, but never guaranteed in time*.
 
-**`lasair_guarantor_refine_seconds`** (2.1.2 has it) is the time the guarantor's worker
+**`lasair_guarantor_refine_seconds`** (2.1.2 has it too) is the time the guarantor's worker
 took to refine one whole package. lasair exports each histogram as the usual `_bucket`, `_sum` and `_count`
 **plus** a plain gauge with the latest observation, so a single scrape shows the last
 value: `lasair_guarantor_refine_seconds` alone is the most recent package's refine time.
@@ -72,7 +70,8 @@ alias of the same series:
 
 Builds from before the `jam_*` work, such as lasair 2.1.2, export only the older names
 (and not all of them: 2.1.2 has no `lasair_ce133_anchor_age_slots`). The case study's runs
-and your own networks use 2.1.2, so the case study's queries use the older names.
+used 2.1.2, so the case study's queries use the older names. On 2.1.3, the image your
+networks run, both names work.
 
 ## Logs
 
@@ -82,8 +81,9 @@ lasair writes one line per event on stdout. By default the line is for people:
 [ce133] package 0x3f1c9a02.. EXPIRED (anchor_too_old): its context can no longer be reported; the builder must resubmit
 ```
 
-In newer builds, with `LASAIR_LOG_FORMAT=json`, every line is one JSON object instead, the
-same message plus fields you can filter on (2.1.2 writes the plain lines only):
+With `LASAIR_LOG_FORMAT=json` in the node's environment, every line is one JSON object
+instead, the same message plus fields you can filter on. jamswap's networks do not set it;
+add it to the lasair nodes' environment to try it (2.1.2 writes the plain lines only):
 
 ```json
 {"ts":"2026-09-28T21:14:03.512Z","level":"warn","component":"ce133","msg":"package 0x3f1c9a02.. EXPIRED (anchor_too_old): its context can no longer be reported; the builder must resubmit","package":"0x3f1c9a02"}
@@ -105,18 +105,19 @@ Every line, in either format, is also counted: `lasair_log_lines_total{level, co
 So a dashboard can graph warnings per component without reading a single log line.
 
 The lasair dashboards' log panels filter on the JSON fields, so they show lines only when
-the nodes run with `LASAIR_LOG_FORMAT=json`. Plain lines, which is what your 2.1.2 nodes
-write, are still in Loki and still searchable with a text filter (lesson 3.8): try
-`{net="lasair6", client="lasair"} |= "STATUS"` on your run for each node's status line.
+the nodes run with `LASAIR_LOG_FORMAT=json`. Plain lines, which is what your nodes write
+unless you set it, are still in Loki and still searchable with a text filter (lesson 3.8):
+try `{net="lasair6", client="lasair"} |= "STATUS"` on your run for each node's status line.
 
 ## JIP-3
 
-In newer builds (not 2.1.2), start lasair with `--telemetry HOST:PORT` (or
-`LASAIR_TELEMETRY=HOST:PORT`). Events never
-wait on the network: they queue (at most 16,384), and a sender thread writes them. If the
-queue fills, events are dropped and the next one sent is preceded by a *Dropped* event
-with the count, so event ids stay correct. After a reconnect (backoff 1 s doubling to
-30 s) the node information is sent again. The sender's own health is exported as
+Start lasair with `--telemetry HOST:PORT` (or `LASAIR_TELEMETRY=HOST:PORT`; 2.1.2 has
+neither). jamswap's networks set `LASAIR_TELEMETRY` on every lasair node to the stack's
+JIP-3 receiver when the stack is up, so yours already stream. Events never wait on the
+network: they queue (at most 16,384), and a sender thread writes them. If the queue
+fills, events are dropped and the next one sent is preceded by a *Dropped* event with the
+count, so event ids stay correct. After a reconnect (backoff 1 s doubling to 30 s) the
+node information is sent again. The sender's own health is exported as
 `lasair_jip3_connected`, `lasair_jip3_queue`, `lasair_jip3_events_total` and
 `lasair_jip3_dropped_total`.
 

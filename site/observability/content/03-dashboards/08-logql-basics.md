@@ -13,7 +13,7 @@ turns them into **numbers**.
   `.../query` for a number at one time. Times are in nanoseconds.
 
 Run the examples on your own networks: the lasair ones on `lasair6` under load (lesson
-0.4), the JIP-3 ones on `lasair-pj`, where PolkaJam nodes send JIP-3 (lesson 6.1). Add
+0.4), the JIP-3 ones on `lasair-pj`, where both clients send JIP-3 (lesson 6.1). Add
 `run_id="<your run id>"` to pick one run. Where a lesson quotes a result, it is from a
 `lasair-pj` run on the course author's machine; yours will differ in the numbers, not in
 the shape.
@@ -64,8 +64,9 @@ package that was accepted and then expired, but both lines contain `anchor_too_o
 ## 3. Parse
 
 `| json` turns a JSON line's fields into labels you can filter on. JIP-3 events are JSON
-(lesson 2.3), and so are lasair's lines in builds that have `LASAIR_LOG_FORMAT=json`
-(newer than the published 2.1.2, which writes plain lines only):
+(lesson 2.3), and so are lasair's lines when a node runs with `LASAIR_LOG_FORMAT=json`
+(lasair 2.1.3 has it, but jamswap's networks do not set it: add it to the lasair nodes'
+environment to try the lasair examples below; 2.1.2 writes plain lines only):
 
 ```logql
 {net="lasair-pj", source="jip3"} | json | event="peer_misbehaved"
@@ -78,7 +79,7 @@ the dev validators' keys, the same on every jamswap network):
 {"event":"peer_misbehaved","id":3301,"ts":"2026-09-28T18:50:26.275860Z","peer":"4418fb8c85bb3985","reason":"Invalid guarantee: No signature from peer eecgwpgwq3noky4ijm4jmvjtmuzv44qvigciusxakq5epnrfj2utb"}
 ```
 
-For lasair JSON logs (newer builds), the fields are `level`, `component`, `msg`, and
+For lasair JSON logs, the fields are `level`, `component`, `msg`, and
 `package`, `slot`, `core` and so on when a line names them:
 
 ```logql

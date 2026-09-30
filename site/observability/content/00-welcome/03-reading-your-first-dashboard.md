@@ -92,17 +92,20 @@ dashed line is a threshold: trouble would be a line climbing toward it.
 **Head agreement**: *distinct heads* and *distinct finalized blocks* both flat at 1, and the
 spread of best slots 0 or 1. One chain.
 
-**Height per node** is **empty**, and that is fine: it reads `jam_best_height`, which the
-lasair image jamswap runs (2.1.2) does not export, and JIP-2, the path the stack reads
-these nodes through, carries slots, not heights. An empty panel means "no data for this
-query", not "zero". Lesson 3.1 lists the usual reasons.
+**Height per node**: blocks since genesis, best solid and finalized dashed. It reads
+`jam_best_height` and `jam_finalized_height`, which the lasair image jamswap runs (2.1.3)
+exports from each node's own `/metrics`; JIP-2 and JIP-3 carry slots, not heights.
 
-**Peers per node** shows only *nodes answering JIP-2*: 6. The same reason: this lasair
-build does not export `jam_peers`.
+**Peers per node** shows each node's peers, and how many nodes answer JIP-2: 6.
 
-**Block life**, the row at the bottom, is empty too. It reads JIP-3 telemetry (time to
-finality, and the median age of a block at each stage), and this lasair build sends none.
-On the mixed `lasair-pj` network the PolkaJam nodes fill it (lesson 6.1).
+**Block life**, the row at the bottom, reads JIP-3 telemetry, which every lasair node
+sends to the stack: time to finality, and the median age of a block at each stage. On a
+fresh `lasair6`, expect a time to finality of a few seconds.
+
+If any of these is empty on your run, check the image in the `up` mark below: lasair
+builds from before lasair adopted the `jam_*` names and JIP-3, such as 2.1.2, fill none of
+them. An empty panel means "no data for this query", not "zero". Lesson 3.1 lists the
+usual reasons.
 
 Hover over any graph: a vertical line follows your mouse across **every** panel, and a
 tooltip lists each series' value at that moment. Use it to line up events across panels.
@@ -114,7 +117,7 @@ started and drove your run. Hover over one to read it. On your run so far:
 
 | Colour | Text | Written by |
 |---|---|---|
-| blue | `lasair6 up: validators lasair,lasair,lasair,lasair,lasair,lasair; lasair ghcr.io/abutlabs/lasair:2.1.2` | `./dex up` |
+| blue | `lasair6 up: validators lasair,lasair,lasair,lasair,lasair,lasair; lasair ghcr.io/abutlabs/lasair:2.1.3` | `./dex up` |
 | purple | the run's begin, and each container's start | the lifecycle service |
 | blue | `loadgen on` | `./dex load`, if you ran it |
 

@@ -11,16 +11,23 @@ your own data. You cannot make lasair's code slower by hand, but you can give on
 validator less CPU: the same fault, made on purpose, and switched off again at the end.
 
 The *what you should see* notes come from the author's run of these steps on 2026-09-29,
-with the images jamswap pins (lasair 2.1.2). Your numbers will differ with your machine;
-the order of events should not.
+on lasair 2.1.2. Your numbers will differ with your machine; the order of events should
+not.
 
 ## 1. Generate: a network under load
 
+jamswap's networks run lasair 2.1.3 by default, which contains the faster PVM that fixed
+the case study's failure (lesson 5.6). To replay the failure, start the network on 2.1.2,
+the build from before the fix, by naming its image (if `lasair6` is already up,
+`./dex down` first):
+
 ```sh
 cd jamswap
-./dex up        # lasair6: six lasair validators and the DEX; a few minutes
+LASAIR_IMAGE=ghcr.io/abutlabs/lasair:2.1.2 ./dex up   # lasair6 on 2.1.2 and the DEX; a few minutes
 ./dex load      # 12 crossing pairs of orders a minute, 20% sealed
 ```
+
+The blue `lasair6 up` mark on your dashboards names the image, so you can check it ran.
 
 Then, from the observability checkout, keep your run id at hand:
 
@@ -239,11 +246,16 @@ days: `./obs link "$RUN" --all` opens every dashboard on it, with its two chaos 
 
 ## Going further
 
-- **The case study's own experiment.** `soak/run lasair6 3600` runs the hour-long soak
-  with the lasair image jamswap pins, 2.1.2, which is the build from before the fix.
-  jamswap's published results say it failed after about 25 minutes on the machine that
-  ran it. On a faster machine it may pass: refine time is CPU time. If it fails on yours,
-  every question above has an answer that matches track 5.
+- **The case study's own experiment.**
+  `LASAIR_IMAGE=ghcr.io/abutlabs/lasair:2.1.2 soak/run lasair6 3600` runs the hour-long
+  soak on 2.1.2, the build from before the fix. jamswap's published results say it failed
+  after about 25 minutes on the machine that ran it. On a faster machine it may pass:
+  refine time is CPU time. If it fails on yours, every question above has an answer that
+  matches track 5.
+- **After the fix.** Try the same steps on the default image, 2.1.3 (`./dex down`, then a
+  plain `./dex up`), and ask the same questions: does the throttled `lm0` still fall
+  behind, and how far? Or run the soak above without `LASAIR_IMAGE` and put the two soaks
+  side by side in the Soak runs table (lesson 5.6).
 - **Other faults.** Lesson 3.6 has you kill one validator and pause another, and read what
   the dashboards say about each.
 - **Any panel is a query.** Pick one on the DEX dashboard, open *Explore* from its menu, and

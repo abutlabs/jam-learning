@@ -32,8 +32,10 @@ selected) that contains `EXPIRED`: the guarantor's "package ... EXPIRED (reason)
 <summary>Answer</summary>
 
 Every JIP-3 *peer misbehaved* event (event 28) any node pushed on `lasair-pj`: each one a
-node's complaint about a peer, with the peer and a reason. On that network only the
-PolkaJam nodes push JIP-3, so these are PolkaJam's complaints (lesson 6.2).
+node's complaint about a peer, with the peer and a reason. On the author's run (lasair
+2.1.2) only the PolkaJam nodes pushed JIP-3, so these were PolkaJam's complaints (lesson
+6.2). lasair 2.1.3 pushes JIP-3 too, but sends this event only for an invalid
+work-report signature over CE-134.
 
 </details>
 
@@ -98,11 +100,11 @@ each. Filter on the expiry itself: `|= "EXPIRED"` returned 1.
 <details>
 <summary>Answer</summary>
 
-It only works if the nodes run with `LASAIR_LOG_FORMAT=json`, which only lasair builds
-newer than the published 2.1.2 have. lasair's default lines are plain text
+It only works if the nodes run with `LASAIR_LOG_FORMAT=json`, which lasair 2.1.3 has but
+jamswap's networks do not set. lasair's default lines are plain text
 (`[ce133] ...`): `| json` fails on them (they get an `__error__` label), no `level` label
-exists, and nothing matches. For plain lines, which is what your `lasair6` writes, filter
-the text: `|~ "(?i)error"`.
+exists, and nothing matches. For plain lines, which is what your `lasair6` writes unless
+you set it, filter the text: `|~ "(?i)error"`.
 
 </details>
 
@@ -207,7 +209,8 @@ sum by (component) (count_over_time({net="<net>", client="lasair"} | json | leve
 ```
 
 The metric `lasair_log_lines_total{level="warn"}` gives the same numbers from Prometheus,
-without reading a single line. Both need a lasair build newer than the published 2.1.2,
-which writes plain lines and has no such counter.
+without reading a single line. lasair 2.1.3 counts every line, in either format, so the
+metric works on your nodes as they are; the LogQL needs `LASAIR_LOG_FORMAT=json` on them.
+2.1.2, which writes plain lines and has no such counter, supports neither.
 
 </details>

@@ -71,7 +71,7 @@ prometheus   http://localhost:9390        up
 loki         http://localhost:3100        up
 pushgateway  http://localhost:9091        up
 alloy        http://localhost:12345       up
-lasair6        <your run id>         builder 1/1 up  dex 0/1 up  jip2 nodes 6  lasair 6/6 up  netwatch 1/1 up
+lasair6        <your run id>         builder 1/1 up  dex 0/1 up  jip2 nodes 6  jip3 nodes 6  lasair 6/6 up  netwatch 1/1 up
 netjoin      alloy on 1 network(s), jip2-exporter on 1 network(s), jip3-receiver on 1 network(s)
 ```
 
@@ -84,15 +84,16 @@ How to read it:
 - **netjoin**: how many networks each collector is attached to right now.
 
 On `lasair6`: the six lasair nodes are scraped (`lasair 6/6 up`), and so are lasair's
-builder and jamswap's netwatch; the JIP-2 exporter polls the six readers (`jip2 nodes 6`).
-`dex 0/1 up` means the DEX's API was not answering yet: it opens once the network
-finalizes, a few minutes after `up`.
+builder and jamswap's netwatch; the JIP-2 exporter polls the six readers (`jip2 nodes 6`),
+and each lasair node pushes JIP-3 to the receiver (`jip3 nodes 6`). `dex 0/1 up` means
+the DEX's API was not answering yet: it opens once the network finalizes, a few minutes
+after `up`.
 
 Stop a network and run `status` again: the scraped jobs go, netjoin detaches, yet a line
-like `jip3 nodes 3` can remain for a network whose nodes pushed JIP-3 (the PolkaJam nodes
-of `lasair-pj`, track 6). The JIP-3 receiver keeps a node's series for 6 hours after it
-disconnects (`JIP3_FORGET_SECS`). `status` reports what Prometheus holds now, which trails
-a network that just stopped.
+like `jip3 nodes 6` can remain for a network whose nodes pushed JIP-3 (the lasair nodes of
+`lasair6`, or all six of `lasair-pj`, track 6). The JIP-3 receiver keeps a node's series
+for 6 hours after it disconnects (`JIP3_FORGET_SECS`). `status` reports what Prometheus
+holds now, which trails a network that just stopped.
 
 `./obs status -v` adds one line per target: net, job, node, client, up or DOWN, and the
 address Alloy scrapes. Use it when a node is missing.

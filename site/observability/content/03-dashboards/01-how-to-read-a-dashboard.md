@@ -115,11 +115,12 @@ In order of likelihood:
 
 1. **Wrong time range or run.** Open the run's link.
 2. **The metric does not exist for this client or build.** The platform dashboards need a
-   node to report the `jam_*` set through at least one path. lasair 2.1.2, the image
-   jamswap runs, exports no `jam_*` names of its own and sends no JIP-3, so on `lasair6`
-   the panels that only a node's own metrics or JIP-3 can fill (*Height per node*, *Peers
-   per node*, *Block life*, blocks authored and import time by client) stay empty; JIP-2
-   fills the rest.
+   node to report the `jam_*` set through at least one path. lasair 2.1.3, the image
+   jamswap runs, reports it through all three. lasair 2.1.2, the build of the case study
+   (track 5), exports no `jam_*` names of its own and sends no JIP-3, so on a `lasair6`
+   started on it the panels that only a node's own metrics or JIP-3 can fill (*Height per
+   node*, *Peers per node*, *Block life*, blocks authored and import time by client) stay
+   empty; JIP-2 fills the rest.
 3. **Nothing happened.** A counter that never incremented has no rate. Several pass/fail
    stats add `or vector(0)` so that "never happened" shows as 0 rather than blank.
 4. **The stack is not collecting.** Open **obs self-health**.
