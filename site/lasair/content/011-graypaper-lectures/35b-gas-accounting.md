@@ -8,14 +8,15 @@ video: https://www.youtube.com/watch?v=0O_Ep-PtLg0
 
 <span class="lecture-badge">Gavin Wood Lecture Series</span>
 
-This section explains how JAM calculates the **gas budget** for each service during accumulation. Gas accounting ensures fair resource allocation when multiple services share a core.
+This section explains how JAM calculates the **gas budget** for each service during accumulation. Gas accounting decides how much gas each service gets and how much accumulation fits in one block.
 
 ## What This Section Covers
 
 - The set of services to accumulate (S)
-- Minimum gas vs elective gas
-- Gas ratio for proportional splitting
-- The complete gas formula
+- The GP 0.8.0 gas budget: per work-digest, per service, per block
+- Minimum gas vs elective gas (lecture-era)
+- Gas ratio for proportional splitting (lecture-era)
+- The complete gas formula (lecture-era)
 
 <div class="callout callout-warning">
 
@@ -56,13 +57,11 @@ S is like making a guest list for a party:
 (** Get services involved in accumulation *)
 let services_to_accumulate (reports : Work_packages.work_report list)
     (transfers : deferred_transfer list) : int list =
-  (* Services from work report digests *)
   let from_reports = List.concat_map (fun r ->
     List.map (fun d -> d.Work_packages.service_index) r.Work_packages.digests
   ) reports in
-  (* Services receiving transfers *)
   let from_xfers = List.map (fun t -> t.dest) transfers in
-  (* Deduplicate and sort *)
+  (* Deduplicate *)
   List.sort_uniq compare (from_reports @ from_xfers)
 ```
 
@@ -75,7 +74,7 @@ let services_to_accumulate (reports : Work_packages.work_report list)
 **Per service, per round** (single-service accumulation Δ₁, eq. `accone`):
 
 ```
-g(s) = χ_Z[s] (or 0)                                 -- always-accumulate allowance
+g(s) = χ_Z[s] in the first round (else 0)            -- always-accumulate allowance
      + Σ gas of deferred transfers whose destination is s
      + Σ g of work-digests for service s in this round's reports
 ```
@@ -86,7 +85,9 @@ g(s) = χ_Z[s] (or 0)                                 -- always-accumulate allow
 Σ digest gas limits (prefix) + Σ gas of the transfers being delivered + Σ χ_Z  ≤  g
 ```
 
-then recurses on the remaining reports with g* = g + Σ gas of the newly created transfers − gas actually used.
+The top-level call passes no transfers and the χ_Z dictionary; every later round passes the transfers the round before created and an empty dictionary, so χ_Z is reserved in the first round only.
+
+Δ₊ then recurses on the remaining reports with g* = g + Σ gas of the newly created transfers − gas actually used. The gas used is what the PVM metered: a charge for each basic block entered plus each host call's own price (see the note further down).
 
 <div class="callout callout-warning">
 
@@ -94,7 +95,7 @@ then recurses on the remaining reports with g* = g + Σ gas of the newly created
 
 </div>
 
-In lasair the block-level loop is `accumulate_sequentially` in `conformance/stf_guarantees.ml`.
+In lasair the block-level loop is `accumulate_sequentially` in `conformance/stf_guarantees.ml`, and its helper `affordable_prefix` does the prefix test. lasair once left the always-accumulate gas out of the first round's test, and so could accumulate reports that the Graypaper defers to a later block.
 
 ## The Lecture's Model (historical): Two Components of Gas
 
@@ -156,7 +157,7 @@ let report_gas (report : Work_packages.work_report) : int64 =
 
 (* lib/work_packages.ml *)
 
-(** Work item specifies its gas requirements *)
+(** Work item structure *)
 type work_item = {
   service_index: int;             (** Target service ID *)
   (* ... other fields ... *)
@@ -165,7 +166,7 @@ type work_item = {
   (* ... *)
 }
 
-(** Work digest contains actual gas used *)
+(** Work digest - summary of work item execution *)
 type work_digest = {
   service_index: int;             (** Target service *)
   gas_limit: int64;               (** Accumulate gas limit *)
@@ -177,6 +178,8 @@ type work_digest = {
 </div>
 
 ## Visual: Gas Distribution
+
+The lecture's split, drawn out. GP 0.8.0 has no per-core elective split; see **The GP 0.8.0 Gas Budget** above.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -237,13 +240,13 @@ Work that **should** happen but can wait:
 
 In the lecture's model the work package author decides the gas ratio. In GP 0.8.0 the author instead decides each work-item's accumulate gas limit directly.
 
-In GP 0.8.0 the PVM never goes negative on gas: each basic block is paid for before it runs, and a block that cannot be paid for ends the run out-of-gas (see [4.7 VM and Gas](lesson.html?lesson=011-graypaper-lectures/21-pvm-gas)).
+In GP 0.8.0 the PVM is metered per basic block, not per instruction: each basic block is paid for in full before it runs, at a price from the pipeline cost model (appendix A.9), and a block that cannot be paid for ends the run out-of-gas with the counter unchanged. Each host call has its own price (the M constants in appendix I.4.5; `transfer`, for example, costs 575, plus the gas it forwards when it succeeds), and a call that costs more than the gas left also ends the run out-of-gas. The gas used, u = ϱ − max(ϱ′, 0) with ϱ the gas given and ϱ′ the gas left, is never more than the gas the run was given (appendix A.8, Ψ_M; see [4.7 VM and Gas](lesson.html?lesson=011-graypaper-lectures/21-pvm-gas)).
 
 </div>
 
 ## The Floor Function
 
-Why `floor()` in the formula?
+Why `floor()` in the lecture's formula?
 
 ```
 Without floor:
@@ -255,7 +258,7 @@ With floor:
   → Ensures total never exceeds G_core
 ```
 
-This is conservative - we might "lose" a tiny bit of gas to rounding, but we'll never accidentally exceed the core's gas budget.
+This is conservative - we might "lose" a tiny bit of gas to rounding, but we'll never accidentally exceed the core's gas budget. (GP 0.8.0 needs no rounding here: a service's gas and the block budget are sums of whole gas amounts.)
 
 ## Privileged Services
 

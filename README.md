@@ -2,32 +2,33 @@
 
 **Read it online: https://abutlabs.github.io/jam-learning/**
 
-Free courses on the JAM protocol from abutlabs, grounded in running code:
+Free material from abutlabs for JAM client teams and service builders, grounded in
+running code:
 
-- **[Learning Lasair](https://abutlabs.github.io/jam-learning/lasair/)**: how a JAM client
-  is built, with lasair, an OCaml client that passes every published Graypaper 0.8.0
-  conformance vector, as the executable reference. The protocol, the codec and
-  Merklization, the state transitions, the PVM, block import, conformance, JAMNP-S
-  networking, and M1 Understanding: what a block importer must get right, chapter by
-  chapter of the Graypaper, with self-tests. lasair's source is not public yet; the lessons
-  quote the code they discuss.
+- **[Build JAM together](https://abutlabs.github.io/jam-learning/together/)**: run
+  [jamswap](https://github.com/abutlabs/jamswap), an order-book exchange that runs as a JAM
+  service, on test nets of any mix of clients (all lasair, all PolkaJam, and both on one
+  chain today), read its verdict, check your own node in one command and add it to a net,
+  or build your own service for GP 0.8.0 and deploy it beside jamswap.
 - **[Learning Observability](https://abutlabs.github.io/jam-learning/observability/)**:
   run the [abutlabs observability stack](https://github.com/abutlabs/observability), start
-  a network yourself (jamswap's `lasair6`, six lasair validators from public images), and
-  learn to read it: chain health, time to finality, work-package stages, logs, soak tests,
-  and a real failure traced from its symptom to its cause. Every lab runs on the data you
-  generate.
+  a network yourself, and learn to read it: chain health, time to finality, work-package
+  stages, logs, soak tests, and a real failure traced from its symptom to its cause. Every
+  lab runs on the data you generate.
+- **[Learning Lasair](https://abutlabs.github.io/jam-learning/lasair/)**: how a JAM client
+  is built, with lasair, an OCaml client that passes every published Graypaper 0.8.0
+  conformance vector, as the executable reference, plus M1 Understanding, chapter by
+  chapter of the Graypaper with self-tests. Most lessons show lasair's code, and they say
+  so: JAM Prize implementers should read the course's note on the Prize rules first.
 
-The stack the courses teach: [lasair](https://abutlabs.github.io/jam-learning/lasair/)
-(the client), [jamswap](https://github.com/abutlabs/jamswap) (an order-book DEX that runs
-as a JAM service) and [observability](https://github.com/abutlabs/observability). The
-standards: the [Graypaper](https://graypaper.com) and the
+The standards: the [Graypaper](https://graypaper.com) and the
 [JAM Implementer Proposals](https://github.com/polkadot-fellows/JIPs).
 
 ## Layout
 
 ```
-site/index.html               the front page: the stack and the two courses
+site/index.html               the front page: the three sections
+site/together/                Build JAM together: jamswap on mixed-client nets, bring your client or service
 site/assets/                  the one reader both courses share (css, js, icons, the OCaml toplevel)
 site/lasair/                  Learning Lasair: pages, data/course.json, content/<track>/<lesson>.md
 site/observability/           Learning Observability: pages, data/course.json, content/...
