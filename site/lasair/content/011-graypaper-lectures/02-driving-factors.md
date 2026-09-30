@@ -125,7 +125,9 @@ let max_refine_gas = 5_000_000_000L      (* 5 billion gas for refine *)
    instructions. Since v0.8.0 each basic block costs the virtual CPU cycles
    a pipeline model needs for it, so gas per instruction depends on the
    code: lasair's cryptographic workloads came out at about 4x their 0.7.2
-   gas. Still on the order of a billion instructions. *)
+   gas (ed25519 verify 1.31M -> 5.29M, Groth16 56.1M -> 246.9M, blake2s
+   2.7k -> 10.1k; measured with jamswap's tools/jam080/measure-gas.sh).
+   Still on the order of a billion instructions. *)
 (* This is orders of magnitude more than Ethereum's ~30 million gas limit *)
 ```
 

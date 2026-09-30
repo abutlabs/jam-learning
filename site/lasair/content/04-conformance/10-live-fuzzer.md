@@ -3,8 +3,10 @@
 The mutation engine made lasair its own examiner, and the borrowed seeds
 let it sit other teams' exams. Eventually you face the real one: you
 submit a Docker image to the conformance fuzzer, it runs your client
-against a reference implementation for up to a million steps, and it
-hands back a single verdict — **Failed**, with a report.
+against a reference implementation, many sessions of up to 1,000 blocks
+each (the `max_steps` every report records, beside its seed and profile:
+safrole, disputes, mutations), and for a session that diverges it hands
+back a single verdict — **Failed**, with a report.
 
 This lesson is not about a particular bug. It is about the *skill* every
 protocol engineer needs and almost no tutorial teaches: how to read a

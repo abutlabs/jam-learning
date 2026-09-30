@@ -227,40 +227,25 @@ Phase 2: Merge all outputs into state
 
 ## Service Creation
 
-Services can create new services via host functions. Collision handling:
+Services create services with the `new` host call (GP 0.8.0, Ω_N). The new service gets
+the creator's next-free id i, which starts from a hash of the creator's id, the entropy
+η′₀ and the block's timeslot, mapped into the public range above S = 2^16. A `check`
+function steps past any id that already names a service:
 
 ```
-If two services accidentally create a service with the same ID:
-  → Block is INVALID
+check(i) = i                                                   if no service has id i
+         = check((i - S + 1) mod (2^32 - 2^8 - S) + S)         otherwise
 
-Why? Service IDs are 32-bit, derived from hash. Collision is
-theoretically possible (~1 in a million).
-
-Safeguard: The block author must ensure no collisions before
-including the block.
+after each new:  i* = check(S + (i - S + 42) mod (2^32 - S - 2^8))
 ```
 
-<div class="lasair-connection">
+So an id collision never makes a block invalid: `check` moves to the next free id. The
+Graypaper says the hash makes the id "almost certainly unique" within one service's
+accumulation, and `check` covers the rest (accounts across services and time). Only the
+registrar may ask for a particular id, and only below S.
 
-### In Lasair: New Service Tracking
-
-```ocaml
-(* From lib/accumulation.ml *)
-
-(** Full accumulation result *)
-type accumulation_result = {
-  reports_accumulated: int;
-  post_partial_state: partial_state;
-  outputs: (int * hash) list;  (** Service -> output hash *)
-  statistics: acc_statistics;
-  new_transfers: deferred_transfer list;
-}
-
-(* New services are tracked in partial_state.accounts *)
-(* Collision detection would happen during state merging *)
-```
-
-</div>
+lasair once moved i on from the raw value instead of the checked id; the official
+fuzzer's first GP 0.8.0 batch caught it.
 
 ## State Transition Stages
 

@@ -151,7 +151,10 @@ lookups give the same answer whenever an audit could happen.
 - **`bless` from a non-manager returns HUH**: a new case in Ω_B in the 0.8.0 text (0.7.2
   had only the panic and WHO cases). The vectors' Deviations note cites GP #519 and #558
   may change it again, so lasair implements it behind one named predicate
-  (`bless_refuses_non_manager`, currently false to match the vectors).
+  (`bless_refuses_non_manager`, currently false to match the vectors). Set it to the
+  strict text and 36 of the 1,406 vector and trace checks fail, among them the accumulate
+  vector `bless_from_non_manager` and a dozen fuzzy traces: the published vectors really
+  do let a non-manager call `bless`.
 - **`designate` takes a count**: r8 = z key sets, gas 1100 + 302·z, HUH unless
   z ∈ 𝕍 = {3c : 2 ≤ c ≤ C} (multiples of three from 6 to 3C, which is 1023 on the full
   spec; eq. valcount) and the caller is the delegator. 0.7.2 read exactly V = 1023 keys;

@@ -204,7 +204,8 @@ By the end, you'll understand the protocol well enough to read lasair's implemen
 ## Further Reading
 
 - [Graypaper](https://graypaper.com) - The official specification
-- [JAM Implementer's Guide](https://github.com/jam-duna/jamtestnet) - Practical guidance
+- [JAM test vectors](https://github.com/davxy/jam-test-vectors) - The conformance vectors every client is checked against
+- [JAM Implementer Proposals](https://github.com/polkadot-fellows/JIPs) - The standards between clients: node RPC, telemetry, chain specs
 - [Polkadot Wiki](https://wiki.polkadot.network) - Background on the ecosystem
 
 ## Reflection Questions

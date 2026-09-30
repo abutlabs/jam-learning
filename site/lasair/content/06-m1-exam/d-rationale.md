@@ -98,8 +98,11 @@ Verified on 2026-09-23:
 - **jamcha.in**: community hub, "a single computer with the power of hundreds", client
   list and documentation.
 - **JAM Implementer's Prize**: https://jam.web3.foundation/ , the paths, milestones and
-  prize amounts; the Fellowship judges. Rule 9 (human authorship and clean-room) is the
-  one lasair disclosed against.
+  prize amounts; the Fellowship judges. Among its rules
+  (https://jam.web3.foundation/rules): 6, a clean-room implementation from the Graypaper
+  and the public implementers' channel; 7, declare any implementation code viewed; 9,
+  generative AI must not be used in any substantive way; 12, an interview may be requested
+  to confirm authorship. lasair is written by an AI and disclosed that against rule 9.
 
 Not verified, listed for completeness: the JAM Graypaper explainer series on
 graypaper.com's "JAM lectures" and Kian Paimani's JAM talks. Check before citing.

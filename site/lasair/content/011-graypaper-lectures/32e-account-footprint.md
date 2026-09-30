@@ -59,10 +59,11 @@ Why `2×` for requests? Each request entry is counted double because it's more c
 L = Σ (81 + preimage_length) for each request
   + Σ (34 + key_length + value_length) for each storage entry
 
-Where:
-  81 = Overhead per request entry (hash + length + status encoding)
-  34 = Overhead per storage entry (32-byte key + 2-byte length prefix)
 ```
+
+81 and 34 are the Graypaper's fixed per-entry overheads (GP 0.8.0, accounts.tex, the
+footprint a_o): 81 octets for each preimage request and 34 for each storage entry, on top
+of the data itself. The text gives them as constants and does not break them down.
 
 <div class="lasair-connection">
 

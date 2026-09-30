@@ -50,13 +50,17 @@ falsifiable claim.
 
 ## The adversarial twist
 
-Roughly one fuzzy vector in twenty is an **invalid block** — a forged
-code hash, a mutated guarantee. Its expected post-state is byte-identical
-to the pre-state: the only conformant behavior is to *reject the block
-wholesale*. Passing these means your validation rules fire before any
+Some fuzzy vectors are **invalid blocks**: a forged code hash, a mutated
+guarantee. In the GP 0.8.0 corpus that is one block of 200
+(`fuzzy/00000123`; the 0.7.2 corpus had about one in twenty), but the
+official fuzzer mutates far more often: its sessions record a
+`mutation_ratio` of 0.1. An invalid block's expected post-state is
+byte-identical to its pre-state: the only conformant behavior is to
+*reject the block wholesale*. Passing these means your validation rules fire before any
 state is touched — exactly what a node needs when the official fuzzer
 (or a real adversary) starts feeding it garbage.
 
 Explore real vectors interactively in the
-[Conformance Explorer](conformance.html) — including the storage
-blocks, the service-creation fuzzy block, and the adversarial block 143.
+[Conformance Explorer](conformance.html), whose showcase comes from the
+GP 0.7.2 corpus: the storage blocks, the service-creation fuzzy block,
+and that corpus's adversarial block 143.
