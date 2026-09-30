@@ -19,7 +19,7 @@ packages, plus the Merkle-mountain-belt of accumulation outputs. Its job is to l
 validation reject duplicate or stale work and to give bridges a compact commitment to
 everything JAM has accumulated.
 
-## Examiner sheet
+## Chapter sheet
 
 ### State touched
 | Symbol | Name | What it holds |

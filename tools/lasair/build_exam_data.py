@@ -76,14 +76,14 @@ def strip_md(t):
 def parse_sections(body):
     """Split the teaching part of a lesson into study sections.
 
-    Chapter sheets: the intro paragraph plus every '### ' under '## Examiner sheet'.
+    Chapter sheets: the intro paragraph plus every '### ' under '## Chapter sheet'.
     Reference pages (no examiner sheet): every '## ' before the question bank.
     """
     qb = body.find("## Question bank")
     teach = body[:qb] if qb >= 0 else body
     sections = []
-    if "## Examiner sheet" in teach:
-        head, sheet = teach.split("## Examiner sheet", 1)
+    if "## Chapter sheet" in teach:
+        head, sheet = teach.split("## Chapter sheet", 1)
         intro = re.sub(r"^#\s.*$|<span class=\"lecture-badge\">.*?</span>", "", head, flags=re.M).strip()
         if intro:
             sections.append({"title": "What this is for", "md": intro})

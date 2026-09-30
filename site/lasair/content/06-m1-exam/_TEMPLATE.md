@@ -20,8 +20,8 @@ Frontmatter keys are read by tools/build_exam_data.py:
   lasair       : comma-separated source pointers
 
 Body rules:
-  - "## Examiner sheet" first, "## Question bank" second. Keep those exact headings: the build
-    script and lesson.js parse them (the chapter sheet sits under "## Examiner sheet").
+  - "## Chapter sheet" first, "## Question bank" second. Keep those exact headings: the build
+    script and lesson.js parse them (the chapter sheet sits under "## Chapter sheet").
   - Every question is "### Q<n> <text>" — add ★ after Q<n> for the hardest, most central questions.
   - The model answer follows immediately in <details><summary>Model answer</summary> … </details>.
     Leave a blank line after <summary> and before </details> so markdown renders inside.
@@ -38,7 +38,7 @@ Body rules:
 
 One-paragraph orientation: what this chapter is *for* in the protocol, in two or three sentences.
 
-## Examiner sheet
+## Chapter sheet
 
 ### State touched
 | Symbol | Name | What it holds |

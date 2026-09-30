@@ -20,7 +20,7 @@ them are recorded forever. It is rarely exercised in practice, which is exactly 
 is a coverage blind spot for implementers and a good test of understanding: the rules
 are precise, numerous and all about thresholds.
 
-## Examiner sheet
+## Chapter sheet
 
 ### State touched
 | Symbol | Name | What it holds |

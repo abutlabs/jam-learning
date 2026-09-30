@@ -14,7 +14,8 @@ state; it does not show that anyone understands *why* each rule is there. This t
 about the second part: the protocol an M1 importer implements, chapter by chapter, for
 anyone learning the chain. (As context: the Web3 Foundation also runs an M1 examination
 interview for prize applicants, and its scope, Graypaper chapters 3–13 plus JAM's
-architecture, design rationale and the PVM, is the scope this track covers.)
+architecture, design rationale and the PVM, is the scope this track covers. The track is
+independent: the Web3 Foundation did not write, review or endorse it.)
 
 ## What it covers
 

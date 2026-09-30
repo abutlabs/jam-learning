@@ -19,7 +19,7 @@ block into a header plus five extrinsics. Everything else in chapters 5–13 is 
 definition of one arrow in this chapter's dependency graph. Understanding this chapter
 means being able to draw that graph on a whiteboard and narrate every arrow.
 
-## Examiner sheet
+## Chapter sheet
 
 ### State touched
 All of it. The state σ is the tuple (eq. statecomposition, 0.8.0):

@@ -21,7 +21,7 @@ the seal for that slot. As a side effect the chain accumulates unbiasable entrop
 this chapter means being able to walk through an epoch boundary end to end: rotation,
 sealing, entropy, markers and the ticket contest.
 
-## Examiner sheet
+## Chapter sheet
 
 ### State touched
 | Symbol | Name | What it holds |

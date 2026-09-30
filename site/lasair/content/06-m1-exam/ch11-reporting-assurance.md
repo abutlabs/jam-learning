@@ -19,7 +19,7 @@ becomes accumulatable or times out. It carries the most validation rules of any 
 in the pool, most of them about the guarantees extrinsic. If this is the large draw,
 expect to be walked rule by rule.
 
-## Examiner sheet
+## Chapter sheet
 
 ### State touched
 | Symbol | Name | What it holds |

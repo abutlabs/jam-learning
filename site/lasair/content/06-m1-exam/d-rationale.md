@@ -16,7 +16,7 @@ and the ceiling is the wider JAM literature: an implementer needs the first, and
 second is what makes the design feel inevitable rather than arbitrary. Everything below quotes or paraphrases the 0.8.0 text unless marked
 "(not in the GP)".
 
-## Examiner sheet
+## Chapter sheet
 
 ### The driving factors (Introduction §1.2)
 

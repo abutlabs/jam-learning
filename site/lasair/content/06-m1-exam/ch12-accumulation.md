@@ -21,7 +21,7 @@ validator set, the authorizer queue) are folded into state. It is where every di
 in lasair's three banked L2a fuzz reports occurred, so it is both the hardest chapter
 and the one with the most evidence to show.
 
-## Examiner sheet
+## Chapter sheet
 
 ### State touched
 | Symbol | Name | What it holds |

@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-29T23:45:45Z",
+ "generated": "2026-09-30T01:16:02Z",
  "portions": {
   "A": {
    "label": "Small section (random)",
@@ -8609,7 +8609,7 @@
    "sections": [
     {
      "title": "Where we are",
-     "md": "M1 is the first milestone of the JAM Implementer's Prize: a client that imports blocks\ncorrectly. Passing the conformance fuzzer shows that an importer computes the right\nstate; it does not show that anyone understands *why* each rule is there. This track is\nabout the second part: the protocol an M1 importer implements, chapter by chapter, for\nanyone learning the chain. (As context: the Web3 Foundation also runs an M1 examination\ninterview for prize applicants, and its scope, Graypaper chapters 3–13 plus JAM's\narchitecture, design rationale and the PVM, is the scope this track covers.)"
+     "md": "M1 is the first milestone of the JAM Implementer's Prize: a client that imports blocks\ncorrectly. Passing the conformance fuzzer shows that an importer computes the right\nstate; it does not show that anyone understands *why* each rule is there. This track is\nabout the second part: the protocol an M1 importer implements, chapter by chapter, for\nanyone learning the chain. (As context: the Web3 Foundation also runs an M1 examination\ninterview for prize applicants, and its scope, Graypaper chapters 3–13 plus JAM's\narchitecture, design rationale and the PVM, is the scope this track covers. The track is\nindependent: the Web3 Foundation did not write, review or endorse it.)"
     },
     {
      "title": "What it covers",

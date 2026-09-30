@@ -18,7 +18,7 @@ that touch it. This is also where most of lasair's live-fuzzer divergences lived
 war stories are dense. Every rule below was checked against the 0.8.0 tex; host-call
 numbers and gas constants are 0.8.0.
 
-## Examiner sheet
+## Chapter sheet
 
 ### Result constants
 | Name | Value | Meaning |

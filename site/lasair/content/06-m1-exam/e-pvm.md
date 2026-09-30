@@ -17,7 +17,7 @@ paper differs most from the 0.7.2 lasair implemented for M1. Understanding it is
 reciting opcodes. It is knowing how the machine decodes a program, what happens on each exit, how gas is charged, how memory is
 laid out, and why. Everything below was checked against the 0.8.0 tex.
 
-## Examiner sheet
+## Chapter sheet
 
 ### The machine in one paragraph
 A RISC-V RV64EM derivative: 13 registers of 64 bits, a 32-bit paged address space with

@@ -20,7 +20,7 @@ in-core reads deterministic, the storage footprint and threshold balance, and th
 privileges. Every host call in Appendix B reads or writes something defined here, so the
 chapter can be approached from either the state side or the execution side.
 
-## Examiner sheet
+## Chapter sheet
 
 ### State touched
 | Symbol | Name | What it holds |

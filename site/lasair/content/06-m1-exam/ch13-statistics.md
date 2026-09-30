@@ -20,7 +20,7 @@ act on them. Small chapter, but it is the last transition in the dependency grap
 reads intermediates from nearly every other chapter, which makes it a good test of
 whether you know where reports, assurances and preimages come from.
 
-## Examiner sheet
+## Chapter sheet
 
 ### State touched
 | Symbol | Name | What it holds |

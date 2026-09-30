@@ -26,7 +26,7 @@ architecture, one step at a time, in plain English with Ethereum comparisons.
 
 </div>
 
-## Examiner sheet
+## Chapter sheet
 
 ### The picture in one diagram
 

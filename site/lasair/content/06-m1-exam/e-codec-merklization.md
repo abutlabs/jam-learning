@@ -17,7 +17,7 @@ also where an implementation is most often wrong by one byte.
 Know the codec rules cold, be able to draw the state key layout and a trie node, and
 know the MMB because recent history depends on it.
 
-## Examiner sheet
+## Chapter sheet
 
 ### Appendix C: the codec ℰ
 | Rule | Encoding |

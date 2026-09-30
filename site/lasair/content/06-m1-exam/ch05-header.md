@@ -18,7 +18,7 @@ chain link, the commitment to the prior state, the commitment to the extrinsic, 
 three markers that Safrole and disputes fill in, and the author's two Bandersnatch
 signatures. It is small, so the understanding that matters is the *why* of each field.
 
-## Examiner sheet
+## Chapter sheet
 
 ### State touched
 None directly. The header is input. Its fields drive τ', η', κ'/λ' (epoch marker), γ

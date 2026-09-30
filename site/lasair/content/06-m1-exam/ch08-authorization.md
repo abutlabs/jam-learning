@@ -19,7 +19,7 @@ JAM wants both patterns, so it puts a small piece of logic, the authorizer, betw
 core and the work-package. On-chain, the chapter is only two state components and one
 transition, but the rationale is the substance.
 
-## Examiner sheet
+## Chapter sheet
 
 ### State touched
 | Symbol | Name | Shape | What it holds |

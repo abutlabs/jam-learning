@@ -18,7 +18,7 @@ it gives you is the ability to *read* the Graypaper fluently: pick any equation 
 later chapter and say what it means. Treat it as a reading skill, not a memory test. Every convention below maps to a concrete OCaml type or function in
 lasair, and the codec details are where implementations actually diverge.
 
-## Examiner sheet
+## Chapter sheet
 
 ### Typography (§3.1)
 | Face | Meaning | Example |

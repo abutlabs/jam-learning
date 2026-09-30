@@ -137,7 +137,7 @@
   // 1 Learn     sheet sections, each followed by the basic bank questions tagged to it
   // 2 Recall    applied bank questions + multiple choice generated from sheet tables
   // 3 Explain   short open bank questions with hints, then the sheet's easier questions
-  // 4 Deep      every question in the sheet's deep bank (the ## Examiner sheet), no hints
+  // 4 Deep      every question in the sheet's deep bank (the ## Chapter sheet), no hints
   // 5 Pressure  ★ questions only, two minutes each
   const LEVELS = {
     1: { name: "Learn", desc: "The basics. Read each section of the chapter, then answer the basic questions about it; every answer is explained. Misses come back until you get them. Goal: 100% on every chapter." },
