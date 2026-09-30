@@ -49,7 +49,7 @@ module Constants = struct
 end
 ```
 
-When the Graypaper names a constant with a sans-serif capital (C, E, P, …), you will find it in one of these two files.
+When the Graypaper names a constant with a sans-serif capital (C, E, P, …), you will find most of them in one of these two files. A few live next to the code that uses them: the host-call gas prices M in `lib/pvm_host.ml`, the dispute limits N_V and N_O in `conformance/disputes_stf.ml`.
 
 ## Graypaper Notation Mapping
 
@@ -77,7 +77,7 @@ JAM's timing is built on slots and epochs:
 let c_slot_seconds = 6              (* P: 6 seconds *)
 let c_epoch_len = 600               (* E: 600 slots = 1 hour *)
 
-(* Derived timing *)
+(* Derived timing (computed here; lasair has no such binding) *)
 let seconds_per_epoch = c_slot_seconds * c_epoch_len
 (* = 3600 seconds = 1 hour *)
 
@@ -146,7 +146,7 @@ let c_block_acc_gas = 3_500_000_000      (* G_T: all accumulation in a block *)
 
 On the tiny spec `Spec` lowers two of these: G_T is 20,000,000 and G_R is 1,000,000,000.
 
-The PVM's own prices are not in this table. Since Graypaper 0.8.0 an instruction's cost comes from a pipeline model and each host call has its own formula (see the PVM and host-call lessons).
+The PVM's own prices are not in this table. Since Graypaper 0.8.0 gas is charged per basic block, on entry, at a cost computed by a model of a CPU pipeline, and each host call has its own formula (see the PVM and host-call lessons).
 
 ## Cryptographic Sizes
 

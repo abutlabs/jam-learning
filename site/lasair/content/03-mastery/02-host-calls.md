@@ -63,7 +63,7 @@ Which calls exist depends on **where** the PVM is running. There are three invoc
 
 Is-Authorized gets only these three.
 
-### Shared by Refine and Accumulate
+### Service data (3–6 Accumulate only, 7–8 Refine only)
 
 ```
  3  lookup      a preimage by hash               (Accumulate)
@@ -100,7 +100,7 @@ Is-Authorized gets only these three.
 24 solicit     request a preimage
 25 forget      drop a preimage request
 26 yield       set the accumulation output
-27 provide     supply a preimage another service asked for
+27 provide     supply a preimage a service (possibly itself) requested
 ```
 
 A call that is not in the current invocation's table (a `transfer` from Refine, say) is an **unknown** host call: it costs 1000 gas and sets ω7 = `WHAT`, and execution continues. Lasair also answers `log` (100), a debug call defined by JIP-1 rather than the Graypaper, which is priced the same way.
@@ -109,7 +109,7 @@ A call that is not in the current invocation's table (a `transfer` from Refine, 
 
 ## In Lasair: Host Call Implementation
 
-Each call is a function in `lib/pvm_host.ml` of the same shape: context, registers and memory in; new gas, registers, memory and (for accumulate) context out. `None` means the call panics the invocation. The simplest one:
+Each call is a function in `lib/pvm_host.ml` of the same shape: context, registers and memory in; new gas, registers, memory and, when the call changes them, the service account and the context out. `None` means the call panics the invocation. The simplest one:
 
 ```ocaml
 let host_gas (ctx : host_context) (regs : registers) (mem : ram) : host_result =
@@ -120,7 +120,7 @@ let host_gas (ctx : host_context) (regs : registers) (mem : ram) : host_result =
   { new_gas; new_regs = regs'; new_mem = mem; new_service = None; new_context = None }
 ```
 
-The detail in the comment is a real bug: lasair once returned the gas from *before* the charge, and a trace vector's state root was off because a service stored the number it got.
+The detail in the comment is a real bug: lasair once returned the gas from *before* the charge, and block-import trace vectors came out with the wrong state root until it was fixed.
 
 ## Detailed Host Call Reference
 
@@ -189,7 +189,7 @@ Output: ω7 = gas remaining after this call
 Cost:   103
 ```
 
-In all of these, a pointer range that the service cannot read (or, for output, write) **panics** the invocation. The Graypaper checks memory before anything else, and the order matters: reading a key from a bad pointer for a service that does not exist must panic, not return NONE.
+In all of these, a pointer range that the service cannot read (or, for output, write) **panics** the invocation. Once the gas is paid, the Graypaper checks memory before anything else, and the order matters: reading a key from a bad pointer for a service that does not exist must panic, not return NONE.
 
 ## In Lasair: Host Call Dispatch Table
 
@@ -213,11 +213,11 @@ let dispatch (host_id : int) (ctx : host_context) (regs : registers) (mem : ram)
   (* ... anything else: unknown *)
 ```
 
-The gas is computed separately, by `host_call_cost`, from the same registers the call reads: a cost can depend on the arguments (a length, a `fetch` selector), and it is charged before the call looks anything up.
+Each handler charges its own gas, computed from the same registers the call reads: a cost can depend on the arguments (a length, a `fetch` selector). If the result leaves the counter below zero, the driver (`execute_host_call`) discards the call's effects and exits out-of-gas. `host_call_cost` holds the same prices as one table: it prices a call that panics (whose handler returns no result), and with `LASAIR_GAS_CHECK=1` it cross-checks every handler's charge.
 
 ## Context-Dependent Availability
 
-Each invocation passes its own dispatch function to the PVM (the Graypaper's F for Ψ_I, Ψ_R and Ψ_A), which is how the same identifier can mean something in one context and nothing in another:
+Each invocation passes its own dispatch function to the PVM (the Graypaper's F for Ψ_I, Ψ_R and Ψ_A), which is how the same identifier can mean something in one context and nothing in another. An illustrative sketch (lasair keeps the three sets as lists in `lib/pvm_host.ml`, checked by `in_invocation_set`):
 
 ```ocaml
 type invocation = Is_authorized | Refine | Accumulate
@@ -264,7 +264,7 @@ Implement `read` for the invoking service's own storage (ω7 = 2⁶⁴ − 1), w
 let host_read_self ~storage ~gas regs mem =
   (* ω8 = key pointer, ω9 = key length, ω10 = output pointer,
      ω11 = offset into the value, ω12 = max length.
-     Returns: `Panic, or `Ok (gas', regs', mem') *)
+     Returns: `Out_of_gas, `Panic, or `Ok (gas', regs', mem') *)
 ```
 
 <details>

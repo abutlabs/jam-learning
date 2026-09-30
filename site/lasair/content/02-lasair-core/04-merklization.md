@@ -42,7 +42,7 @@ Merkle trees solve all three.
 
 ## The Graypaper's Binary Merkle Tree
 
-The Graypaper builds its sequence trees with one *node function* N (appendix E, eq. merklenode): an empty sequence is the zero hash, a single item is itself, and anything longer splits at ⌈n/2⌉ and hashes the prefix `node` with the two halves. From `lib/merklization.ml`:
+The Graypaper builds its sequence trees with one *node function* N (appendix E, eq. merklenode): an empty sequence is the zero hash, a single item is itself, and anything longer splits at ⌈n/2⌉ and hashes the prefix `node` with the two halves. From `lib/merklization.ml` (abridged: lasair defines its `split` inline):
 
 ```ocaml
 let prefix_node = Bytes.of_string "node"
@@ -163,7 +163,7 @@ Every node is exactly **64 bytes**, and its first bits say what it is (appendix 
 | Embedded-value leaf (value ≤ 32 bytes) | `10` + 6-bit value length | the 31-byte key | the value, zero-padded |
 | Regular leaf (value > 32 bytes) | `11000000` | the 31-byte key | Blake2b-256 of the value |
 
-A branch has room for only 511 bits of child hashes, so the left child's hash loses its first bit to the discriminator. From `lib/state_db.ml`:
+A branch has room for only 511 bits of child hashes, so the left child's hash loses its first bit to the discriminator. From `lib/state_db.ml` (abridged: length assertions dropped):
 
 ```ocaml
 let branch (left : bytes) (right : bytes) : bytes =
@@ -191,7 +191,7 @@ let leaf (k : bytes) (v : bytes) : bytes =
   result
 ```
 
-A node's identity is the Blake2b-256 hash of its 64 bytes, and the whole trie's root is computed by recursive partition on the key bits:
+A node's identity is the Blake2b-256 hash of its 64 bytes, and the whole trie's root is computed by recursive partition on the key bits (abridged):
 
 ```ocaml
 let rec merkle_state (kvs : kv list) (bit_idx : int) : bytes =
@@ -203,7 +203,7 @@ let rec merkle_state (kvs : kv list) (bit_idx : int) : bytes =
     hash (branch (merkle_state left (bit_idx + 1)) (merkle_state right (bit_idx + 1)))
 ```
 
-Graypaper 0.8.0 changed this layout: the discriminators moved to the most significant bits of the first byte, and key bits are read most-significant first. Every state root in every later test vector depends on it, so lasair's 0.8.0 migration fixed the trie before touching any state transition.
+The official trie test vectors only caught up with this layout in their 0.8.0 release, listed there as a fix: discriminators in the most significant bits of the first byte, key bits read most-significant first. The Graypaper itself has specified this layout since 0.4.0, when its `bits` function became most-significant first. Lasair's `State_db` already matched it; its 0.8.0 migration only deleted a test-only copy of the trie that had followed the old vectors.
 
 ## No Extensions: Leaves Do the Compressing
 
@@ -249,24 +249,24 @@ Every block header contains the prior state root:
 ```ocaml
 type header = {
   parent : hash;
-  parent_state_root : hash;  (* H_r: root of the state after the PARENT block *)
+  parent_state_root : hash;  (* H_R: root of the state after the PARENT block *)
   extrinsic_hash : hash;
   slot : int;
   (* ... *)
 }
 ```
 
-H_r is the posterior state root of the *parent*, so a block commits to the state it was built on, and the state *it* produces is committed by its child. The root commits to everything in σ:
+H_R is the posterior state root of the *parent*, so a block commits to the state it was built on, and the state *it* produces is committed by its child. The root commits to everything in σ:
 
 - the authorizer pools and queues, recent history, Safrole state, disputes, entropy
 - the staging, active and previous validator sets
 - availability assignments, the timeslot, privileges, statistics
-- the accumulation queues and the last accumulation outputs
+- the accumulation queue, the accumulation history and the last accumulation outputs
 - every service account, its storage, its preimages and its preimage requests
 
 ## In Lasair: Computing State Root
 
-The state is first flattened into key/value pairs, each component under a key built by the Graypaper's constructor C (appendix D). A state component gets `C(i) = [i, 0, 0, …]`; a service account gets `C(255, s)`, with the service id's four bytes interleaved with zeros; a storage item, preimage or request gets `C(s, h)`, the service id interleaved with the start of a Blake2b hash. From `lib/merklization.ml`:
+The state is first flattened into key/value pairs, each component under a key built by the Graypaper's constructor C (appendix D). A state component gets `C(i) = [i, 0, 0, …]`; a service account gets `C(255, s)`, with the service id's four bytes interleaved with zeros; a storage item, preimage or request gets `C(s, h)`, the service id interleaved with the start of a Blake2b hash. From `lib/merklization.ml` (abridged):
 
 ```ocaml
 let state_key_from_index (idx : int) : bytes =
@@ -305,7 +305,7 @@ It walks from the root: at a branch it follows the key's next bit to the child h
 
 ## Batch Updates
 
-A block's state transition makes many writes, then asks for the root once:
+A block's state transition makes many writes, then asks for the root once (an illustrative sketch, not lasair's code):
 
 ```ocaml
 let apply_mutations (db : State_db.t) mutations =

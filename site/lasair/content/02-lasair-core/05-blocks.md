@@ -18,17 +18,17 @@ A JAM block has two parts:
 │                         BLOCK                                │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
-│  HEADER (variable size, in this order)                      │
-│  ├── parent            : hash (32 bytes)          H_p       │
-│  ├── parent_state_root : hash (32 bytes)          H_r       │
-│  ├── extrinsic_hash    : hash (32 bytes)          H_x       │
-│  ├── slot              : u32 (4 bytes)            H_t       │
-│  ├── epoch_mark        : option (variable)        H_e       │
-│  ├── tickets_mark      : option (E × 33 bytes)    H_w       │
-│  ├── author_index      : u16 (2 bytes)            H_i       │
-│  ├── entropy_source    : VRF signature (96 bytes) H_v       │
-│  ├── offenders_mark    : list of Ed25519 keys     H_o       │
-│  └── seal              : signature (96 bytes)     H_s       │
+│  HEADER (variable size, in encoded order)                   │
+│  ├── parent            : hash (32 bytes)          H_P       │
+│  ├── parent_state_root : hash (32 bytes)          H_R       │
+│  ├── extrinsic_hash    : hash (32 bytes)          H_X       │
+│  ├── slot              : u32 (4 bytes)            H_T       │
+│  ├── epoch_mark        : option (variable)        H_E       │
+│  ├── tickets_mark      : option (E × 33 bytes)    H_W       │
+│  ├── author_index      : u16 (2 bytes)            H_I       │
+│  ├── entropy_source    : VRF signature (96 bytes) H_V       │
+│  ├── offenders_mark    : list of Ed25519 keys     H_O       │
+│  └── seal              : signature (96 bytes)     H_S       │
 │                                                              │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
@@ -142,13 +142,13 @@ Present only in the first block after ticket submission closes, and only if the 
 
 ### author_index and seal
 
-The author is identified by an index into the posterior active validator set, H_i ∈ ℕ_|κ′|. The seal is a Bandersnatch signature by that validator over the unsigned header:
+The author is identified by an index into the posterior active validator set, H_I ∈ ℕ_|κ′|. The seal is a Bandersnatch signature by that validator over the unsigned header:
 
 ```ocaml
 let validate_seal ~post_state block =
   (* Ticket mode: the slot belongs to a ticket, and the seal must be a
      signature under the ticket's context by the author's key.
-     Fallback mode: the slot's sealer key (γ_s′[slot]) must be the
+     Fallback mode: the slot's sealer key (γ_S′[slot]) must be the
      author's own key. *)
   let author_key = active_set post_state block.header.author_index in
   let context = seal_context post_state block.header.slot in
@@ -180,7 +180,7 @@ type ticket = {
 }
 ```
 
-The ring proof shows the ticket came from *some* validator of the next epoch's ring (the root γ_Z) without revealing which. Its VRF output is the ticket id. In Graypaper 0.8.0 the number of entries each validator may submit is n = ⌈2E / |γ_P′|⌉ (on the full spec with 1023 validators, 2; on tiny, 4). At most K tickets per block, and none once slot Y of the epoch has passed.
+The ring proof shows the ticket came from *some* validator of the next epoch's ring (the root γ_Z) without revealing which. Its VRF output is the ticket id. In Graypaper 0.8.0 the number of entries each validator may submit is n = ⌈2E / |γ_P′|⌉ (on the full spec with 1023 validators, 2; on tiny, 4). At most K tickets per block, and none from slot Y of the epoch onwards.
 
 ### Preimages
 
@@ -409,7 +409,7 @@ let author_index = 0x0005 = 5
 
 1. **Header + Extrinsic** - Two-part structure
 2. **Parent chaining** - Each block references the previous
-3. **State commitment** - H_r pins the state the block was built on
+3. **State commitment** - H_R pins the state the block was built on
 4. **Seal** - Cryptographic proof of authorship, by ticket or fallback key
 5. **Extrinsic types** - Tickets, preimages, guarantees, assurances, disputes
 6. **All or nothing** - A block that fails any check changes nothing

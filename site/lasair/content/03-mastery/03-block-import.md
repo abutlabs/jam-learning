@@ -84,14 +84,14 @@ The caller then compares `State_db.root state` with the expected post-state root
 
 ## Phase 1: Validation
 
-`validate_block_guarantees` runs every check the Graypaper places on a block before any of its effects are applied. Each failure has a short, stable name (the same names the test vectors use where they have one):
+`validate_block_guarantees` runs the rest of the block's validity checks (the disputes were already checked by `process_disputes`) before any of its effects are applied. Each failure has a short, stable name (the same names the test vectors use where they have one):
 
 ### The header against its parent
 
 ```ocaml
 if not (Bytes.equal (compute_extrinsic_hash extrinsic) header.extrinsic_hash)
 then raise (Reject "bad_extrinsic_hash");
-(* H_r is the posterior state root of the parent: the root of the pre-state we hold *)
+(* H_R is the posterior state root of the parent: the root of the pre-state we hold *)
 if not (Bytes.equal parent_state_root (Lasair.State_db.root pre_db)) then
   raise (Reject "bad_parent_state_root");
 ```
@@ -100,7 +100,7 @@ The parent itself is implicit here: the importer is handed the parent's state. I
 
 ### Time, author, seal
 
-In order: the slot must be later than the parent's (`bad_slot`); the author index must name a validator of the posterior active set (`bad_author_index`); the seal must verify for the slot's ticket or fallback key (`bad_seal`); the entropy-source VRF signature must verify (`bad_vrf`); the epoch and tickets markers must be exactly what this block should carry (`bad_epoch_mark`, `bad_tickets_mark`); and the offenders marker must list exactly the new culprits and faults (`bad_offenders_mark`).
+In order: the slot must be later than the parent's (`bad_slot`); the author index must name a validator of the posterior active set (`bad_author_index`); the seal must verify for the slot's ticket or fallback key (`bad_seal`); the entropy-source VRF signature must verify (`bad_vrf`); and the epoch and tickets markers must be exactly what this block should carry (`bad_epoch_mark`, `bad_tickets_mark`). The offenders marker is checked earlier, with the disputes: it must list exactly the keys of the new culprits, then of the new faults (`bad_offenders_mark`).
 
 ### The extrinsics
 
@@ -134,7 +134,7 @@ Lasair's order above follows this graph. Two places where it matters:
 
 ## Phase 3: Accumulation
 
-`process_guarantees` handles the whole availability-to-accumulation path: assurances mark reports available; available reports whose dependencies are met join the accumulation queue; accumulation runs within the block's gas budget G_T; and new guarantees take their cores.
+`process_guarantees` handles the whole availability-to-accumulation path: assurances mark reports available; available reports with no unmet dependencies are accumulated, and the rest wait in the accumulation queue ω until their dependencies have been accumulated; accumulation runs within the block's gas budget (the larger of G_T and G_A · C plus the always-accumulate allowances); and new guarantees take their cores.
 
 ```ocaml
 (* A sketch of what process_guarantees does, in Graypaper order *)
@@ -154,7 +154,7 @@ let rho' = place_new_guarantees rho_double_dagger guarantees in
 Two details worth knowing before you write your own:
 
 - **Failed work is still accumulated.** A work item that panicked or ran out of gas in refine reaches accumulate as an operand with an *error* result. The service's accumulate code decides what to do with it; the importer does not skip it.
-- **Accumulation runs in rounds.** Each round (the Graypaper's Δ+, eq. accseq) takes the longest prefix of the ready reports whose gas limits, plus any waiting transfers and the always-accumulate services, fit the remaining budget. The transfers a round creates are delivered in the next round, with the next reports that fit. Reports that never fit wait for a later block. A service that panics in a later round does not undo an earlier one.
+- **Accumulation runs in rounds.** Each round (the Graypaper's Δ+, eq. accseq) takes the longest prefix of the ready reports whose gas limits, plus any waiting transfers and (in the first round) the always-accumulate services, fit the remaining budget. The transfers a round creates are delivered in the next round, with the next reports that fit. Reports that never fit wait for a later block. A service that panics in a later round does not undo an earlier one.
 
 ## Phase 4: Finalization
 
@@ -163,7 +163,7 @@ The last steps update the bookkeeping:
 ### Advance Time
 
 ```ocaml
-(* Stf_transitions.update_timeslot: τ' = H_t *)
+(* Stf_transitions.update_timeslot: τ' = H_T *)
 let state = Stf_transitions.update_timeslot state header.slot
 ```
 
@@ -173,7 +173,8 @@ On the first block of a new epoch (`new_epoch`, the epoch *index* changed, which
 
 ```ocaml
 (* Sketch of the Graypaper's epoch change (Safrole, ch. 6) *)
-let rotate_epoch state ~last_slot_of_prev_epoch =
+let rotate_epoch state ~consecutive ~last_slot_of_prev_epoch =
+  (* consecutive: the new epoch directly follows the previous one (e' = e + 1) *)
   let pending = phi state.staging_set in      (* ι, with offenders' keys nulled *)
   { state with
     pending_set = pending;                    (* γ_P' : next epoch's keys *)
@@ -181,7 +182,8 @@ let rotate_epoch state ~last_slot_of_prev_epoch =
     previous_set = state.active_set;          (* λ'  = κ   *)
     epoch_root = ring_root pending;           (* γ_Z' *)
     slot_sealers =                            (* γ_S' *)
-      if last_slot_of_prev_epoch >= tail_start && full state.ticket_accumulator
+      if consecutive && last_slot_of_prev_epoch >= tail_start
+         && full state.ticket_accumulator
       then outside_in state.ticket_accumulator        (* the winning tickets *)
       else fallback_keys state;                       (* keys from entropy *)
     ticket_accumulator = [];                  (* γ_A' *)
@@ -194,7 +196,7 @@ Since Graypaper 0.8.0 these sets may change size here, so everything indexed by 
 
 ```ocaml
 (* Stf_transitions.update_history: patch the previous entry's state root
-   with H_r, then append this block's entry *)
+   with H_R, then append this block's entry *)
 let state = Stf_transitions.update_history state header header.parent_state_root
               extrinsic.guarantees
 ```
@@ -203,7 +205,7 @@ Each β entry holds the header hash, the accumulation-output super-peak, the sta
 
 ## Error Handling
 
-An import returns `Ok state` or `Error reason`. The reason names the first failed rule, which is exactly what the conformance fuzzer compares:
+An import returns `Ok state` or `Error reason`. The reason names the first rule the block failed, and lasair's fuzz target (`bin/conformance_target.ml`) sends it back to the fuzzer in its error message:
 
 ```ocaml
 type import_result =
@@ -215,7 +217,7 @@ type import_result =
    "preimage_unneeded", "too_many_tickets", ... *)
 ```
 
-When the harness compares against a reference, the outcome is one of: `matches`, `rejected_as_expected`, `post_state_root` (imported to the wrong state), `imported_invalid` (accepted a block the reference rejected), `rejected_valid` (rejected a block the reference imported), or `state_mismatch` (the right root over different key-values).
+When the harness compares against a reference, the outcome is one of: `matches`, `rejected_as_expected`, `post_state_root` (imported to the wrong state), `imported_invalid` (accepted a block the reference rejected), `rejected_valid` (rejected a block the reference imported), `state_mismatch` (the right root over different key-values), or, before any import, `pre_state_root` (the given pre-state does not hash to its stated root).
 
 ## Tracing and Debugging
 
@@ -247,8 +249,8 @@ Block arrives
          ▼
 ┌─────────────────┐
 │ Header checks   │──────────▶ Error: bad_extrinsic_hash, bad_parent_state_root,
-│   H_x, H_r, H_t │                   bad_slot, bad_author_index, bad_seal, ...
-│   H_i, H_s, H_v │
+│   H_X, H_R, H_T │                   bad_slot, bad_author_index, bad_seal, ...
+│   H_I, H_S, H_V │
 └────────┬────────┘
          │
          ▼
@@ -309,12 +311,12 @@ Rationale:
 - Fail fast on cheap checks
 - Don't waste expensive crypto on obviously invalid blocks
 
-But note: efficiency may choose the order of checks only when the
-outcome cannot depend on it. The fuzzer compares the REASON a block
-was rejected as well as whether it was. If a block breaks two rules,
-you must name the same one the reference does, so in practice an
-importer checks in the order the reference implementation and the
-test vectors expect, and keeps cheap-first only where that is free.
+But note: the order of checks decides WHICH rule a block that
+breaks two rules is rejected under. The STF test vectors name the
+error they expect, and a fuzz target reports its rejection reason,
+so an importer that wants to name the same rule as the vectors
+checks in the order they imply, and keeps cheap-first only where
+that is free.
 ```
 
 </details>
