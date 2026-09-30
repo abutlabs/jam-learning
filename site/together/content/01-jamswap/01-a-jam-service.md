@@ -5,14 +5,20 @@ running on JAM. It is worth running on your net because it exercises most of wha
 chain does for a service: work-packages refined on cores, guarantees and availability,
 accumulation, preimages, and finality, all under load.
 
-## Why it needs JAM
+## Where it sits among on-chain order books
 
-On most chains every validator re-executes every transaction, so heavy computation is
-expensive, and decentralized exchanges settle for a pricing formula instead of an order
-book. JAM's **refine** phase is different: a work-package is computed by the few
-validators assigned to its core, then re-executed by randomly selected auditors, and a
-wrong result is provable and costs the signers their stake. That is the shape of a
-matching engine: heavy, parallel, deterministic.
+jamswap is not the first exchange to match orders on-chain. Hyperliquid built a layer-1
+chain for trading, with the order book in its protocol and every validator running the
+matching engine; dYdX (v4) and Injective are app-chains with order books; Serum (later
+OpenBook) and Phoenix run order books as programs on Solana; BitShares and Stellar had
+them in their protocols years earlier. Each paid for matching with a chain of its own or
+with a fast chain's per-transaction compute limits.
+
+JAM offers a different trade. Its **refine** phase computes a work-package on the few
+validators assigned to a core; randomly selected auditors re-execute it, and a provably
+wrong result costs the signers their stake. So jamswap is an ordinary JAM service: no
+chain of its own, the same security as every other service, and heavy per-batch work
+paid by one core's validators and its auditors rather than by the whole network.
 
 | JAM phase | jamswap's job |
 |---|---|
