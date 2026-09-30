@@ -5,7 +5,7 @@
 Free material from abutlabs for JAM client teams and service builders, grounded in
 running code:
 
-- **[Build JAM together](https://abutlabs.github.io/jam-learning/together/)**: run
+- **[Build a mixed-testnet JAM service](https://abutlabs.github.io/jam-learning/mixed-testnet/)**: run
   [jamswap](https://github.com/abutlabs/jamswap), an order-book exchange that runs as a JAM
   service, on test nets of any mix of clients (all lasair, all PolkaJam, and both on one
   chain today), read its verdict, check your own node in one command and add it to a net,
@@ -28,7 +28,7 @@ The standards: the [Graypaper](https://graypaper.com) and the
 
 ```
 site/index.html               the front page: the three sections
-site/together/                Build JAM together: jamswap on mixed-client nets, bring your client or service
+site/mixed-testnet/           a mixed-testnet JAM service: jamswap on mixed-client nets, bring your client or service
 site/assets/                  the one reader both courses share (css, js, icons, the OCaml toplevel)
 site/lasair/                  Learning Lasair: pages, data/course.json, content/<track>/<lesson>.md
 site/observability/           Learning Observability: pages, data/course.json, content/...

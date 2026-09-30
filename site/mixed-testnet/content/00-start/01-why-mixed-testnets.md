@@ -1,4 +1,4 @@
-# Why build JAM together
+# Why build on a mixed testnet
 
 JAM is one protocol with many independent clients, and the point of it is the services
 that run on it. Neither is proven by the Graypaper or the conformance vectors alone. The

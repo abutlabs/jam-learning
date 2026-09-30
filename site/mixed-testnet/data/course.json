@@ -1,5 +1,5 @@
 {
- "title": "Build JAM Together",
+ "title": "Build a Mixed-Testnet JAM Service",
  "repo": "https://github.com/abutlabs/jam-learning",
  "branch": "main",
  "tracks": [
@@ -9,7 +9,7 @@
    "title": "Start here",
    "description": "Why JAM is proven by running clients and services together, and what this section gives you to do it.",
    "lessons": [
-    {"id": "01-why-build-together", "title": "Why build JAM together", "minutes": 5}
+    {"id": "01-why-mixed-testnets", "title": "Why build on a mixed testnet", "minutes": 5}
    ]
   },
   {

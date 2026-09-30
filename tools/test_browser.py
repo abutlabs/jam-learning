@@ -258,7 +258,7 @@ def offline(b, base, httpd):
 
 def phone(b, base):
     b.cdp("Emulation.setDeviceMetricsOverride", width=390, height=844, deviceScaleFactor=2, mobile=True)
-    for page in ("index.html", "together/index.html", "lasair/lesson.html?lesson=01-jam-protocol/01-what-is-jam",
+    for page in ("index.html", "mixed-testnet/index.html", "lasair/lesson.html?lesson=01-jam-protocol/01-what-is-jam",
                  "observability/index.html", "lasair/exam.html"):
         b.go(base + page)
         b.wait("!!document.querySelector('.nav-menu')", 5)
