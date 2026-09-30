@@ -8,9 +8,16 @@ found the cause, the root cause, and the code fix. Hand-authored teaching
 metadata is merged with the real diff bytes so the page teaches from evidence,
 not prose.
 
+Two campaigns: B1-B9 from lasair's GP 0.7.2 (M1) fuzzer runs, whose reports lived in
+lasair's private fuzzer-runs/; C1-C7 from GP 0.8.0: the official fuzzer's first batch
+(its reports are in lasair's regression-reports/) and three divergences found by reading
+the code against the Graypaper, which no vector reaches. An entry whose report cannot be
+read here keeps the bytes already in the output file, so a rebuild never loses them.
+
 Usage:
-  python3 tools/build_divergence_data.py <fuzzer-runs-dir> <out.json>
-  (defaults: ../fuzzer-runs  site/data/divergences.json, relative to repo root)
+  python3 tools/lasair/build_divergence_data.py [<fuzzer-runs-dir>] [<out.json>]
+  (defaults: ../lasair/fuzzer-runs and site/lasair/data/divergences.json, relative to
+  the repository root; LASAIR_DIR names the lasair checkout, default ../lasair)
 """
 import json, os, sys
 
@@ -32,6 +39,9 @@ def component_of(key_hex):
     if chap and key_hex[2:].strip("0") == "":
         return chap
     if b == 0xff and key_hex[2:].strip("0") == "":
+        return COMPONENT[0xff]
+    kb = bytes.fromhex(key_hex)
+    if b == 0xff and kb[2] == kb[4] == kb[6] == 0 and not any(kb[8:]):
         return COMPONENT[0xff]
     return "service-storage"
 
@@ -210,53 +220,207 @@ FIX_CODE = {
    "let taken id = id = self || List.mem_assoc id other_services\n            || (match ctx.lookup_service with Some f -> f id <> None | None -> false) in\nlet new_id = check ctx.nextfree   (* skip every taken id *)"),
 }
 
+# GP 0.8.0. C1-C4: the official fuzzer's first 0.8.0 batch (report_file is under the lasair
+# checkout). C5-C7: found by reading lasair's accumulation against accumulation.tex (lasair#87).
+META_080 = [
+ {"id":"C1","title":"The service statistics that counted nothing","axis":"value",
+  "cls":"missing accounting term","report":"session 1790609255_2232","seed":"84c493ad9dbe9764","step":193,"imports":80,
+  "report_file":"regression-reports/lasair-1790609255_2232/report.json",
+  "story":"GP 0.8.0 statistics keep, for each service, the imports and exports of every "
+    "work-digest refined for it, summed over R(s). lasair wrote both as zero: the fields were "
+    "in the record, but the per-service fold never carried them. Nothing in the published "
+    "vectors had caught it. The official fuzzer's first 0.8.0 batch caught it twice (sessions "
+    "2232 and 6979), with a digest importing or exporting 65,535 segments.",
+  "trace":"One diverging key in both sessions, C(13) statistics, the first differing byte inside "
+    "a service record: the signature of a wrong field in one service's statistics.",
+  "cause":"A statistics record is a sum over the service's digests. Every field of the refine "
+    "load has to be carried through the fold, not only the ones test data happens to vary.",
+  "fix":"The per-service fold carries all six refine-load fields (count, gas, imports, extrinsic "
+    "count and size, exports), and the encoder writes imports and exports from it.",
+  "lesson":"A field that is always zero in your test data is a field you have not tested."},
+ {"id":"C2","title":"The fetch past the end of the value","axis":"value",
+  "cls":"gas pricing edge","report":"session 1790609057_9714","seed":"30183ac66c620e5c","step":64,"imports":64,
+  "report_file":"regression-reports/lasair-1790609057_9714/report.json",
+  "story":"fetch copies up to z octets of a value from offset f and is priced on a length. At step "
+    "64 a service fetched selector 15 with f = 236 of a 176-octet value and z = 256: nothing to "
+    "copy. lasair priced it on the 0 octets copied; the reference charged the bound z, "
+    "355 + memgas(344, 256) = 441 gas, 86 more, and the service's recorded gas moved with it.",
+  "trace":"One diverging key, C(13) statistics, inside the service's record; the gas differed by "
+    "86 = memgas(344, 256), exactly the length term of one fetch.",
+  "cause":"GP 0.8.0 prices fetch on z. The vectors show the reference charges the octets actually "
+    "copied when there are some at f (f < |v|), and z otherwise; lasair treated f past the end "
+    "like the first case.",
+  "fix":"fetch_charge_len charges min(z, |v| - f) only when f < |v|, and z in every other case.",
+  "lesson":"Test every edge of a range: before it, inside it, exactly at its end, past its end."},
+ {"id":"C3","title":"The next service id, one short","axis":"identity",
+  "cls":"identity allocation","report":"session 1790608994_2415","seed":"a89af6cad53ca7f1","step":455,"imports":447,
+  "report_file":"regression-reports/lasair-1790608994_2415/report.json",
+  "story":"When new creates a service, the creator's next-free id moves on, "
+    "i* = check(S + (i - S + 42) mod (2^32 - S - 2^8)), from the checked index it was just given. "
+    "lasair moved on from the raw, unchecked value. When that raw value had been taken, check had "
+    "already skipped past it, so lasair's next id came out one short, and the next service it "
+    "created got a different id from the reference's.",
+  "trace":"Six diverging keys at step 455 of the batch's longest session: a service account record "
+    "(89 octets), its storage entries and the statistics, all of one service created under a "
+    "different id.",
+  "cause":"The GP bumps from the index the invocation was actually given, which has already been "
+    "through check.",
+  "fix":"Bump from new_id, the checked index, not from ctx.nextfree.",
+  "lesson":"B9, from the 0.7.2 campaign, was the same class: allocate from the checked value "
+    "everywhere, not only where the id is first chosen."},
+ {"id":"C4","title":"The number too big to be negative","axis":"codec",
+  "cls":"codec signedness","report":"session 1790609924_6095","seed":"e059b689c2d19221","step":2,"imports":1,
+  "report_file":"regression-reports/lasair-1790609924_6095/report.json",
+  "keys_note":"No state diff: the fuzzer compared import results, expected ok, got bad_extrinsic_hash.",
+  "story":"A work report carried auth_gas_used = 2^64 - 70. A GP compact natural goes up to "
+    "2^64 - 1, but lasair held it in an int64 and chose its encoded length with a signed "
+    "comparison: at 2^63 and above an int64 is negative, so the value was written in one byte. "
+    "The report's hash came out wrong, the extrinsic hash with it, and a valid block was rejected "
+    "as bad_extrinsic_hash. The trace loader also read that field as 0.",
+  "trace":"At the second step the reference accepted the block and lasair rejected it: a valid "
+    "block refused for its extrinsic hash points at the extrinsic's encoding.",
+  "cause":"Codec naturals are unsigned 64-bit; OCaml's Int64 is signed, so every comparison on a "
+    "codec value has to be unsigned.",
+  "fix":"bytes_needed and encode_compact compare with Int64.unsigned_compare; the trace loader "
+    "parses u64 fields as unsigned. lasair's gate now also replays this session through the "
+    "socket target's binary path.",
+  "lesson":"Where the language's integers are signed and the protocol's are not, every comparison "
+    "is a chance to be wrong, and it stays invisible until the top bit is set."},
+ {"id":"C5","title":"The budget that forgot the always-accumulate gas","axis":"value",
+  "cls":"missing equation term (proactive)","report":None,"seed":"(none: found by reading the code against the Graypaper)","step":None,"imports":None,
+  "keys_note":"No report, and no vector or trace could produce one: the always-accumulate set is empty in all 2,000 privileges states of the 0.8.0 traces.",
+  "story":"Sequential accumulation takes, each round, the reports that fit: report gas + incoming "
+    "transfers' gas + the always-accumulate services' gas <= g. lasair checked only the report "
+    "gas. With always-accumulate services holding gas and more reports queued than fit, it "
+    "accumulated reports the Graypaper defers.",
+  "trace":"Transcribing accseq's condition term by term against the code: the last term was "
+    "missing.",
+  "cause":"The first round of accseq carries the always-accumulate dictionary, and its gas counts "
+    "against the same budget as the reports.",
+  "fix":"affordable_prefix transcribes the condition; the first round passes the always-accumulate "
+    "gas as part of what is fixed before any report is taken.",
+  "lesson":"Transcribe every term of an equation. A missing term passes every vector that never "
+    "makes it non-zero."},
+ {"id":"C6","title":"The reports recorded as accumulated but never run","axis":"existence",
+  "cls":"unconsumed output (proactive)","report":None,"seed":"(none: found by reading the code against the Graypaper)","step":None,"imports":None,
+  "keys_note":"No report: it needs a backlog of ready reports and a spent budget, which no published trace has.",
+  "story":"accseq returns n, how many reports it accumulated; the accumulated history keeps only "
+    "those, and the rest stay in the ready queue. lasair never computed n: it wrote every "
+    "accumulatable report into the history and out of the queue before accumulating, so a report "
+    "the budget could not reach was dropped without running.",
+  "trace":"Following each output of the equation into the code: nothing consumed n.",
+  "cause":"The history is the accumulated prefix W*[..n] (accumulation.tex, final state "
+    "integration), not W*.",
+  "fix":"accumulate_sequentially returns n; the history and the ready queue update after "
+    "accumulation, with W*[..n].",
+  "lesson":"Every value an equation produces must be consumed somewhere. If nothing reads it, "
+    "something is using a stand-in."},
+ {"id":"C7","title":"The always-accumulate services that skipped quiet blocks","axis":"existence",
+  "cls":"missing trigger (proactive)","report":None,"seed":"(none: found by reading the code against the Graypaper)","step":None,"imports":None,
+  "keys_note":"No report, and no vector or trace could produce one: the always-accumulate set is empty in all 2,000 privileges states of the 0.8.0 traces.",
+  "story":"lasair ran accumulation only when a work report became available in the block. The "
+    "Graypaper runs accseq every block, and with always-accumulate services set it always has "
+    "work: those services accumulate even in a block where nothing else does.",
+  "trace":"Checking every guard around the code against the text: 'only when a report became "
+    "available' is not in the Graypaper.",
+  "cause":"n = i + |t| + |f| is positive whenever the always-accumulate set is non-empty.",
+  "fix":"Accumulation runs every block; with nothing available it runs the always-accumulate "
+    "services and any queued reports whose dependencies are met.",
+  "lesson":"A condition around protocol code that the specification does not state is a bug "
+    "waiting for the input that crosses it."},
+]
+
+FIX_CODE.update({
+ "C1": ("conformance/stf_guarantees.ml — imports and exports summed over R(s)",
+   "Buffer.add_bytes services_buf (encode_compact 0L);  (* imports *)\n…\nBuffer.add_bytes services_buf (encode_compact 0L);  (* exports *)",
+   "Buffer.add_bytes services_buf (encode_compact (Int64.of_int svc_imports));  (* imports *)\n…\nBuffer.add_bytes services_buf (encode_compact (Int64.of_int svc_exports));  (* exports *)"),
+ "C2": ("lib/pvm_host.ml — fetch_charge_len: z unless there are octets at f",
+   "| None -> z\n| Some v ->\n  let n = Int64.of_int (Bytes.length v) in\n  let f = if Int64.unsigned_compare f n < 0 then f else n in\n  let rest = Int64.sub n f in   (* 0 past the end *)\n  if Int64.unsigned_compare z rest < 0 then z else rest",
+   "| Some v when Int64.unsigned_compare f (Int64.of_int (Bytes.length v)) < 0 ->\n  let rest = Int64.sub (Int64.of_int (Bytes.length v)) f in\n  if Int64.unsigned_compare z rest < 0 then z else rest\n| _ -> z   (* no value, or f at or past its end *)"),
+ "C3": ("lib/pvm_host.ml — host_new: move on from the checked id",
+   "(Int64.rem (Int64.add (Int64.sub ctx.nextfree 0x10000L) 42L) range)",
+   "(Int64.rem (Int64.add (Int64.sub new_id 0x10000L) 42L) range)   (* new_id = check nextfree *)"),
+ "C4": ("lib/serialization.ml — compact naturals compared unsigned",
+   "else if v < 0x80L then 1                          (* < 2^7 *)\nelse if v < 0x4000L then 2                        (* < 2^14 *)\n…",
+   "let ult (a : int64) (b : int64) = Int64.unsigned_compare a b < 0\n…\nelse if ult v 0x80L then 1                        (* < 2^7 *)\nelse if ult v 0x4000L then 2                      (* < 2^14 *)\n…"),
+ "C5": ("conformance/stf_guarantees.ml — accumulate_sequentially: the round's affordable prefix",
+   "let (round_reports, rest) = prefix [] g reports in   (* report gas only *)",
+   "let fixed = gas_add_u64 (transfers_gas transfers) (if first then f_sum else 0L) in\nlet (round_reports, rest) = affordable_prefix ~g ~fixed report_gas reports in"),
+ "C6": ("conformance/stf_guarantees.ml — record only what accseq accumulated",
+   "let db = shift_accumulated_ring db pkg_hashes in   (* all of W*, before accumulating *)\nlet db = update_ready_queue db slot ~prev_slot ~queued:wq ~accumulated:pkg_hashes in\n… accumulate_sequentially db slot decoded_reports",
+   "let (db, …, n_accumulated) = accumulate_sequentially db slot decoded_reports in\nlet pkg_hashes = List.filteri (fun i _ -> i < n_accumulated) pkg_hashes in\nlet db = shift_accumulated_ring db pkg_hashes in\nlet db = update_ready_queue db slot ~prev_slot ~queued:wq ~accumulated:pkg_hashes in"),
+ "C7": ("conformance/stf_guarantees.ml — accumulate every block",
+   "if cores_to_accumulate <> [] then begin\n  … accumulate …\nend else begin\n  (* nothing available: no accumulation at all *)\nend",
+   "begin   (* accseq runs every block: always-accumulate services, ready queued reports *)\n  … accumulate …\nend"),
+})
+
 def truncate(hexv, head=24, tail=16):
     if len(hexv) <= (head + tail) * 2:
         return hexv, False
     return hexv[:head*2] + "…" + hexv[-tail*2:], True
 
+def diff_keys(report_json):
+    """The diverging keys and roots of a fuzzer report.json (0.7.2 and 0.8.0 share the shape)."""
+    d = json.load(open(report_json))
+    keys = []
+    sd = d["error"].get("state_diff")
+    if not sd:
+        return keys, None
+    for kv in sd["keyvals"]:
+        k = kv["key"][2:]
+        exp = kv["diff"]["exp"][2:]; got = kv["diff"]["got"][2:]
+        expt, _ = truncate(exp); gott, _ = truncate(got)
+        first = next((i for i in range(min(len(exp), len(got))//2)
+                      if exp[i*2:i*2+2] != got[i*2:i*2+2]), None)
+        keys.append({"component": component_of(k), "key": k[:16] + "…",
+                     "bytes": len(exp)//2, "exp": expt, "got": gott, "first_diff": first})
+    return keys, {"exp": sd["roots"]["exp"][:18] + "…", "got": sd["roots"]["got"][:18] + "…"}
+
+
 def main():
-    runs_dir = sys.argv[1] if len(sys.argv) > 1 else "../fuzzer-runs"
-    out = sys.argv[2] if len(sys.argv) > 2 else "site/data/divergences.json"
+    root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    lasair = os.environ.get("LASAIR_DIR") or os.path.join(root, "..", "lasair")
+    runs_dir = sys.argv[1] if len(sys.argv) > 1 else os.path.join(lasair, "fuzzer-runs")
+    out = sys.argv[2] if len(sys.argv) > 2 else os.path.join(root, "site", "lasair", "data", "divergences.json")
+    previous = {}
+    if os.path.exists(out):
+        previous = {e["id"]: e for e in json.load(open(out))["divergences"]}
     entries = []
-    for m in META:
-        e = dict(m)
+    for m in [dict(x, gp="0.7.2") for x in META] + [dict(x, gp="0.8.0") for x in META_080]:
+        e = {k: v for k, v in m.items() if k != "report_file"}
         if m["id"] in FIX_CODE:
             cap, before, after = FIX_CODE[m["id"]]
             e["fix_code"] = {"caption": cap, "before": before, "after": after}
         e["keys"] = []
         if m["report"]:
-            rj = os.path.join(runs_dir, m["report"], "report", "report.json")
+            path = (os.path.join(lasair, m["report_file"]) if m.get("report_file")
+                    else os.path.join(runs_dir, m["report"], "report", "report.json"))
             try:
-                d = json.load(open(rj))
-                for kv in d["error"]["state_diff"]["keyvals"]:
-                    k = kv["key"][2:]
-                    exp = kv["diff"]["exp"][2:]; got = kv["diff"]["got"][2:]
-                    expt, _ = truncate(exp); gott, _ = truncate(got)
-                    first = next((i for i in range(min(len(exp), len(got))//2)
-                                  if exp[i*2:i*2+2] != got[i*2:i*2+2]), None)
-                    e["keys"].append({
-                        "component": component_of(k), "key": k[:16] + "…",
-                        "bytes": len(exp)//2, "exp": expt, "got": gott,
-                        "first_diff": first})
-                e["root_hex"] = {"exp": d["error"]["state_diff"]["roots"]["exp"][:18] + "…",
-                                 "got": d["error"]["state_diff"]["roots"]["got"][:18] + "…"}
+                e["keys"], roots = diff_keys(path)
+                if roots:
+                    e["root_hex"] = roots
             except (FileNotFoundError, KeyError) as ex:
-                e["keys_note"] = f"(report bytes unavailable: {ex})"
+                old = previous.get(m["id"], {})
+                if old.get("keys"):              # keep the bytes an earlier build read
+                    e["keys"], e["root_hex"] = old["keys"], old.get("root_hex")
+                else:
+                    e["keys_note"] = f"(report bytes unavailable: {ex})"
         entries.append(e)
     payload = {
         "summary": {
             "total": len(entries),
-            "fixed": len([e for e in entries if e["id"] != "B6"]) + 1,
+            "fixed": len(entries),
+            "by_gp": {v: len([e for e in entries if e["gp"] == v]) for v in ("0.7.2", "0.8.0")},
             "classes": sorted(set(e["cls"].replace(" (proactive)", "") for e in entries)),
             "deepest": max(e["imports"] for e in entries if e["imports"]),
         },
         "divergences": entries,
     }
     os.makedirs(os.path.dirname(out), exist_ok=True)
-    json.dump(payload, open(out, "w"), indent=1)
+    json.dump(payload, open(out, "w"), indent=1, ensure_ascii=False)
     print(f"wrote {out}: {len(entries)} divergences, "
           f"{sum(len(e['keys']) for e in entries)} real diff keys")
+
 
 if __name__ == "__main__":
     main()

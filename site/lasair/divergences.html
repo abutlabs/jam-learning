@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The Divergence Lab: seven real divergences from lasair's live JAM conformance fuzzer campaign — the actual report diff, the trace that found the cause, and the fix.">
+    <meta name="description" content="The Divergence Lab: sixteen real divergences in lasair, from the GP 0.7.2 fuzzer campaign, the official fuzzer's first GP 0.8.0 batch, and three found by reading the code against the Graypaper: the report diff, the trace that found the cause, and the fix.">
     <title>The Divergence Lab - Learning Lasair</title>
     <link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
     <meta name="theme-color" content="#0d1117">
@@ -25,11 +25,14 @@
                 fuzzer is harder: it imports <em>honest-looking</em> blocks into
                 lasair and a reference client and compares the whole state root
                 after every block. The first byte that disagrees is a real
-                protocol bug. Here are seven of them — each with the
-                <strong>actual report diff</strong>, the trace that found the
-                cause, and the fix. Read one and you learn the protocol the way
-                we did: by watching it break. They come from lasair's M1 campaign
-                on Graypaper 0.7.2.
+                protocol bug. Here are sixteen of them, each with the
+                <strong>actual report diff</strong> where there is one, the trace that
+                found the cause, and the fix. B1–B9 come from lasair's M1 campaign on
+                Graypaper 0.7.2. C1–C4 come from the official fuzzer's first GP 0.8.0
+                batch. C5–C7 were found without any fuzzer, by reading lasair's
+                accumulation against the Graypaper: no published vector or trace
+                reaches them. Read one and you learn the protocol the way we did: by
+                watching it break.
             </p>
         </header>
 
