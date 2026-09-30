@@ -1,0 +1,114 @@
+{
+ "family": "storage",
+ "block": "00000056",
+ "slot": 56,
+ "why": "Out-of-gas rollback. The invocation has a gas limit of just 116,976; the service runs out mid-write. Per the Graypaper only a HALT commits \u2014 every storage change is discarded, but the gas still counts in the service statistics. The state root only balances if you do both.",
+ "family_explainer": "The storage family runs a real service that stress-tests service storage. Each block: (1) new work reports are guaranteed onto cores, (2) validators assure availability of earlier reports, (3) once a report has a super-majority of assurances it becomes available and the service's ACCUMULATE entry point executes in the PVM \u2014 reading, writing and deleting storage keys via host calls, metered by gas. The post-state root certifies every byte: storage entries, the service's octet/item footprint, gas statistics, the accumulated-set ring and the ready queue.",
+ "extrinsic": {
+  "tickets": 0,
+  "guarantees": [],
+  "assurance_votes": {
+   "core0": 6,
+   "core1": 4,
+   "count": 6
+  },
+  "preimages": []
+ },
+ "events": [
+  "6 validator assurance(s): core 0 has 6, core 1 has 4 vote(s). A report becomes AVAILABLE when votes exceed 2/3 of 6 validators (i.e. \u2265 5).",
+  "ACCUMULATION: package(s) 2a0606b9\u2026 became available and were accumulated \u2014 the service's accumulate entry point ran inside the PVM. The accumulated-set ring C(15) records them (sorted, ring 11), aging out after 12 blocks.",
+  "Service 0 statistics: 6 work item(s) accumulated for 116,976 gas (exact PVM metering \u2014 every instruction costs 1, host calls cost 10, log costs 10)."
+ ],
+ "accumulated_now": [
+  "2a0606b90bc3139f"
+ ],
+ "service_stats": [
+  {
+   "service": 0,
+   "provided_count": 0,
+   "provided_size": 0,
+   "refine_count": 0,
+   "refine_gas": 0,
+   "imports": 0,
+   "xt_count": 0,
+   "xt_size": 0,
+   "exports": 0,
+   "acc_count": 6,
+   "acc_gas": 116976
+  }
+ ],
+ "pre_state_entries": 30,
+ "post_state_entries": 30,
+ "diff": [
+  {
+   "key": "03000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c3",
+   "label": "C(3) recent history (beta)",
+   "desc": "Last H=8 block hashes, state roots, MMR",
+   "change": "modified",
+   "pre_len": 1456,
+   "post_len": 1328,
+   "first_diff_byte": 1
+  },
+  {
+   "key": "06000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c6",
+   "label": "C(6) entropy (eta)",
+   "desc": "Entropy accumulator (4 x 32 bytes)",
+   "change": "modified",
+   "pre_len": 128,
+   "post_len": 128,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0a000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c10",
+   "label": "C(10) pending reports (rho)",
+   "desc": "Per-core: guaranteed report awaiting assurances",
+   "change": "modified",
+   "pre_len": 3715,
+   "post_len": 1633,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0b000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c11",
+   "label": "C(11) timeslot (tau)",
+   "desc": "Most recent block's slot (u32)",
+   "change": "modified",
+   "pre_len": 4,
+   "post_len": 4,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0d000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c13",
+   "label": "C(13) statistics (pi)",
+   "desc": "Validator, core and service activity counters",
+   "change": "modified",
+   "pre_len": 334,
+   "post_len": 322,
+   "first_diff_byte": 20
+  },
+  {
+   "key": "0f000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c15",
+   "label": "C(15) accumulated (xi)",
+   "desc": "12-ring history of accumulated package hashes",
+   "change": "modified",
+   "pre_len": 396,
+   "post_len": 364,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "ff000000000000000000000000000000000000000000000000000000000000",
+   "kind": "account",
+   "label": "service 0 account",
+   "desc": "Code hash, balance, gas minimums, storage footprint (octets/items), gratis, timestamps",
+   "change": "modified",
+   "pre_len": 89,
+   "post_len": 89,
+   "first_diff_byte": 81
+  }
+ ]
+}

@@ -1,0 +1,101 @@
+[
+ {
+  "family": "fallback",
+  "block": "00000001",
+  "slot": 1,
+  "why": "The simplest possible block: no work, no tickets. Only the clock (timeslot), entropy accumulator and validator statistics change. Start here to see the smallest state delta a block can make.",
+  "file": "fallback-00000001.json",
+  "diff_count": 4,
+  "accumulates": false
+ },
+ {
+  "family": "safrole",
+  "block": "00000011",
+  "slot": 11,
+  "why": "Safrole ticket submission: validators submit Ring-VRF tickets that decide future block authorship. Watch C(4) (safrole state) absorb the tickets while everything else stays still.",
+  "file": "safrole-00000011.json",
+  "diff_count": 4,
+  "accumulates": false
+ },
+ {
+  "family": "storage",
+  "block": "00000006",
+  "slot": 6,
+  "why": "The first real accumulation in the storage family. Two work reports become available (enough validators assured them), the service's accumulate code runs in the PVM for 478,680 gas, writes storage, and the accumulated-set ring C(15) records the package hashes.",
+  "file": "storage-00000006.json",
+  "diff_count": 7,
+  "accumulates": true
+ },
+ {
+  "family": "storage",
+  "block": "00000025",
+  "slot": 25,
+  "why": "Two reports become available in the same block, on different cores, guaranteed 5 slots apart. The accumulated-set entry is a SET \u2014 serialized in lexicographic hash order, not core order. This block is the only place in the family that exposes the difference.",
+  "file": "storage-00000025.json",
+  "diff_count": 14,
+  "accumulates": true
+ },
+ {
+  "family": "storage",
+  "block": "00000038",
+  "slot": 38,
+  "why": "Dependency ordering. One available report DECLARES a prerequisite, so per the Graypaper it must take the queue path (W^Q) and accumulate after the dependency-free report \u2014 even though its prerequisite is already satisfied. Operand order changes what the service computes, so getting this wrong breaks the state root.",
+  "file": "storage-00000038.json",
+  "diff_count": 25,
+  "accumulates": true
+ },
+ {
+  "family": "storage",
+  "block": "00000056",
+  "slot": 56,
+  "why": "Out-of-gas rollback. The invocation has a gas limit of just 116,976; the service runs out mid-write. Per the Graypaper only a HALT commits \u2014 every storage change is discarded, but the gas still counts in the service statistics. The state root only balances if you do both.",
+  "file": "storage-00000056.json",
+  "diff_count": 7,
+  "accumulates": true
+ },
+ {
+  "family": "storage_light",
+  "block": "00000076",
+  "slot": 76,
+  "why": "A report becomes available but DECLARES an unsatisfied prerequisite, so instead of accumulating it parks in the ready-queue ring C(14) at slot mod 12. Nothing accumulates; last-accumulation timestamps must NOT move.",
+  "file": "storage_light-00000076.json",
+  "diff_count": 7,
+  "accumulates": false
+ },
+ {
+  "family": "preimages",
+  "block": "00000008",
+  "slot": 8,
+  "why": "The preimages extrinsic at work: the block body carries 5 blobs answering earlier solicitations. Each lands under its preimage key C(s, E4(2^32-2) ++ h) and stamps its request entry with this slot. The block author's validator stats count all 5 (612 octets).",
+  "file": "preimages-00000008.json",
+  "diff_count": 24,
+  "accumulates": true
+ },
+ {
+  "family": "preimages",
+  "block": "00000013",
+  "slot": 13,
+  "why": "The bootstrap service deliberately panics (it tries to forget a request that is not yet expungeable). Per the Graypaper the panic discards every state change the invocation made \u2014 but the gas it burned still lands in the statistics.",
+  "file": "preimages-00000013.json",
+  "diff_count": 7,
+  "accumulates": true
+ },
+ {
+  "family": "fuzzy",
+  "block": "00000006",
+  "slot": 6,
+  "why": "The fuzzy family throws everything at once. Here the service CREATES two new services mid-accumulation: their ids derive from blake2b(service ++ entropy ++ slot), the second exactly 42 above the first \u2014 the Graypaper's '+42 bump' in the wild. Each newborn starts life as a single unprovided request for its own code.",
+  "file": "fuzzy-00000006.json",
+  "diff_count": 15,
+  "accumulates": true
+ },
+ {
+  "family": "fuzzy",
+  "block": "00000143",
+  "slot": 143,
+  "why": "An ADVERSARIAL block: one work result claims a code hash that does not match the service's actual code. A conformant node must reject the whole block \u2014 the expected post-state is byte-identical to the pre-state. Importing it at all is the failure.",
+  "file": "fuzzy-00000143.json",
+  "diff_count": 0,
+  "accumulates": false
+ }
+]

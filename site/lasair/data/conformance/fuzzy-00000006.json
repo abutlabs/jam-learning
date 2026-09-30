@@ -1,0 +1,221 @@
+{
+ "family": "fuzzy",
+ "block": "00000006",
+ "slot": 6,
+ "why": "The fuzzy family throws everything at once. Here the service CREATES two new services mid-accumulation: their ids derive from blake2b(service ++ entropy ++ slot), the second exactly 42 above the first \u2014 the Graypaper's '+42 bump' in the wild. Each newborn starts life as a single unprovided request for its own code.",
+ "family_explainer": "Seed-generated chaos: every feature at once, plus deliberately invalid blocks. Services create and destroy other services, transfer funds, upgrade their own code, checkpoint and panic; roughly one vector in twenty is adversarial and must be rejected outright. This family is the closest thing to the official fuzzer's behavior that ships as static vectors.",
+ "extrinsic": {
+  "tickets": 0,
+  "guarantees": [
+   {
+    "core": 0,
+    "package": "0c20d675",
+    "bundle_len": 305,
+    "digests": [
+     {
+      "service": 0,
+      "gas_limit": 10000000,
+      "result": "ok"
+     }
+    ],
+    "prerequisites": []
+   },
+   {
+    "core": 1,
+    "package": "0ae93d4b",
+    "bundle_len": 1528,
+    "digests": [
+     {
+      "service": 0,
+      "gas_limit": 5000000,
+      "result": "ok"
+     },
+     {
+      "service": 0,
+      "gas_limit": 5000000,
+      "result": "ok"
+     }
+    ],
+    "prerequisites": []
+   }
+  ],
+  "assurance_votes": {
+   "core0": 5,
+   "core1": 6,
+   "count": 6
+  },
+  "preimages": []
+ },
+ "events": [
+  "Core 0: package 0c20d675\u2026 guaranteed (1 work item(s), bundle 305 bytes). It now waits on this core for availability assurances.",
+  "Core 1: package 0ae93d4b\u2026 guaranteed (2 work item(s), bundle 1528 bytes). It now waits on this core for availability assurances.",
+  "6 validator assurance(s): core 0 has 5, core 1 has 6 vote(s). A report becomes AVAILABLE when votes exceed 2/3 of 6 validators (i.e. \u2265 5).",
+  "ACCUMULATION: package(s) 3a91d35e\u2026, a2b711e5\u2026 became available and were accumulated \u2014 the service's accumulate entry point ran inside the PVM. The accumulated-set ring C(15) records them (sorted, ring 11), aging out after 12 blocks.",
+  "Service 0 statistics: 5 work item(s) accumulated for 140,901 gas (exact PVM metering \u2014 every instruction costs 1, host calls cost 10, log costs 10)."
+ ],
+ "accumulated_now": [
+  "3a91d35e6527ed3a",
+  "a2b711e5ee48e141"
+ ],
+ "service_stats": [
+  {
+   "service": 0,
+   "provided_count": 0,
+   "provided_size": 0,
+   "refine_count": 3,
+   "refine_gas": 29017,
+   "imports": 0,
+   "xt_count": 10,
+   "xt_size": 595,
+   "exports": 0,
+   "acc_count": 5,
+   "acc_gas": 140901
+  }
+ ],
+ "pre_state_entries": 21,
+ "post_state_entries": 29,
+ "diff": [
+  {
+   "key": "004400b500a400aaa0d7f8eab5ca1cca4a0472988422febc68a6b6a944cabf",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 4
+  },
+  {
+   "key": "00450019006a0051135ef0225518c5ddc999419ffbf52cf2d4213d55af782e",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 4
+  },
+  {
+   "key": "00c0001d0056003b9dfa998fdc18531738e679fe8cf0cb42c3f5f40de9fe04",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 140
+  },
+  {
+   "key": "00f00078008e0099cd2569e9ccf2045b86062b3e1b16723b5cd83807dab284",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 140
+  },
+  {
+   "key": "03000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c3",
+   "label": "C(3) recent history (beta)",
+   "desc": "Last H=8 block hashes, state roots, MMR",
+   "change": "modified",
+   "pre_len": 779,
+   "post_len": 1004,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "06000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c6",
+   "label": "C(6) entropy (eta)",
+   "desc": "Entropy accumulator (4 x 32 bytes)",
+   "change": "modified",
+   "pre_len": 128,
+   "post_len": 128,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0a000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c10",
+   "label": "C(10) pending reports (rho)",
+   "desc": "Per-core: guaranteed report awaiting assurances",
+   "change": "modified",
+   "pre_len": 1559,
+   "post_len": 1174,
+   "first_diff_byte": 1
+  },
+  {
+   "key": "0b000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c11",
+   "label": "C(11) timeslot (tau)",
+   "desc": "Most recent block's slot (u32)",
+   "change": "modified",
+   "pre_len": 4,
+   "post_len": 4,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0d000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c13",
+   "label": "C(13) statistics (pi)",
+   "desc": "Validator, core and service activity counters",
+   "change": "modified",
+   "pre_len": 305,
+   "post_len": 332,
+   "first_diff_byte": 16
+  },
+  {
+   "key": "0f000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c15",
+   "label": "C(15) accumulated (xi)",
+   "desc": "12-ring history of accumulated package hashes",
+   "change": "modified",
+   "pre_len": 12,
+   "post_len": 76,
+   "first_diff_byte": 11
+  },
+  {
+   "key": "172c10ffad30eb44aa84f31be60f9d7ed87eaef9dbb83ab9b4db18c1148396",
+   "kind": "service-data",
+   "label": "service-3953987607 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 1
+  },
+  {
+   "key": "412c10ffad30eb44aa84f31be60f9d7ed87eaef9dbb83ab9b4db18c1148396",
+   "kind": "service-data",
+   "label": "service-3953987649 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 1
+  },
+  {
+   "key": "ff000000000000000000000000000000000000000000000000000000000000",
+   "kind": "account",
+   "label": "service 0 account",
+   "desc": "Code hash, balance, gas minimums, storage footprint (octets/items), gratis, timestamps",
+   "change": "modified",
+   "pre_len": 89,
+   "post_len": 89,
+   "first_diff_byte": 33
+  },
+  {
+   "key": "ff17001000ad00eb0000000000000000000000000000000000000000000000",
+   "kind": "account",
+   "label": "service 11341847 account",
+   "desc": "Code hash, balance, gas minimums, storage footprint (octets/items), gratis, timestamps",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 89
+  },
+  {
+   "key": "ff41001000ad00eb0000000000000000000000000000000000000000000000",
+   "kind": "account",
+   "label": "service 11341889 account",
+   "desc": "Code hash, balance, gas minimums, storage footprint (octets/items), gratis, timestamps",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 89
+  }
+ ]
+}

@@ -1,0 +1,64 @@
+{
+ "family": "safrole",
+ "block": "00000011",
+ "slot": 11,
+ "why": "Safrole ticket submission: validators submit Ring-VRF tickets that decide future block authorship. Watch C(4) (safrole state) absorb the tickets while everything else stays still.",
+ "family_explainer": "Safrole is JAM's block-production lottery. Validators submit anonymous Ring-VRF tickets during an epoch; the best tickets win future authoring slots. These vectors exercise ticket validation, epoch transitions and the sealing-key marker.",
+ "extrinsic": {
+  "tickets": 0,
+  "guarantees": [],
+  "assurance_votes": {
+   "core0": 0,
+   "core1": 0,
+   "count": 0
+  },
+  "preimages": []
+ },
+ "events": [],
+ "accumulated_now": [],
+ "service_stats": [],
+ "pre_state_entries": 21,
+ "post_state_entries": 21,
+ "diff": [
+  {
+   "key": "03000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c3",
+   "label": "C(3) recent history (beta)",
+   "desc": "Last H=8 block hashes, state roots, MMR",
+   "change": "modified",
+   "pre_len": 846,
+   "post_len": 878,
+   "first_diff_byte": 1
+  },
+  {
+   "key": "06000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c6",
+   "label": "C(6) entropy (eta)",
+   "desc": "Entropy accumulator (4 x 32 bytes)",
+   "change": "modified",
+   "pre_len": 128,
+   "post_len": 128,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0b000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c11",
+   "label": "C(11) timeslot (tau)",
+   "desc": "Most recent block's slot (u32)",
+   "change": "modified",
+   "pre_len": 4,
+   "post_len": 4,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0d000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c13",
+   "label": "C(13) statistics (pi)",
+   "desc": "Validator, core and service activity counters",
+   "change": "modified",
+   "pre_len": 305,
+   "post_len": 305,
+   "first_diff_byte": 72
+  }
+ ]
+}

@@ -1,0 +1,231 @@
+{
+ "family": "storage",
+ "block": "00000025",
+ "slot": 25,
+ "why": "Two reports become available in the same block, on different cores, guaranteed 5 slots apart. The accumulated-set entry is a SET \u2014 serialized in lexicographic hash order, not core order. This block is the only place in the family that exposes the difference.",
+ "family_explainer": "The storage family runs a real service that stress-tests service storage. Each block: (1) new work reports are guaranteed onto cores, (2) validators assure availability of earlier reports, (3) once a report has a super-majority of assurances it becomes available and the service's ACCUMULATE entry point executes in the PVM \u2014 reading, writing and deleting storage keys via host calls, metered by gas. The post-state root certifies every byte: storage entries, the service's octet/item footprint, gas statistics, the accumulated-set ring and the ready queue.",
+ "extrinsic": {
+  "tickets": 0,
+  "guarantees": [
+   {
+    "core": 0,
+    "package": "427d4736",
+    "bundle_len": 5227,
+    "digests": [
+     {
+      "service": 0,
+      "gas_limit": 2000000,
+      "result": "ok"
+     },
+     {
+      "service": 0,
+      "gas_limit": 2000000,
+      "result": "ok"
+     },
+     {
+      "service": 0,
+      "gas_limit": 2000000,
+      "result": "ok"
+     },
+     {
+      "service": 0,
+      "gas_limit": 2000000,
+      "result": "ok"
+     },
+     {
+      "service": 0,
+      "gas_limit": 2000000,
+      "result": "ok"
+     }
+    ],
+    "prerequisites": []
+   },
+   {
+    "core": 1,
+    "package": "75b26b80",
+    "bundle_len": 1095,
+    "digests": [
+     {
+      "service": 0,
+      "gas_limit": 10000000,
+      "result": "ok"
+     }
+    ],
+    "prerequisites": [
+     "ac9463be",
+     "bf222778"
+    ]
+   }
+  ],
+  "assurance_votes": {
+   "core0": 6,
+   "core1": 6,
+   "count": 6
+  },
+  "preimages": []
+ },
+ "events": [
+  "Core 0: package 427d4736\u2026 guaranteed (5 work item(s), bundle 5227 bytes). It now waits on this core for availability assurances.",
+  "Core 1: package 75b26b80\u2026 guaranteed (1 work item(s), bundle 1095 bytes) \u2014 declares prerequisite ac9463be\u2026. It now waits on this core for availability assurances.",
+  "6 validator assurance(s): core 0 has 6, core 1 has 6 vote(s). A report becomes AVAILABLE when votes exceed 2/3 of 6 validators (i.e. \u2265 5).",
+  "ACCUMULATION: package(s) a6a46aeb\u2026, bf222778\u2026 became available and were accumulated \u2014 the service's accumulate entry point ran inside the PVM. The accumulated-set ring C(15) records them (sorted, ring 11), aging out after 12 blocks.",
+  "Service 0 statistics: 8 work item(s) accumulated for 309,354 gas (exact PVM metering \u2014 every instruction costs 1, host calls cost 10, log costs 10)."
+ ],
+ "accumulated_now": [
+  "a6a46aebf4352524",
+  "bf2227786aee9be0"
+ ],
+ "service_stats": [
+  {
+   "service": 0,
+   "provided_count": 0,
+   "provided_size": 0,
+   "refine_count": 6,
+   "refine_gas": 352580,
+   "imports": 0,
+   "xt_count": 46,
+   "xt_size": 2640,
+   "exports": 0,
+   "acc_count": 8,
+   "acc_gas": 309354
+  }
+ ],
+ "pre_state_entries": 44,
+ "post_state_entries": 42,
+ "diff": [
+  {
+   "key": "0007000f00c20099c4e5e141bb649b125a3bd4a720134b005b535e0b7201d9",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 32
+  },
+  {
+   "key": "000e00f500250079af77454ec8855fdef99481b0c73818c0f60c96fc5578dd",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "removed",
+   "pre_len": 32,
+   "post_len": null
+  },
+  {
+   "key": "002100530020005f30e50cd009085620fda9324c609079b8464cbf4f3829a0",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 32
+  },
+  {
+   "key": "008f009900a1007e3b707aeef305f1f21e8b354befcc0dab4810953cf5ad12",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "removed",
+   "pre_len": 32,
+   "post_len": null
+  },
+  {
+   "key": "00bf005a002800557041774031b2bc43d5f765c958c995ebb8f941b208ecda",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "removed",
+   "pre_len": 32,
+   "post_len": null
+  },
+  {
+   "key": "00cf00b500bf002d7d9ba36998e3c7161d90f8b5ecaefabfae44c0809b19ed",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "removed",
+   "pre_len": 32,
+   "post_len": null
+  },
+  {
+   "key": "00f5009a00d200631b4f8e53d6450360710aefb553b15462553eecc02c0eff",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "modified",
+   "pre_len": 8,
+   "post_len": 8,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "03000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c3",
+   "label": "C(3) recent history (beta)",
+   "desc": "Last H=8 block hashes, state roots, MMR",
+   "change": "modified",
+   "pre_len": 1231,
+   "post_len": 1327,
+   "first_diff_byte": 1
+  },
+  {
+   "key": "06000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c6",
+   "label": "C(6) entropy (eta)",
+   "desc": "Entropy accumulator (4 x 32 bytes)",
+   "change": "modified",
+   "pre_len": 128,
+   "post_len": 128,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0a000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c10",
+   "label": "C(10) pending reports (rho)",
+   "desc": "Per-core: guaranteed report awaiting assurances",
+   "change": "modified",
+   "pre_len": 1916,
+   "post_len": 2416,
+   "first_diff_byte": 1
+  },
+  {
+   "key": "0b000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c11",
+   "label": "C(11) timeslot (tau)",
+   "desc": "Most recent block's slot (u32)",
+   "change": "modified",
+   "pre_len": 4,
+   "post_len": 4,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0d000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c13",
+   "label": "C(13) statistics (pi)",
+   "desc": "Validator, core and service activity counters",
+   "change": "modified",
+   "pre_len": 329,
+   "post_len": 334,
+   "first_diff_byte": 16
+  },
+  {
+   "key": "0f000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c15",
+   "label": "C(15) accumulated (xi)",
+   "desc": "12-ring history of accumulated package hashes",
+   "change": "modified",
+   "pre_len": 236,
+   "post_len": 268,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "ff000000000000000000000000000000000000000000000000000000000000",
+   "kind": "account",
+   "label": "service 0 account",
+   "desc": "Code hash, balance, gas minimums, storage footprint (octets/items), gratis, timestamps",
+   "change": "modified",
+   "pre_len": 89,
+   "post_len": 89,
+   "first_diff_byte": 57
+  }
+ ]
+}

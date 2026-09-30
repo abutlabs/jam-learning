@@ -1,0 +1,313 @@
+{
+ "family": "storage",
+ "block": "00000038",
+ "slot": 38,
+ "why": "Dependency ordering. One available report DECLARES a prerequisite, so per the Graypaper it must take the queue path (W^Q) and accumulate after the dependency-free report \u2014 even though its prerequisite is already satisfied. Operand order changes what the service computes, so getting this wrong breaks the state root.",
+ "family_explainer": "The storage family runs a real service that stress-tests service storage. Each block: (1) new work reports are guaranteed onto cores, (2) validators assure availability of earlier reports, (3) once a report has a super-majority of assurances it becomes available and the service's ACCUMULATE entry point executes in the PVM \u2014 reading, writing and deleting storage keys via host calls, metered by gas. The post-state root certifies every byte: storage entries, the service's octet/item footprint, gas statistics, the accumulated-set ring and the ready queue.",
+ "extrinsic": {
+  "tickets": 0,
+  "guarantees": [
+   {
+    "core": 0,
+    "package": "97417215",
+    "bundle_len": 3555,
+    "digests": [
+     {
+      "service": 0,
+      "gas_limit": 2000000,
+      "result": "ok"
+     },
+     {
+      "service": 0,
+      "gas_limit": 2000000,
+      "result": "ok"
+     },
+     {
+      "service": 0,
+      "gas_limit": 2000000,
+      "result": "ok"
+     },
+     {
+      "service": 0,
+      "gas_limit": 2000000,
+      "result": "ok"
+     },
+     {
+      "service": 0,
+      "gas_limit": 2000000,
+      "result": "ok"
+     }
+    ],
+    "prerequisites": []
+   }
+  ],
+  "assurance_votes": {
+   "core0": 5,
+   "core1": 6,
+   "count": 6
+  },
+  "preimages": []
+ },
+ "events": [
+  "Core 0: package 97417215\u2026 guaranteed (5 work item(s), bundle 3555 bytes). It now waits on this core for availability assurances.",
+  "6 validator assurance(s): core 0 has 5, core 1 has 6 vote(s). A report becomes AVAILABLE when votes exceed 2/3 of 6 validators (i.e. \u2265 5).",
+  "ACCUMULATION: package(s) 51beee85\u2026, 899bce03\u2026 became available and were accumulated \u2014 the service's accumulate entry point ran inside the PVM. The accumulated-set ring C(15) records them (sorted, ring 11), aging out after 12 blocks.",
+  "Service 0 statistics: 9 work item(s) accumulated for 763,763 gas (exact PVM metering \u2014 every instruction costs 1, host calls cost 10, log costs 10)."
+ ],
+ "accumulated_now": [
+  "51beee853a614cf7",
+  "899bce03b649266c"
+ ],
+ "service_stats": [
+  {
+   "service": 0,
+   "provided_count": 0,
+   "provided_size": 0,
+   "refine_count": 5,
+   "refine_gas": 255262,
+   "imports": 0,
+   "xt_count": 24,
+   "xt_size": 1334,
+   "exports": 0,
+   "acc_count": 9,
+   "acc_gas": 763763
+  }
+ ],
+ "pre_state_entries": 35,
+ "post_state_entries": 42,
+ "diff": [
+  {
+   "key": "0011003a00600085673b7eb09ab9f5eb2aa588030bd722f7b4f3e7c4e068aa",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "removed",
+   "pre_len": 32,
+   "post_len": null
+  },
+  {
+   "key": "00280008003d006dc5176a55ccf097f94d6b994772c42650181a8aaa9a1283",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "removed",
+   "pre_len": 32,
+   "post_len": null
+  },
+  {
+   "key": "002d00da000b00daa0a4c7d0205b472fd45dc628ea4b8576096e4602e2e617",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 32
+  },
+  {
+   "key": "00560067002200834b74a3e43c8340b83945bd96ecd43a740afa97ad66d19d",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "removed",
+   "pre_len": 32,
+   "post_len": null
+  },
+  {
+   "key": "00670042003d00acefed357efdbc102a458883131bf5a212589c42fc56cbe5",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 32
+  },
+  {
+   "key": "0073004500720018965e633f213e7b5dbb5fc8f03793a98909bdd61d0f94a8",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 32
+  },
+  {
+   "key": "0077004f00e8009a6d16ee1b63f18c993234fff7f9f045f847ef7936ed2466",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 32
+  },
+  {
+   "key": "007a00a6005900fb3f29be5a2709a608b84b792664feac393216d80a7002cb",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 32
+  },
+  {
+   "key": "008200700076006ebd4eaa6199193e730143fd135d611e134a79834d83e3bd",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "removed",
+   "pre_len": 32,
+   "post_len": null
+  },
+  {
+   "key": "009a002f0056004055b7928083043f246018f40ec5027c7a4b9962f6b32ecc",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 32
+  },
+  {
+   "key": "00af008600ba00397cdc32d5cd34d6ee92983d33655c8fee8ffd3279a2f8c6",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 32
+  },
+  {
+   "key": "00b70012007c0031b8bdb286c2082b4d3adab0a27defa04f1550c3b9487565",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 32
+  },
+  {
+   "key": "00be00c7002d00bd4ae3e4eb640f9a0862de5599c6f5ae7f421ccb03e83ca7",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "removed",
+   "pre_len": 32,
+   "post_len": null
+  },
+  {
+   "key": "00cc008b000600bc016adaf13fcdfeb0d2b363c122e4dc879de9b078d824ee",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 32
+  },
+  {
+   "key": "00d80023003a0024d908c0287ee3aa15fe45198a3120d31bc920447b2ddde0",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 32
+  },
+  {
+   "key": "00d8007b00aa0019278b07889b912a721d65cbccd7aee81686e53b66c83b5c",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 32
+  },
+  {
+   "key": "00df00af002d002ac13ec5f74ffccdffd621c0d95b0230c47f638dfa1f63f8",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 32
+  },
+  {
+   "key": "00f5009a00d200631b4f8e53d6450360710aefb553b15462553eecc02c0eff",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "modified",
+   "pre_len": 8,
+   "post_len": 8,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "03000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c3",
+   "label": "C(3) recent history (beta)",
+   "desc": "Last H=8 block hashes, state roots, MMR",
+   "change": "modified",
+   "pre_len": 1328,
+   "post_len": 1328,
+   "first_diff_byte": 1
+  },
+  {
+   "key": "06000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c6",
+   "label": "C(6) entropy (eta)",
+   "desc": "Entropy accumulator (4 x 32 bytes)",
+   "change": "modified",
+   "pre_len": 128,
+   "post_len": 128,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0a000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c10",
+   "label": "C(10) pending reports (rho)",
+   "desc": "Per-core: guaranteed report awaiting assurances",
+   "change": "modified",
+   "pre_len": 2857,
+   "post_len": 1611,
+   "first_diff_byte": 1
+  },
+  {
+   "key": "0b000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c11",
+   "label": "C(11) timeslot (tau)",
+   "desc": "Most recent block's slot (u32)",
+   "change": "modified",
+   "pre_len": 4,
+   "post_len": 4,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0d000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c13",
+   "label": "C(13) statistics (pi)",
+   "desc": "Validator, core and service activity counters",
+   "change": "modified",
+   "pre_len": 333,
+   "post_len": 330,
+   "first_diff_byte": 20
+  },
+  {
+   "key": "0f000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c15",
+   "label": "C(15) accumulated (xi)",
+   "desc": "12-ring history of accumulated package hashes",
+   "change": "modified",
+   "pre_len": 268,
+   "post_len": 332,
+   "first_diff_byte": 1
+  },
+  {
+   "key": "ff000000000000000000000000000000000000000000000000000000000000",
+   "kind": "account",
+   "label": "service 0 account",
+   "desc": "Code hash, balance, gas minimums, storage footprint (octets/items), gratis, timestamps",
+   "change": "modified",
+   "pre_len": 89,
+   "post_len": 89,
+   "first_diff_byte": 57
+  }
+ ]
+}

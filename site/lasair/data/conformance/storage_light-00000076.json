@@ -1,0 +1,97 @@
+{
+ "family": "storage_light",
+ "block": "00000076",
+ "slot": 76,
+ "why": "A report becomes available but DECLARES an unsatisfied prerequisite, so instead of accumulating it parks in the ready-queue ring C(14) at slot mod 12. Nothing accumulates; last-accumulation timestamps must NOT move.",
+ "family_explainer": "Same service and lifecycle as the storage family, but each work report carries a single work item, isolating the per-report machinery (availability, queueing, ordering) from multi-item aggregation.",
+ "extrinsic": {
+  "tickets": 0,
+  "guarantees": [],
+  "assurance_votes": {
+   "core0": 3,
+   "core1": 5,
+   "count": 5
+  },
+  "preimages": []
+ },
+ "events": [
+  "5 validator assurance(s): core 0 has 3, core 1 has 5 vote(s). A report becomes AVAILABLE when votes exceed 2/3 of 6 validators (i.e. \u2265 5).",
+  "READY QUEUE: at least one available report declares unsatisfied prerequisites \u2014 it parks in ring 4 of C(14) instead of accumulating, and will run when its dependencies accumulate."
+ ],
+ "accumulated_now": [],
+ "service_stats": [],
+ "pre_state_entries": 42,
+ "post_state_entries": 42,
+ "diff": [
+  {
+   "key": "03000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c3",
+   "label": "C(3) recent history (beta)",
+   "desc": "Last H=8 block hashes, state roots, MMR",
+   "change": "modified",
+   "pre_len": 1425,
+   "post_len": 1329,
+   "first_diff_byte": 1
+  },
+  {
+   "key": "06000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c6",
+   "label": "C(6) entropy (eta)",
+   "desc": "Entropy accumulator (4 x 32 bytes)",
+   "change": "modified",
+   "pre_len": 128,
+   "post_len": 128,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0a000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c10",
+   "label": "C(10) pending reports (rho)",
+   "desc": "Per-core: guaranteed report awaiting assurances",
+   "change": "modified",
+   "pre_len": 1160,
+   "post_len": 598,
+   "first_diff_byte": 597
+  },
+  {
+   "key": "0b000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c11",
+   "label": "C(11) timeslot (tau)",
+   "desc": "Most recent block's slot (u32)",
+   "change": "modified",
+   "pre_len": 4,
+   "post_len": 4,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0d000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c13",
+   "label": "C(13) statistics (pi)",
+   "desc": "Validator, core and service activity counters",
+   "change": "modified",
+   "pre_len": 330,
+   "post_len": 306,
+   "first_diff_byte": 44
+  },
+  {
+   "key": "0e000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c14",
+   "label": "C(14) ready queue (theta)",
+   "desc": "12-ring queue of dependent work reports",
+   "change": "modified",
+   "pre_len": 12,
+   "post_len": 603,
+   "first_diff_byte": 4
+  },
+  {
+   "key": "0f000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c15",
+   "label": "C(15) accumulated (xi)",
+   "desc": "12-ring history of accumulated package hashes",
+   "change": "modified",
+   "pre_len": 364,
+   "post_len": 332,
+   "first_diff_byte": 1
+  }
+ ]
+}

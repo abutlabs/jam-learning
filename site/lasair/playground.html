@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="An in-browser OCaml REPL with JAM protocol helpers: epoch math, the JAM codec, and more. Run lesson code instantly.">
+    <title>OCaml Playground - Learning Lasair</title>
+    <link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .playground-layout {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 60px);
+            padding-top: 60px;
+        }
+
+        .playground-header {
+            padding: var(--space-lg) var(--space-xl);
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+
+        .playground-header h1 {
+            margin: 0 0 var(--space-sm) 0;
+            font-size: 1.5rem;
+        }
+
+        .playground-header p {
+            margin: 0;
+            color: var(--text-secondary);
+        }
+
+        .playground-main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .editor-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .output-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-code);
+        }
+
+        .panel-header {
+            padding: var(--space-sm) var(--space-md);
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .editor-area {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        #code-editor {
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: none;
+            padding: var(--space-md);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            line-height: 1.5;
+            resize: none;
+            outline: none;
+        }
+
+        #output {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-md);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            color: var(--text-primary);
+        }
+
+        .run-button {
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            padding: var(--space-sm) var(--space-lg);
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: background var(--transition-fast);
+        }
+
+        .run-button:hover {
+            background: var(--accent-hover);
+        }
+
+        .run-button:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .examples {
+            padding: var(--space-md);
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+
+        .examples h3 {
+            font-size: 0.85rem;
+            margin: 0 0 var(--space-sm) 0;
+            color: var(--text-secondary);
+        }
+
+        .example-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+        }
+
+        .example-button {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            padding: var(--space-xs) var(--space-md);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .example-button:hover {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: var(--space-md);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Output formatting */
+        .output-input {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .output-error {
+            color: #f85149;
+            font-weight: 500;
+        }
+
+        .output-warning {
+            color: #d29922;
+        }
+
+        .output-value {
+            color: #58a6ff;
+        }
+
+        .output-result {
+            color: #3fb950;
+        }
+
+        .output-debug {
+            color: var(--text-muted);
+            font-size: 0.8em;
+        }
+
+        .debug-toggle {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+        }
+
+        .debug-toggle.active {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        @media (max-width: 800px) {
+            .playground-main {
+                flex-direction: column;
+            }
+
+            .editor-panel {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <nav id="site-nav" class="top-nav" aria-label="Main navigation"></nav>
+    <script src="../assets/js/nav.js"></script>
+
+    <main class="playground-layout" id="main">
+        <div class="playground-header">
+            <h1>OCaml Playground</h1>
+            <p>Run OCaml code in your browser with JAM protocol helpers pre-loaded.</p>
+        </div>
+
+        <div class="playground-main">
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <span>Code</span>
+                    <button id="run-btn" class="run-button" disabled>Loading...</button>
+                </div>
+                <div class="editor-area">
+                    <textarea id="code-editor" spellcheck="false">(* Try some OCaml! *)
+
+(* Calculate which epoch slot 1234 belongs to *)
+epoch_of_slot 1234;;
+
+(* Check if slot 600 is an epoch boundary *)
+is_epoch_boundary 600;;
+
+(* Encode a number using the JAM codec's variable-length encoding *)
+encode_compact 42 |> hex_of_bytes;;
+
+(* Define your own function *)
+let factorial n =
+  let rec loop acc n =
+    if n <= 1 then acc
+    else loop (acc * n) (n - 1)
+  in loop 1 n;;
+
+factorial 5;;
+</textarea>
+                </div>
+                <div class="examples">
+                    <h3>Try These Examples</h3>
+                    <div class="example-buttons">
+                        <button class="example-button" data-code="epoch_of_slot 12345;;&#10;first_slot_of_epoch 10;;&#10;is_epoch_boundary 1200;;&#10;">Epoch Math</button>
+                        <button class="example-button" data-code="encode_compact 42 |> hex_of_bytes;;&#10;encode_compact 1000 |> hex_of_bytes;;&#10;decode_compact (encode_compact 1000) 0;;&#10;encode_u32_le 0x12345678l |> hex_of_bytes;;&#10;">JAM Codec</button>
+                        <button class="example-button" data-code="let rec fib n = if n <= 1 then n else fib (n-1) + fib (n-2);;&#10;List.init 10 fib;;&#10;">Fibonacci</button>
+                        <button class="example-button" data-code="List.map (fun x -> x * 2) [1; 2; 3; 4; 5];;&#10;List.filter (fun x -> x mod 2 = 0) [1; 2; 3; 4; 5; 6];;&#10;List.fold_left (+) 0 [1; 2; 3; 4; 5];;&#10;">List Operations</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="output-panel">
+                <div class="panel-header">
+                    <span>Output</span>
+                    <div>
+                        <button id="debug-btn" class="example-button debug-toggle">Debug</button>
+                        <button id="clear-btn" class="example-button">Clear</button>
+                    </div>
+                </div>
+                <div id="output">
+                    <div class="loading" id="loading">
+                        <div class="spinner"></div>
+                        <span>Loading OCaml runtime...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/toplevel.js"></script>
+    <script>
+        const editor = document.getElementById('code-editor');
+        const output = document.getElementById('output');
+        const runBtn = document.getElementById('run-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const loading = document.getElementById('loading');
+
+        let replReady = false;
+
+        // Wait for toplevel to load
+        function waitForRepl() {
+            if (typeof LasairRepl !== 'undefined') {
+                initRepl();
+            } else {
+                setTimeout(waitForRepl, 100);
+            }
+        }
+
+        function initRepl() {
+            try {
+                const setupOutput = LasairRepl.setup();
+                loading.style.display = 'none';
+                output.textContent = setupOutput + '\n';
+                replReady = true;
+                runBtn.disabled = false;
+                runBtn.textContent = 'Run (Ctrl+Enter)';
+
+                // Check for preloaded code from URL parameter
+                const params = new URLSearchParams(window.location.search);
+                const preloadCode = params.get('code');
+                if (preloadCode) {
+                    try {
+                        // Decode base64 and UTF-8
+                        editor.value = decodeURIComponent(escape(atob(preloadCode)));
+                        // Optional: auto-run the code
+                        // runCode();
+                    } catch (e) {
+                        console.error('Failed to decode preloaded code:', e);
+                    }
+                }
+            } catch (e) {
+                loading.innerHTML = '<span style="color: var(--error)">Failed to initialize: ' + e.message + '</span>';
+            }
+        }
+
+        function runCode() {
+            if (!replReady) return;
+
+            const code = editor.value;
+            const startTime = performance.now();
+
+            // Log to browser console for debugging
+            console.group('OCaml Evaluation');
+            console.log('Input:', code);
+
+            // Show input in output panel
+            appendOutput('# ' + code.trim().split('\n').join('\n  '), 'input');
+
+            try {
+                const result = LasairRepl.eval(code);
+                const elapsed = (performance.now() - startTime).toFixed(2);
+
+                console.log('Output:', result);
+                console.log('Time:', elapsed + 'ms');
+
+                // Parse and format output
+                formatOutput(result, elapsed);
+
+            } catch (e) {
+                console.error('Error:', e);
+                appendOutput('Exception: ' + e.message, 'error');
+            }
+
+            console.groupEnd();
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function appendOutput(text, type = 'normal') {
+            const span = document.createElement('span');
+            span.textContent = text + '\n';
+            span.className = 'output-' + type;
+            output.appendChild(span);
+        }
+
+        function formatOutput(result, elapsed) {
+            // Split result into lines and format
+            const lines = result.split('\n');
+            lines.forEach(line => {
+                if (line.startsWith('Error:') || line.includes('Error:')) {
+                    appendOutput(line, 'error');
+                } else if (line.startsWith('Warning:')) {
+                    appendOutput(line, 'warning');
+                } else if (line.match(/^val \w+ :/)) {
+                    // Value binding - highlight the name
+                    appendOutput(line, 'value');
+                } else if (line.match(/^- : /)) {
+                    // Expression result
+                    appendOutput(line, 'result');
+                } else if (line.trim()) {
+                    appendOutput(line, 'normal');
+                }
+            });
+
+            // Show timing in debug mode
+            if (debugMode) {
+                appendOutput(`[${elapsed}ms]`, 'debug');
+            }
+        }
+
+        let debugMode = false;
+        const debugBtn = document.getElementById('debug-btn');
+
+        debugBtn.addEventListener('click', () => {
+            debugMode = !debugMode;
+            debugBtn.classList.toggle('active', debugMode);
+            if (debugMode) {
+                appendOutput('[Debug mode enabled - timing info will be shown]', 'debug');
+            }
+        });
+
+        runBtn.addEventListener('click', runCode);
+
+        clearBtn.addEventListener('click', () => {
+            output.textContent = '';
+            // Re-run setup to get welcome message
+            if (replReady) {
+                const setupOutput = LasairRepl.setup();
+                output.textContent = setupOutput + '\n';
+            }
+        });
+
+        editor.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                runCode();
+            }
+
+            // Tab inserts spaces
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = editor.selectionStart;
+                const end = editor.selectionEnd;
+                editor.value = editor.value.substring(0, start) + '  ' + editor.value.substring(end);
+                editor.selectionStart = editor.selectionEnd = start + 2;
+            }
+        });
+
+        // Example buttons
+        document.querySelectorAll('.example-button[data-code]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                editor.value = btn.dataset.code;
+            });
+        });
+
+        // Start loading
+        waitForRepl();
+    </script>
+</body>
+</html>

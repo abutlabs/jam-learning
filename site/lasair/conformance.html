@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore real JAM conformance test vectors: block anatomy, the work-report lifecycle, PVM gas, and the annotated state diff each Merkle root certifies.">
+    <title>Conformance Explorer - Learning Lasair</title>
+    <link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/conformance.css">
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <nav id="site-nav" class="top-nav" aria-label="Main navigation"></nav>
+    <script src="../assets/js/nav.js"></script>
+
+    <main class="conformance-layout" id="main">
+        <aside class="vector-picker">
+            <h2>Test Vectors</h2>
+            <p class="picker-intro">
+                Every JAM implementation must replay the block-import trace
+                vectors and land on identical state roots — every byte, every
+                unit of gas. These showcase blocks come from the Graypaper 0.7.2
+                set (606 traces) that lasair passed for M1; it now passes all
+                1000 traces of the 0.8.0 set as well.
+            </p>
+            <div id="vector-list"></div>
+            <div class="picker-footer">
+                <a href="lesson.html?lesson=04-conformance/01-overview">
+                    New: the Conformance Lab — runnable examples for every
+                    test category</a><br><br>
+                <a href="https://github.com/davxy/jam-conformance" target="_blank">
+                    Vector source: jam-conformance (GP v0.7.2, the M1 set)</a>
+            </div>
+        </aside>
+
+        <section class="vector-view" id="vector-view">
+            <div class="loading">Select a vector…</div>
+        </section>
+    </main>
+
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/conformance.js"></script>
+</body>
+</html>

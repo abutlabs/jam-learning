@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The Divergence Lab: seven real divergences from lasair's live JAM conformance fuzzer campaign — the actual report diff, the trace that found the cause, and the fix.">
+    <title>The Divergence Lab - Learning Lasair</title>
+    <link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/divergences.css">
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <nav id="site-nav" class="top-nav" aria-label="Main navigation"></nav>
+    <script src="../assets/js/nav.js"></script>
+
+    <main id="main" class="dv-main">
+        <header class="dv-hero">
+            <h1>The Divergence Lab</h1>
+            <p class="dv-sub">
+                The Mutation Lab proves lasair rejects <em>garbage</em>. The live
+                fuzzer is harder: it imports <em>honest-looking</em> blocks into
+                lasair and a reference client and compares the whole state root
+                after every block. The first byte that disagrees is a real
+                protocol bug. Here are seven of them — each with the
+                <strong>actual report diff</strong>, the trace that found the
+                cause, and the fix. Read one and you learn the protocol the way
+                we did: by watching it break. They come from lasair's M1 campaign
+                on Graypaper 0.7.2.
+            </p>
+        </header>
+
+        <section id="scoreboard" class="dv-scoreboard"></section>
+
+        <section class="dv-howto">
+            <h2>How to read a divergence</h2>
+            <p class="dv-section-intro">
+                The state root gives no partial credit — one wrong byte fails the
+                whole block. So a report is small and exact. Read it in three
+                moves, shown on every card below:
+            </p>
+            <ol class="dv-howto-list">
+                <li><strong>How deep</strong> did it get? Imported blocks before the stop. Never compare across seeds — depth is a property of the seed.</li>
+                <li><strong>Which key</strong> diverged? The first key byte names the state component — that is your first hypothesis.</li>
+                <li><strong>How wrong?</strong> Expected vs computed, byte for byte. And check the pre-state: if <code>pre == exp ≠ got</code>, you modified what the reference left alone.</li>
+            </ol>
+        </section>
+
+        <section class="dv-explorer">
+            <aside class="dv-picker">
+                <h2>Divergences</h2>
+                <div id="div-list"></div>
+            </aside>
+            <div id="div-view" class="dv-view">
+                <div class="dv-loading">Select a divergence…</div>
+            </div>
+        </section>
+
+        <section class="dv-howto">
+            <h2>How each one was fixed</h2>
+            <p class="dv-section-intro">
+                Every card above ends with the real change — the before/after
+                code under <em>“The fix, in code”</em> — and the
+                <em>root cause</em> and <em>lesson</em> that explain why. The
+                bug is the lesson; the fix is the proof you understood it.
+            </p>
+        </section>
+    </main>
+
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/divergences.js"></script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="M1 Understanding: what a JAM block importer must get right, chapter by chapter of the Graypaper, with flashcards, timed self-tests and a grade ledger.">
+    <title>M1 Understanding - Learning Lasair</title>
+    <link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/exam.css">
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <nav id="site-nav" class="top-nav" aria-label="Main navigation"></nav>
+    <script src="../assets/js/nav.js"></script>
+
+    <main id="main" class="exam-main">
+        <header class="exam-hero">
+            <h1>M1 Understanding</h1>
+            <p class="exam-sub">
+                What a block importer (JAM's first milestone, M1) must get right, chapter by
+                chapter of the Graypaper (3–13). Test yourself the way the W3F's M1 examination
+                does: a question, an answer said aloud, an honest grade. Every grade goes in
+                your ledger (kept in this browser only).
+                How the self-test works: <a href="lesson.html?lesson=06-m1-exam/00-how-the-exam-works">start here</a>.
+            </p>
+        </header>
+
+        <nav class="exam-tabs" role="tablist" aria-label="Exam modes">
+            <button class="exam-tab active" data-tab="flash" role="tab" aria-selected="true">Study</button>
+            <button class="exam-tab" data-tab="mock" role="tab" aria-selected="false">Timed self-test</button>
+            <button class="exam-tab" data-tab="ledger" role="tab" aria-selected="false">Ledger</button>
+        </nav>
+
+        <!-- Study (difficulty 1-5) -->
+        <section id="tab-flash" class="exam-panel active" role="tabpanel">
+            <div class="exam-controls">
+                <label>Chapter
+                    <select id="flash-chapter"></select>
+                </label>
+            </div>
+            <div class="exam-level">
+                <label for="flash-level">Difficulty <b id="level-name"></b></label>
+                <input type="range" id="flash-level" min="1" max="5" step="1" value="1">
+                <div class="exam-level-ticks" aria-hidden="true"><span>1 Learn</span><span>2 Recall</span><span>3 Explain</span><span>4 Deep</span><span>5 Pressure</span></div>
+                <p id="level-desc" class="exam-note"></p>
+            </div>
+            <div class="exam-controls">
+                <label class="exam-check" id="flash-read-wrap"><input type="checkbox" id="flash-read" checked> read each section first</label>
+                <button id="flash-start" class="exam-btn primary">Start</button>
+                <span id="level-suggest" class="exam-suggest"></span>
+            </div>
+            <div id="mastery-board" class="exam-board"></div>
+            <div id="flash-card" class="exam-card hidden"></div>
+            <div id="flash-empty" class="exam-empty">Pick a chapter and a level, then press Start. Starting cold? Level 1, reading on. Keys: A–D pick, Enter next.</div>
+        </section>
+
+        <!-- Timed self-test -->
+        <section id="tab-mock" class="exam-panel" role="tabpanel">
+            <div id="mock-setup" class="exam-setup">
+                <p>
+                    A run-through draws one <strong>small</strong> and one <strong>large</strong> chapter at
+                    random, then runs the fixed portions C, D and E. Each portion has a time budget
+                    and a handful of questions, ★ first. Grade yourself per question; at the end of
+                    each portion, grade the portion as a whole, as honestly as someone checking your understanding would.
+                </p>
+                <div class="exam-controls">
+                    <label>Questions per portion
+                        <select id="mock-per">
+                            <option value="4">4</option>
+                            <option value="6" selected>6</option>
+                            <option value="8">8</option>
+                        </select>
+                    </label>
+                    <label class="exam-check"><input type="checkbox" id="mock-timer" checked> 120-minute timer</label>
+                    <button id="mock-draw" class="exam-btn primary">Draw and begin</button>
+                </div>
+                <div id="mock-preview" class="exam-preview"></div>
+            </div>
+            <div id="mock-run" class="hidden">
+                <div class="exam-timer-bar">
+                    <div id="mock-clock" class="exam-clock">120:00</div>
+                    <div id="mock-portion-label" class="exam-portion-label"></div>
+                    <button id="mock-abort" class="exam-btn subtle">Stop the run-through</button>
+                </div>
+                <div id="mock-card" class="exam-card"></div>
+            </div>
+            <div id="mock-result" class="hidden"></div>
+        </section>
+
+        <!-- Ledger -->
+        <section id="tab-ledger" class="exam-panel" role="tabpanel">
+            <div class="exam-controls">
+                <button id="ledger-export" class="exam-btn primary">Export as markdown</button>
+                <button id="ledger-copy" class="exam-btn">Copy to clipboard</button>
+                <button id="ledger-clear" class="exam-btn danger">Clear ledger</button>
+            </div>
+            <p class="exam-note">
+                Grades live only in this browser (localStorage). Export after each session and keep the
+                markdown with your notes: over a few sessions it shows your weak spots.
+            </p>
+            <div id="ledger-recall"></div>
+            <div id="ledger-summary"></div>
+            <div id="ledger-mocks"></div>
+            <div id="ledger-weak"></div>
+            <div id="ledger-log"></div>
+        </section>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/exam.js"></script>
+</body>
+</html>

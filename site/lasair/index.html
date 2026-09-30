@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn to build a JAM client with lasair, an OCaml implementation that passes every published Graypaper 0.8.0 conformance vector, as your executable reference. Graypaper lessons, a conformance explorer, and an in-browser REPL.">
+    <title>Learning Lasair — Learn to Build a JAM Client</title>
+    <link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <nav id="site-nav" class="top-nav" aria-label="Main navigation"></nav>
+    <script src="../assets/js/nav.js"></script>
+
+    <main class="landing" id="main">
+        <section class="hero">
+            <h1>Learn to Build<br>a JAM Client.</h1>
+            <p class="hero-subtitle">
+                The Graypaper tells you what a JAM client must do. This course shows
+                you how one actually does it — with lasair, a conformance-passing
+                OCaml implementation, as your executable reference.
+            </p>
+            <a href="lesson.html?lesson=01-jam-protocol/01-what-is-jam" class="cta-button">Start with JAM</a>
+            <a href="conformance.html" class="cta-button cta-secondary">Open the Conformance Explorer</a>
+        </section>
+
+        <section class="proof-banner" aria-label="Conformance status">
+            <div class="proof-stat">
+                <span class="proof-number"><span data-conformance="passing">406</span>/<span data-conformance="total">406</span></span>
+                <span class="proof-label">GP 0.8.0 component vectors passing</span>
+            </div>
+            <div class="proof-stat">
+                <span class="proof-number"><span data-conformance="traces">1000</span></span>
+                <span class="proof-label">block-import traces, block for block</span>
+            </div>
+            <div class="proof-stat">
+                <span class="proof-number">bit-exact</span>
+                <span class="proof-label">PVM gas vs. reference polkavm</span>
+            </div>
+            <a class="gp-badge" href="https://graypaper.com" target="_blank" rel="noopener">
+                Targets Graypaper <span data-graypaper>v0.8.0</span>
+            </a>
+        </section>
+
+        <section class="journey">
+            <h2>The Path to a Working Client</h2>
+            <p>
+                Every JAM client is built in roughly the same order — each layer is
+                provable against official test vectors before you build the next.
+                This course follows that path:
+            </p>
+            <ol class="journey-steps">
+                <li>
+                    <a href="lesson.html?lesson=02-lasair-core/03-serialization">
+                        <span class="journey-step">1</span>
+                        <span class="journey-name">Codec</span>
+                        <span class="journey-desc">JAM's serialization — and the round-trip oracle that proves it</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="lesson.html?lesson=02-lasair-core/04-merklization">
+                        <span class="journey-step">2</span>
+                        <span class="journey-name">Merklization</span>
+                        <span class="journey-desc">State as a Patricia trie; the root every block certifies</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="lesson.html?lesson=04-conformance/03-stf-basics">
+                        <span class="journey-step">3</span>
+                        <span class="journey-name">STFs</span>
+                        <span class="journey-desc">The state transitions, one vector suite at a time</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="lesson.html?lesson=03-mastery/01-pvm-architecture">
+                        <span class="journey-step">4</span>
+                        <span class="journey-name">PVM</span>
+                        <span class="journey-desc">The virtual machine: 13 registers, gas, host calls</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="lesson.html?lesson=04-conformance/06-traces">
+                        <span class="journey-step">5</span>
+                        <span class="journey-name">Traces</span>
+                        <span class="journey-desc">Import full blocks end to end, family by family</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="lesson.html?lesson=04-conformance/01-overview">
+                        <span class="journey-step">6</span>
+                        <span class="journey-name">Conformance</span>
+                        <span class="journey-desc">The fuzzer, the forensic loop, and proving you're done</span>
+                    </a>
+                </li>
+            </ol>
+        </section>
+
+        <section class="tracks">
+            <h2>Learning Tracks</h2>
+            <div id="tracks-main">
+                <noscript><p>Enable JavaScript to see the course tracks, or browse the
+                <a href="https://github.com/abutlabs/jam-learning/tree/main/site/lasair/content">lesson sources on GitHub</a>.</p></noscript>
+            </div>
+
+            <h2 class="tracks-elective-heading">Electives: OCaml for Lasair Contributors</h2>
+            <p class="tracks-elective-note">
+                The main path reads fine without writing OCaml. Take these tracks if
+                you want to follow the examples closely or contribute to lasair itself.
+            </p>
+            <div id="tracks-elective"></div>
+        </section>
+
+        <section class="tracks" id="labs">
+            <h2>Labs</h2>
+            <p class="tracks-elective-note">
+                Interactive explorers from lasair's M1 campaign. Their data comes from Graypaper
+                0.7.2; the ideas they teach carry over to 0.8.0 unchanged.
+            </p>
+            <div>
+                <div class="track">
+                    <div class="track-header">
+                        <h3><a href="conformance.html">Conformance Explorer</a></h3>
+                        <span class="track-status">GP 0.7.2</span>
+                    </div>
+                    <p>Real conformance vectors, opened up: block anatomy, the work-report
+                    lifecycle, PVM gas, and the annotated state diff each Merkle root certifies.</p>
+                </div>
+                <div class="track">
+                    <div class="track-header">
+                        <h3><a href="mutation.html">Mutation Lab</a></h3>
+                        <span class="track-status">GP 0.7.2</span>
+                    </div>
+                    <p>Corrupt a valid block one way at a time and watch the target hold:
+                    never crash, never hang, reject without a state change.</p>
+                </div>
+                <div class="track">
+                    <div class="track-header">
+                        <h3><a href="divergences.html">Divergence Lab</a></h3>
+                        <span class="track-status">GP 0.7.2</span>
+                    </div>
+                    <p>Seven real divergences from lasair's conformance-fuzzer campaign: the
+                    report diff, the trace that found the cause, and the fix.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="philosophy">
+            <div class="principles">
+                <div class="principle">
+                    <h3>Real Code</h3>
+                    <p>Every example comes from lasair. No toy problems, no invented APIs.</p>
+                </div>
+                <div class="principle">
+                    <h3>Real Failures</h3>
+                    <p>The bugs that cost weeks — codec offsets, entry points, gas signs — taught before you hit them.</p>
+                </div>
+                <div class="principle">
+                    <h3>Vectors First</h3>
+                    <p>Every concept ends at a test vector you can run. If it isn't proven, it isn't done.</p>
+                </div>
+            </div>
+        </section>
+            
+
+        <section class="about">
+            <h2>What is Lasair?</h2>
+            <p>
+                <strong>Lasair</strong> (Irish: "flame") is an OCaml implementation of the
+                <a href="https://graypaper.com" target="_blank" rel="noopener">JAM protocol</a>, targeting the
+                Web3 Foundation JAM Implementer's Prize. It passes the full official
+                conformance suite, and — as far as we know — it is the only JAM client
+                with a teaching companion built alongside it.
+            </p>
+            <p>
+                This course teaches the protocol through lasair's codebase. By the end
+                you'll understand JAM well enough to build your own client. lasair's
+                source is not public yet, so the lessons quote the code they discuss and
+                name the file it lives in.
+            </p>
+            <p>
+                <strong>Scope:</strong> lasair passed M1, the block importer, on
+                Graypaper 0.7.2 (every live-fuzzer lane, tiny and full spec), and now
+                targets Graypaper 0.8.0, passing every published 0.8.0 vector. It is
+                building M2: block authoring, JAMNP-S networking, Safrole and GRANDPA
+                finality. The course teaches the importer first; the networking track
+                covers the M2 frontier.
+            </p>
+        </section>
+
+        <section class="cta">
+            <h2>Ready to Begin?</h2>
+            <a href="lesson.html?lesson=00-introduction/welcome" class="cta-button">Start with the Introduction</a>
+        </section>
+    </main>
+
+    <footer>
+        <p>Built with curiosity. <a href="https://github.com/abutlabs/jam-learning">View on GitHub</a> ·
+           Targets <a href="https://graypaper.com" rel="noopener">Graypaper <span data-graypaper>v0.8.0</span></a> ·
+           Part of <a href="../index.html">jam-learning</a></p>
+    </footer>
+
+    <script src="../assets/js/app.js"></script>
+</body>
+</html>

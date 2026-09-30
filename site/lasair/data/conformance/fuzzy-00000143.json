@@ -1,0 +1,50 @@
+{
+ "family": "fuzzy",
+ "block": "00000143",
+ "slot": 143,
+ "why": "An ADVERSARIAL block: one work result claims a code hash that does not match the service's actual code. A conformant node must reject the whole block \u2014 the expected post-state is byte-identical to the pre-state. Importing it at all is the failure.",
+ "family_explainer": "Seed-generated chaos: every feature at once, plus deliberately invalid blocks. Services create and destroy other services, transfer funds, upgrade their own code, checkpoint and panic; roughly one vector in twenty is adversarial and must be rejected outright. This family is the closest thing to the official fuzzer's behavior that ships as static vectors.",
+ "extrinsic": {
+  "tickets": 0,
+  "guarantees": [
+   {
+    "core": 0,
+    "package": "3d79294a",
+    "bundle_len": 24806,
+    "digests": [
+     {
+      "service": 1985398958,
+      "gas_limit": 12919,
+      "result": "ok"
+     },
+     {
+      "service": 3088308099,
+      "gas_limit": 12919,
+      "result": "ok"
+     },
+     {
+      "service": 3088308099,
+      "gas_limit": 12919,
+      "result": "ok"
+     }
+    ],
+    "prerequisites": []
+   }
+  ],
+  "assurance_votes": {
+   "core0": 5,
+   "core1": 3,
+   "count": 5
+  },
+  "preimages": []
+ },
+ "events": [
+  "Core 0: package 3d79294a\u2026 guaranteed (3 work item(s), bundle 24806 bytes). It now waits on this core for availability assurances.",
+  "5 validator assurance(s): core 0 has 5, core 1 has 3 vote(s). A report becomes AVAILABLE when votes exceed 2/3 of 6 validators (i.e. \u2265 5)."
+ ],
+ "accumulated_now": [],
+ "service_stats": [],
+ "pre_state_entries": 131,
+ "post_state_entries": 131,
+ "diff": []
+}

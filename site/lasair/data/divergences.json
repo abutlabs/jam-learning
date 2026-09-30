@@ -1,0 +1,376 @@
+{
+ "summary": {
+  "total": 9,
+  "fixed": 9,
+  "classes": [
+   "canonical ordering",
+   "cross-service access",
+   "host memory-fault ordering",
+   "identity allocation",
+   "in-invocation mutation visibility",
+   "out-of-gas effect ordering",
+   "privilege ownership",
+   "privilege-gated writeback"
+  ],
+  "deepest": 6951
+ },
+ "divergences": [
+  {
+   "id": "B1",
+   "title": "The accumulation-output set, sorted wrong",
+   "axis": "ordering",
+   "cls": "canonical ordering",
+   "report": "run-41d85c00edde6cbc9eef8b9097ee046e",
+   "seed": "1551410130",
+   "step": 2854,
+   "imports": 951,
+   "story": "The accumulation output is a GP set of (service_id, hash) pairs. We sorted it by service_id alone. When one service accumulates twice in a block it emits two pairs with the same id; ours kept insertion order, the reference sorts by the full key. The mis-ordered set hashed differently, and recent history \u03b2 commits to that hash, so the error cascaded into a second key.",
+   "trace": "Two diverging keys, same length, same entries different order \u2014 the signature of an ordering bug, not a value bug.",
+   "cause": "GP sets have a total order over the FULL key tuple. Sorting by a prefix is wrong the moment two entries share that prefix.",
+   "fix": "sort lastaccout C(16) by (service_id, hash), not service_id alone \u2014 and route every set through one canonical encoder so no call site can emit one unsorted.",
+   "lesson": "Wherever the protocol defines a set or ordered sequence that reaches the trie, it has a total order. Make the canonical encoder the only path to state.",
+   "fix_code": {
+    "caption": "conformance/stf_guarantees.ml \u2014 sort the C(16) output set",
+    "before": "List.sort (fun a b -> compare a.service_id b.service_id) yields",
+    "after": "List.sort (fun a b -> compare (a.service_id, a.hash) (b.service_id, b.hash)) yields"
+   },
+   "keys": [
+    {
+     "component": "C(3) recent history \u03b2",
+     "key": "0300000000000000\u2026",
+     "bytes": 1364,
+     "exp": "0872c30da202ddaa5a57e8bea67dc9e194a75671f73545b8\u2026db3ac2c0159313cf3bc2c14e46b25399",
+     "got": "0872c30da202ddaa5a57e8bea67dc9e194a75671f73545b8\u2026db3ac2c0159313cf3bc2c14e46b25399",
+     "first_diff": 1160
+    },
+    {
+     "component": "C(16) accumulation output",
+     "key": "1000000000000000\u2026",
+     "bytes": 109,
+     "exp": "03dd6c7ac42fcd5d06685f41d458ca3d43487f1a766411f8\u20264d4d3d053acc3641f8e05f132b4aefbd",
+     "got": "03dd6c7ac46d8c48ca9b76b3f1341a27ae23e8e0ba124bf6\u20264d4d3d053acc3641f8e05f132b4aefbd",
+     "first_diff": 5
+    }
+   ],
+   "root_hex": {
+    "exp": "0xd1d39ec6421cad67\u2026",
+    "got": "0xc67e8a1867b0048d\u2026"
+   }
+  },
+  {
+   "id": "B2",
+   "title": "The host call that faulted too late",
+   "axis": "existence",
+   "cls": "host memory-fault ordering",
+   "report": "run-9a6b6a95c27aee6b20b3ac47e287a64c",
+   "seed": "431662357",
+   "step": 595,
+   "imports": 211,
+   "story": "A service read host call got an out-of-range key pointer for a service that did not exist. We resolved the (missing) service first, found nothing, returned NONE \u2014 and let the invocation run on and yield. The reference reads the key from memory FIRST; the bad pointer faults and the invocation panics with no yield. One spurious yield cascaded into the output set, the statistics, and an account.",
+   "trace": "Four diverging keys, one cause: an entry present that should not exist.",
+   "cause": "A host call must read and validate ALL input memory (faulting on any bad range) BEFORE any service or state logic. The order decides panic-vs-commit.",
+   "fix": "host_read reads + range-checks the key from memory before resolving the target service.",
+   "lesson": "The order of 'check the pointer' vs 'look up the service' is protocol-visible. Audit every host call for the same shape.",
+   "fix_code": {
+    "caption": "lib/pvm_host.ml \u2014 read the key before resolving the service",
+    "before": "let svc = resolve_service service_id in\n(* ... *) read_key_from_memory mem key_ptr",
+    "after": "if not (is_range_readable mem key_ptr key_len) then None  (* fault first *)\nelse let svc = resolve_service service_id in ..."
+   },
+   "keys": [
+    {
+     "component": "C(3) recent history \u03b2",
+     "key": "0300000000000000\u2026",
+     "bytes": 1362,
+     "exp": "08c7ede87f7d8b9792b5a9dad9052d4865b0848c5ca0e8b1\u2026514dadfaad025bcb2d3a6ed930bb3722",
+     "got": "08c7ede87f7d8b9792b5a9dad9052d4865b0848c5ca0e8b1\u2026514dadfaad025bcb2d3a6ed930bb3722",
+     "first_diff": 1160
+    },
+    {
+     "component": "C(13) statistics \u03c0",
+     "key": "0d00000000000000\u2026",
+     "bytes": 385,
+     "exp": "03000000000000000000000000000000050000000c000000\u202666dcdce0000000000000000003c0e987",
+     "got": "03000000000000000000000000000000050000000c000000\u202666dcdce0000000000000000003c0e987",
+     "first_diff": 352
+    },
+    {
+     "component": "C(16) accumulation output",
+     "key": "1000000000000000\u2026",
+     "bytes": 73,
+     "exp": "0200000000fd483ae0044c83e34bb488502f033cf1387f6b\u20264031e107ba6892b1bec15f5ef4115a98",
+     "got": "0300000000fd483ae0044c83e34bb488502f033cf1387f6b\u20269b8dfe1a68a907bb1651915bdc989e5e",
+     "first_diff": 0
+    },
+    {
+     "component": "service-storage",
+     "key": "e3d7f14536b76afe\u2026",
+     "bytes": 8,
+     "exp": "97ae3295a82ca19e",
+     "got": "576643129dcfe31e",
+     "first_diff": 0
+    }
+   ],
+   "root_hex": {
+    "exp": "0x9dcf449a8493521c\u2026",
+    "got": "0xaa233a1be198b094\u2026"
+   }
+  },
+  {
+   "id": "B3",
+   "title": "The cross-service read that came back empty",
+   "axis": "value",
+   "cls": "cross-service access",
+   "report": "run-c0caff7e515e9194027c07a538e87b29",
+   "seed": "1071703991",
+   "step": 6628,
+   "imports": 2239,
+   "story": "A service accumulating two operands wrote an 8-byte value derived from data it READ from another service's storage (service 1116759087, key \"data\", 128 bytes). We returned NONE; the reference returned the real bytes, and the divergent input produced a divergent fold. Two mistakes: the closure that loads a foreign service loaded it with EMPTY storage, and the read addressed foreign storage by the raw key instead of the state key interleaved with the FOREIGN service's id.",
+   "trace": "Operands, entropy and info were verified byte-exact FIRST; only then did the 13 read calls reveal the one that came back empty \u2014 and the pre-state confirmed the value was there.",
+   "cause": "Any host call that can target a foreign service must load that service's full data and key it correctly. Storage interleaves the OWNING service's id; preimages key by raw hash.",
+   "fix": "lookup_service loads the foreign service's storage; the foreign-read branch interleaves the key with the target service id via storage_state_key_for.",
+   "lesson": "Get the keying wrong and the data is invisible even when loaded. Verify each operand byte-exact before suspecting execution.",
+   "fix_code": {
+    "caption": "conformance/stf_guarantees.ml + lib/pvm_host.ml \u2014 load + interleave foreign storage",
+    "before": "lookup_service sid = service_account_of_decoded acct ch ~storage:[] ..\n(* host_read foreign: *) List.assoc_opt key svc.storage",
+    "after": "lookup_service sid = ..~storage:(load_service_storage db0 sid)..\n(* host_read foreign: *) let k = storage_state_key_for (target_id) key in\nList.assoc_opt k svc.storage"
+   },
+   "keys": [
+    {
+     "component": "service-storage",
+     "key": "c2d75845feb71ffe\u2026",
+     "bytes": 8,
+     "exp": "f11db6b1f939789f",
+     "got": "04a4c9f6d8047afe",
+     "first_diff": 0
+    }
+   ],
+   "root_hex": {
+    "exp": "0x3581053315734a02\u2026",
+    "got": "0xb872348d8be7c5eb\u2026"
+   }
+  },
+  {
+   "id": "B4",
+   "title": "The validator set the manager could not set",
+   "axis": "privilege",
+   "cls": "privilege-gated writeback",
+   "report": "run-f62d9e03c9f40e4e2bd69329f59a74a9",
+   "seed": "2919757377",
+   "step": 17593,
+   "imports": 5888,
+   "story": "A designate set the staging validators \u03b9, but the invoker was service 0 \u2014 the MANAGER, not the DELEGATE (the role that may set validators). It had blessed the delegatorship to itself the same block. The reference kept \u03b9 unchanged; we applied it.",
+   "trace": "\u03b9 (2,016 bytes = six validators \u00d7 336) wholly replaced. No OTHER key diverged \u2014 the tell that the host call returned OK (gas/stats unchanged) and only the writeback was wrong.",
+   "cause": "Privileged operations record their request and return success; whether the effect SURVIVES is decided at the merge by who held the privilege at round start.",
+   "fix": "gate the \u03b9 writeback on the round-start delegator (inv = pv0.pv_delegator), exactly as the auth-queue write is gated on the round-start assigner \u2014 NOT on the manager.",
+   "lesson": "Enforce privilege at the writeback, never by faking a failure in the host call. A first attempt that rejected inside the host function shifted gas and broke a different key \u2014 the gate caught it.",
+   "fix_code": {
+    "caption": "conformance/stf_guarantees.ml \u2014 gate the \u03b9 writeback on the delegate",
+    "before": "match acc.acc_designate with\n| Some v -> State_db.set db (make_state_key 7) v",
+    "after": "match acc.acc_designate with\n| Some v when inv = pv0.pv_delegator -> State_db.set db (make_state_key 7) v\n| _ -> db"
+   },
+   "keys": [
+    {
+     "component": "C(7) staging validators \u03b9",
+     "key": "0700000000000000\u2026",
+     "bytes": 2016,
+     "exp": "2105650944fcd101621fd5bb3124c9fd191d114b7ad936c1\u202600000000000000000000000000000000",
+     "got": "151e5c8fe2b9d8a606966a79edd2f9e5db47e83947ce368c\u202600000000000000000000000000000000",
+     "first_diff": 0
+    }
+   ],
+   "root_hex": {
+    "exp": "0x66f2f7d993671326\u2026",
+    "got": "0x4bb3716544c34baa\u2026"
+   }
+  },
+  {
+   "id": "B5",
+   "title": "The checkpoint you could not afford",
+   "axis": "value",
+   "cls": "out-of-gas effect ordering",
+   "report": "run-0526ef3d904f5e397a6f443eee8d1941",
+   "seed": "1502007736",
+   "step": 6306,
+   "imports": 2140,
+   "story": "A service with a tiny gas budget wrote a storage value, then made a checkpoint call \u2014 and that call ran it out of gas (gas 7, cost 10, result \u22123). On out-of-gas an invocation reverts to its last checkpoint. Ours snapshotted INSIDE the failing checkpoint call, capturing the just-made write, so the revert kept it. The reference runs out of gas BEFORE taking the snapshot and reverts to the previous checkpoint, before the write.",
+   "trace": "pre == exp \u2260 got \u2014 the reference left the key unchanged and we modified it. That single observation pointed straight at a wrongly-kept write.",
+   "cause": "A host call that cannot afford its gas must not apply its effect. For most calls this is invisible \u2014 OOG reverts everything since the last checkpoint anyway. But checkpoint is special: its effect IS the revert target.",
+   "fix": "a checkpoint that can't afford its gas does not snapshot; the prior checkpoint stays the revert target. Gas still goes negative, so the PVM OOGs the next step.",
+   "lesson": "A checkpoint you cannot pay for must not become the place you roll back to.",
+   "fix_code": {
+    "caption": "lib/pvm_host.ml \u2014 a checkpoint it can't afford takes no snapshot",
+    "before": "let host_checkpoint ctx .. =\n  let cp = snapshot ctx in   (* always *)\n  { .. checkpoint = Some cp }",
+    "after": "let host_checkpoint ctx .. =\n  let new_gas = ctx.gas_remaining - 10 in\n  if new_gas < 0 then { .. (* no snapshot; OOG next step *) }\n  else { .. checkpoint = Some (snapshot ctx) }"
+   },
+   "keys": [
+    {
+     "component": "service-storage",
+     "key": "66bb6ac9dc2fec75\u2026",
+     "bytes": 9,
+     "exp": "ff090000f820000000",
+     "got": "ff0d0000f820000000",
+     "first_diff": 1
+    }
+   ],
+   "root_hex": {
+    "exp": "0x4d7306e7e8a042bc\u2026",
+    "got": "0xa0191a347a26f2b4\u2026"
+   }
+  },
+  {
+   "id": "B6",
+   "title": "The sibling fixed before the fuzzer found it",
+   "axis": "value",
+   "cls": "cross-service access (proactive)",
+   "report": null,
+   "seed": "(none \u2014 proactive)",
+   "step": null,
+   "imports": null,
+   "story": "B3 fixed foreign-service STORAGE reads. The same closure loaded foreign PREIMAGES as an empty list \u2014 so a cross-service lookup (preimage by hash) of another service would return NONE exactly as the storage read had. Same class, different host call. Found by auditing B3's class, fixed and corpus-verified before any lane reached it.",
+   "trace": "No report. The taxonomy is the tool: every confirmed bug is a template for its siblings.",
+   "cause": "A class of bug, once named, enumerates its instances. Cross-service access is one closure feeding many host calls.",
+   "fix": "lookup_service loads foreign preimages too (keyed by raw blake2b hash, no interleave).",
+   "lesson": "When you fix one instance of a class, fix the others in the same change. One report becomes many fixes, and the next run starts deeper.",
+   "fix_code": {
+    "caption": "conformance/stf_guarantees.ml \u2014 load foreign preimages too",
+    "before": "lookup_service sid = ..~preimages:[]",
+    "after": "lookup_service sid = ..~preimages:(load_service_preimages db0 sid)"
+   },
+   "keys": []
+  },
+  {
+   "id": "B7",
+   "title": "The eject you could do twice",
+   "axis": "value",
+   "cls": "in-invocation mutation visibility",
+   "report": "run-1fb56fe7ec0450995a9d18885097323e",
+   "seed": "2365413577",
+   "step": 11794,
+   "imports": 4020,
+   "story": "A clean double-count: we credited a service the same 173,551 twice. The trace showed service 0 making TWO eject calls for the same target (3108400684). Eject deletes a service and the caller inherits its balance. The first succeeded; the second should have found nothing and returned WHO, but it re-found the target and inherited the balance again.",
+   "trace": "The magnitude was the tell \u2014 exactly twice the expected delta. The second eject resolved its target through lookup_service, which reads the immutable pre-round snapshot.",
+   "cause": "Within a round every invocation sees the same PRE-ROUND snapshot of OTHER services \u2014 correct, and why the lookup reads an immutable base. But a service the invocation ITSELF deletes must be shadowed; the snapshot does not know what this execution already changed.",
+   "fix": "host_eject records ejected ids (acc_ejected) and excludes them from target resolution, so the second eject sees nothing and WHOs \u2014 matching the reference.",
+   "lesson": "A snapshot view is right for base state and wrong for the invocation's own deletions and creations. Whenever you resolve against an immutable snapshot, ask what THIS execution already changed.",
+   "fix_code": {
+    "caption": "lib/pvm_host.ml \u2014 an ejected service is gone for the rest of the invocation",
+    "before": "let target =\n  match other_services with .. | None -> lookup_service dest_id",
+    "after": "let already_ejected = List.mem dest_id acc.acc_ejected in\nlet target =\n  if already_ejected then None\n  else match other_services with .. | None -> lookup_service dest_id"
+   },
+   "keys": [
+    {
+     "component": "C(13) statistics \u03c0",
+     "key": "0d00000000000000\u2026",
+     "bytes": 397,
+     "exp": "01000000000000000000000000000000060000000b000000\u202603c40000018b4e000881d90001c09a41",
+     "got": "01000000000000000000000000000000060000000b000000\u202603c40000018b4e000881d90001c09a41",
+     "first_diff": 328
+    },
+    {
+     "component": "service account record",
+     "key": "ff00000000000000\u2026",
+     "bytes": 89,
+     "exp": "00c197434b3353804d6d13829a4eb764f39d7068e71cdb40\u20263f000000000000007b0e000000000000",
+     "got": "00c197434b3353804d6d13829a4eb764f39d7068e71cdb40\u20263f000000000000007b0e000000000000",
+     "first_diff": 33
+    }
+   ],
+   "root_hex": {
+    "exp": "0x0c5d1c942560f678\u2026",
+    "got": "0xd73a1c02fcbe0c95\u2026"
+   }
+  },
+  {
+   "id": "B8",
+   "title": "The role you cannot give yourself away",
+   "axis": "privilege",
+   "cls": "privilege ownership",
+   "report": "run-04d280c8c7e56f73eb9184e3a0837931",
+   "seed": "3070419911",
+   "step": 20674,
+   "imports": 6951,
+   "story": "Two blesses, one block. First the MANAGER blessed the delegate role to service 1444745969 \u2014 legitimate, applied. Then that same service, now the delegate but NOT the manager, blessed the delegatorship back to zero. We applied that too, zeroing the field in the privileges record C(12). The reference kept 1444745969 \u2014 a delegate cannot bless its own role away.",
+   "trace": "One diverging key: the C(12) delegator (bytes 12-15) zeroed where the reference holds a service id. The two BLESS-WB log lines told the whole story \u2014 a valid manager bless, then a non-manager self-bless we should have ignored.",
+   "cause": "Not every privilege is owned the same way. A per-core ASSIGNER may be moved by its own current holder; the singleton MANAGER, DELEGATE and REGISTRAR roles are the manager's alone. Our writeback used the assigner rule (manager OR current holder) for all of them.",
+   "fix": "gate the delegate and registrar writebacks on is_manager alone, matching the manager field; only the per-core assigner keeps the manager-or-holder rule.",
+   "lesson": "Read the ownership rule per field. A uniform 'holder or manager' is too coarse \u2014 per-resource privileges and singleton roles are owned differently.",
+   "fix_code": {
+    "caption": "conformance/stf_guarantees.ml \u2014 delegate/registrar need continuous ownership",
+    "before": "pv_delegator = if is_manager || pv0.pv_delegator = inv then v else pv0.pv_delegator",
+    "after": "let held_continuously start cur = start = inv && cur = inv in\npv_delegator = if is_manager || held_continuously round_start_pv.pv_delegator pv0.pv_delegator\n               then v else pv0.pv_delegator"
+   },
+   "keys": [
+    {
+     "component": "C(12) privileges \u03c7",
+     "key": "0c00000000000000\u2026",
+     "bytes": 21,
+     "exp": "000000000000000000000000f1121d560000000000",
+     "got": "000000000000000000000000000000000000000000",
+     "first_diff": 12
+    }
+   ],
+   "root_hex": {
+    "exp": "0x2637114adbb6661f\u2026",
+    "got": "0x2a6ada76b85d9f00\u2026"
+   }
+  },
+  {
+   "id": "B9",
+   "title": "The service id you minted twice",
+   "axis": "value",
+   "cls": "identity allocation",
+   "report": "run-770a5750e02cdf158fe2f018eeb9469b",
+   "seed": "3743464522",
+   "step": 5741,
+   "imports": 1935,
+   "story": "A `new` host call mints a fresh service id from I() = blake(E(s) ++ eta'_0 ++ E(t)) mod range + 2^16, advancing 42 per creation and skipping any id already taken. We computed 983279732 and used it \u2014 but that id had been created at an earlier step and already existed in state. The reference saw it taken and bumped to 983279733; we did not, so we reused the id and OVERWROTE the existing service, corrupting its account and storage.",
+   "trace": "Four diverging keys at once \u2014 a service account, its storage, and a reference to it in another service \u2014 all off by one in the low byte (..74 vs ..75). The shape screamed a single id computed one too low.",
+   "cause": "Our 'taken' check looked only at the current service and the invocation's other_services overlay, not at services that exist in STATE. A service created in a prior block lives in state, reached through the snapshot lookup, not the overlay.",
+   "fix": "'taken' also consults ctx.lookup_service (the state snapshot the cross-service reads use), and the minted id runs through the collision check \u2014 so a new id skips every existing service, as the reference does.",
+   "lesson": "When you allocate a globally-unique identifier, 'unique' means against ALL existing holders, not just your local working set. An allocator that checks only its overlay will hand out a live id and silently clobber what was there.",
+   "fix_code": {
+    "caption": "lib/pvm_host.ml \u2014 a new id must skip ids taken in state",
+    "before": "let taken id = id = self || List.mem_assoc id other_services in\nlet new_id = ctx.nextfree   (* raw, unchecked *)",
+    "after": "let taken id = id = self || List.mem_assoc id other_services\n            || (match ctx.lookup_service with Some f -> f id <> None | None -> false) in\nlet new_id = check ctx.nextfree   (* skip every taken id *)"
+   },
+   "keys": [
+    {
+     "component": "service-storage",
+     "key": "004400b500a400aa\u2026",
+     "bytes": 4,
+     "exp": "75a89b3a",
+     "got": "74a89b3a",
+     "first_diff": 0
+    },
+    {
+     "component": "service-storage",
+     "key": "75a0a8779b9e3a1e\u2026",
+     "bytes": 1,
+     "exp": "00",
+     "got": "",
+     "first_diff": null
+    },
+    {
+     "component": "service-storage",
+     "key": "ff7400a8009b003a\u2026",
+     "bytes": 89,
+     "exp": "0048e259db1d0d50e01826117dbda2fdb7939ceaca1254c8\u202602000000c30600000000000000000000",
+     "got": "0048e259db1d0d50e01826117dbda2fdb7939ceaca1254c8\u202602000000c30600000000000000000000",
+     "first_diff": 33
+    },
+    {
+     "component": "service-storage",
+     "key": "ff7500a8009b003a\u2026",
+     "bytes": 89,
+     "exp": "0048e259db1d0d50e01826117dbda2fdb7939ceaca1254c8\u202602000000c30600000000000000000000",
+     "got": "",
+     "first_diff": null
+    }
+   ],
+   "root_hex": {
+    "exp": "0x34fda29990ffe535\u2026",
+    "got": "0x5283e50a8b76f000\u2026"
+   }
+  }
+ ]
+}

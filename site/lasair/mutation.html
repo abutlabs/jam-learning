@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The Mutation Lab: corrupt a valid JAM block one way at a time and watch the target hold the trilogy — never crash, never hang, reject without state change.">
+    <title>The Mutation Lab - Learning Lasair</title>
+    <link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/mutation.css">
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <nav id="site-nav" class="top-nav" aria-label="Main navigation"></nav>
+    <script src="../assets/js/nav.js"></script>
+
+    <main id="main" class="mut-main">
+        <header class="mut-hero">
+            <h1>The Mutation Lab</h1>
+            <p class="mut-sub">
+                The curated vectors prove lasair imports <em>honest</em> blocks.
+                The official fuzzer sends <em>corrupted</em> ones — and has no
+                answer key, because the only correct response to garbage is the
+                same every time: reject it, change nothing, stay alive. We call
+                that the <strong>trilogy</strong>. This lab is lasair's own
+                examiner: it takes a block we know is valid, breaks it one way
+                at a time, and checks the trilogy holds.
+            </p>
+        </header>
+
+        <section id="scoreboard" class="mut-scoreboard"></section>
+
+        <section class="mut-walls-section">
+            <h2>Why nothing gets through</h2>
+            <p class="mut-section-intro">
+                A block is wrapped in layered cryptographic commitments. A
+                mutation without a validator's signing key always breaks one of
+                them — there is no gap to slip through. The lab proves it by
+                trying.
+            </p>
+            <div id="walls" class="mut-walls"></div>
+        </section>
+
+        <section class="mut-explorer">
+            <aside class="mut-picker">
+                <h2>Mutation classes</h2>
+                <div id="class-list"></div>
+            </aside>
+            <div id="class-view" class="mut-view">
+                <div class="mut-loading">Select a mutation…</div>
+            </div>
+        </section>
+
+        <section class="mut-run">
+            <h2>Run it yourself</h2>
+            <p class="mut-section-intro">
+                The engine lives in lasair's replay driver (lasair's source is not
+                public yet, so for now this shows how the lab is run). One pass
+                mutates every block in a family; the soak loops with fresh seeds
+                for hours.
+            </p>
+            <pre class="mut-cmd"><code># one pass over a family, with a per-class report
+dune exec bin/fuzz_driver.exe -- \
+  --mutate vectors/traces/fuzzy \
+  --mutate-report /tmp/mutation.json
+
+# soak: loop every family for 30 minutes, fresh seeds each round
+dune exec bin/fuzz_driver.exe -- --mutate-soak 30 \
+  --mutate vectors/traces/fallback \
+  --mutate vectors/traces/safrole \
+  --mutate vectors/traces/fuzzy</code></pre>
+        </section>
+    </main>
+
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/mutation.js"></script>
+</body>
+</html>

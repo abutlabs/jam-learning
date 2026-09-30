@@ -1,0 +1,11 @@
+; Learning Lasair Browser Modules
+; These are educational implementations compiled to JavaScript
+
+(library
+ (name learning_lasair)
+ (modules jam_constants jam_codec merkle pvm_basics))
+
+(executable
+ (name test_jam_codec)
+ (modules test_jam_codec)
+ (libraries learning_lasair))

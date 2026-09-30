@@ -1,0 +1,351 @@
+{
+ "family": "preimages",
+ "block": "00000008",
+ "slot": 8,
+ "why": "The preimages extrinsic at work: the block body carries 5 blobs answering earlier solicitations. Each lands under its preimage key C(s, E4(2^32-2) ++ h) and stamps its request entry with this slot. The block author's validator stats count all 5 (612 octets).",
+ "family_explainer": "The preimages family exercises JAM's data-availability contract for service code and data. The service SOLICITS hashes it wants (host call 23), the chain later receives matching blobs in the block body (the E_P extrinsic), lookups serve them back (host call 2), and FORGET (24) begins the two-step expunge dance governed by the D=32-slot turnaround period.",
+ "extrinsic": {
+  "tickets": 0,
+  "guarantees": [
+   {
+    "core": 0,
+    "package": "23a49e8f",
+    "bundle_len": 2757,
+    "digests": [
+     {
+      "service": 0,
+      "gas_limit": 3333333,
+      "result": "ok"
+     },
+     {
+      "service": 0,
+      "gas_limit": 3333333,
+      "result": "ok"
+     },
+     {
+      "service": 0,
+      "gas_limit": 3333333,
+      "result": "ok"
+     }
+    ],
+    "prerequisites": []
+   },
+   {
+    "core": 1,
+    "package": "d64e2975",
+    "bundle_len": 2236,
+    "digests": [
+     {
+      "service": 0,
+      "gas_limit": 2500000,
+      "result": "ok"
+     },
+     {
+      "service": 0,
+      "gas_limit": 2500000,
+      "result": "ok"
+     },
+     {
+      "service": 0,
+      "gas_limit": 2500000,
+      "result": "ok"
+     },
+     {
+      "service": 0,
+      "gas_limit": 2500000,
+      "result": "ok"
+     }
+    ],
+    "prerequisites": []
+   }
+  ],
+  "assurance_votes": {
+   "core0": 6,
+   "core1": 5,
+   "count": 6
+  },
+  "preimages": [
+   {
+    "requester": 0,
+    "bytes": 74
+   },
+   {
+    "requester": 0,
+    "bytes": 42
+   },
+   {
+    "requester": 0,
+    "bytes": 177
+   },
+   {
+    "requester": 0,
+    "bytes": 164
+   },
+   {
+    "requester": 0,
+    "bytes": 155
+   }
+  ]
+ },
+ "events": [
+  "Core 0: package 23a49e8f\u2026 guaranteed (3 work item(s), bundle 2757 bytes). It now waits on this core for availability assurances.",
+  "Core 1: package d64e2975\u2026 guaranteed (4 work item(s), bundle 2236 bytes). It now waits on this core for availability assurances.",
+  "6 validator assurance(s): core 0 has 6, core 1 has 5 vote(s). A report becomes AVAILABLE when votes exceed 2/3 of 6 validators (i.e. \u2265 5).",
+  "ACCUMULATION: package(s) 1b94a272\u2026, 429cc8ed\u2026 became available and were accumulated \u2014 the service's accumulate entry point ran inside the PVM. The accumulated-set ring C(15) records them (sorted, ring 11), aging out after 12 blocks.",
+  "Service 0 statistics: 6 work item(s) accumulated for 67,031 gas (exact PVM metering \u2014 every instruction costs 1, host calls cost 10, log costs 10).",
+  "Service 0: 5 preimage(s) totalling 612 bytes provided via the block body.",
+  "E_P extrinsic: 5 preimage blob(s) (74, 42, 177, 164, 155 bytes) answer earlier solicitations: each is stored under its hash and its request entry is stamped with slot 8."
+ ],
+ "accumulated_now": [
+  "1b94a272b7861e8e",
+  "429cc8ed51d8b3b0"
+ ],
+ "service_stats": [
+  {
+   "service": 0,
+   "provided_count": 5,
+   "provided_size": 612,
+   "refine_count": 7,
+   "refine_gas": 56527,
+   "imports": 0,
+   "xt_count": 41,
+   "xt_size": 2487,
+   "exports": 0,
+   "acc_count": 6,
+   "acc_gas": 67031
+  }
+ ],
+ "pre_state_entries": 33,
+ "post_state_entries": 44,
+ "diff": [
+  {
+   "key": "0001007100a000ab5cbd7e82c9744baf137918fe8d08741476a397e9dc2884",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "modified",
+   "pre_len": 32,
+   "post_len": 32,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0027003c002100b6887164b8ecf2f3c874ea1ba2d3a30893d94ab13e59f684",
+   "kind": "preimage",
+   "label": "service-0 preimage blob",
+   "desc": "Blob of 42 bytes, keyed C(s, E4(2^32-2) ++ blake2b(blob))",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 42
+  },
+  {
+   "key": "005600440040007fbfa4588aaed0bee5d6228f085c1f5fd493aabdafa09292",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "modified",
+   "pre_len": 1,
+   "post_len": 5,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0056004f006500544609cdce7d44ec4e555c73dfbb206b389f8e06a19ebe7c",
+   "kind": "preimage",
+   "label": "service-0 preimage blob",
+   "desc": "Blob of 177 bytes, keyed C(s, E4(2^32-2) ++ blake2b(blob))",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 177
+  },
+  {
+   "key": "0069000700a00047cbf843ec78b8f6e929665efd68b24e745764231e2389df",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "modified",
+   "pre_len": 1,
+   "post_len": 5,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "007c00f00019004ce89fab8795363c38246cea45cbfa9951dc43ffa32fed09",
+   "kind": "preimage",
+   "label": "service-0 preimage blob",
+   "desc": "Blob of 164 bytes, keyed C(s, E4(2^32-2) ++ blake2b(blob))",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 164
+  },
+  {
+   "key": "00a30033006700ef22a96de1dc64117fba8837bbbd088ebfa8c8c01bd98b34",
+   "kind": "preimage",
+   "label": "service-0 preimage blob",
+   "desc": "Blob of 74 bytes, keyed C(s, E4(2^32-2) ++ blake2b(blob))",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 74
+  },
+  {
+   "key": "00a300aa006100850eb2c6f5df80109b99f913a7729a71a9346651271a63b1",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 1
+  },
+  {
+   "key": "00a400880034009b73bc658afca9858287148c0ebc836e6983ce83f0e30e70",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "modified",
+   "pre_len": 1,
+   "post_len": 5,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "00a5007500d50003f36d58d12314093b32af60c86bec25a652b0b9074fab54",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "modified",
+   "pre_len": 1,
+   "post_len": 5,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "00a600e200f20060f36fc8daa63224f1cafa2985e21027f2a12f74c9eff77a",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 1
+  },
+  {
+   "key": "00ba006600520096188ee05a262045a21d33c68df5dcd55eeef418e3df6f90",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 1
+  },
+  {
+   "key": "00e1001c009300381d4a43eb181804eb7bae423f4c62f4c509a3411bb5c372",
+   "kind": "preimage",
+   "label": "service-0 preimage blob",
+   "desc": "Blob of 155 bytes, keyed C(s, E4(2^32-2) ++ blake2b(blob))",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 155
+  },
+  {
+   "key": "00e80045002000abf9be40859261d346e3d16d8bf028bb80edb72ba7a49bb5",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 1
+  },
+  {
+   "key": "00ee003d009300c6972735fe5a25fe5f696f1e7270d89ac85ceea3fb0f2b51",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 1
+  },
+  {
+   "key": "00f60035005a00b8d23f8e3f860ba5b810802970200eb194386da714f1478f",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "added",
+   "pre_len": null,
+   "post_len": 1
+  },
+  {
+   "key": "00ff006800c600f5648e5a3291f3cf19950c69a4b016c323b1b46759a85ba0",
+   "kind": "service-data",
+   "label": "service-0 data entry",
+   "desc": "Storage entry C(s, E4(2^32-1)++key), preimage blob, or request entry C(s, E4(len)++hash) \u2014 positions 1,3,5,7,8..30 carry blake2b bytes, so the original key is unrecoverable by design",
+   "change": "modified",
+   "pre_len": 1,
+   "post_len": 5,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "03000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c3",
+   "label": "C(3) recent history (beta)",
+   "desc": "Last H=8 block hashes, state roots, MMR",
+   "change": "modified",
+   "pre_len": 1261,
+   "post_len": 1326,
+   "first_diff_byte": 1
+  },
+  {
+   "key": "06000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c6",
+   "label": "C(6) entropy (eta)",
+   "desc": "Entropy accumulator (4 x 32 bytes)",
+   "change": "modified",
+   "pre_len": 128,
+   "post_len": 128,
+   "first_diff_byte": 1
+  },
+  {
+   "key": "0a000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c10",
+   "label": "C(10) pending reports (rho)",
+   "desc": "Per-core: guaranteed report awaiting assurances",
+   "change": "modified",
+   "pre_len": 1411,
+   "post_len": 1443,
+   "first_diff_byte": 1
+  },
+  {
+   "key": "0b000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c11",
+   "label": "C(11) timeslot (tau)",
+   "desc": "Most recent block's slot (u32)",
+   "change": "modified",
+   "pre_len": 4,
+   "post_len": 4,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0d000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c13",
+   "label": "C(13) statistics (pi)",
+   "desc": "Validator, core and service activity counters",
+   "change": "modified",
+   "pre_len": 329,
+   "post_len": 335,
+   "first_diff_byte": 20
+  },
+  {
+   "key": "0f000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c15",
+   "label": "C(15) accumulated (xi)",
+   "desc": "12-ring history of accumulated package hashes",
+   "change": "modified",
+   "pre_len": 140,
+   "post_len": 204,
+   "first_diff_byte": 5
+  },
+  {
+   "key": "ff000000000000000000000000000000000000000000000000000000000000",
+   "kind": "account",
+   "label": "service 0 account",
+   "desc": "Code hash, balance, gas minimums, storage footprint (octets/items), gratis, timestamps",
+   "change": "modified",
+   "pre_len": 89,
+   "post_len": 89,
+   "first_diff_byte": 57
+  }
+ ]
+}

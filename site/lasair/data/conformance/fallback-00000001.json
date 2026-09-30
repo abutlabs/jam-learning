@@ -1,0 +1,64 @@
+{
+ "family": "fallback",
+ "block": "00000001",
+ "slot": 1,
+ "why": "The simplest possible block: no work, no tickets. Only the clock (timeslot), entropy accumulator and validator statistics change. Start here to see the smallest state delta a block can make.",
+ "family_explainer": "Fallback blocks exercise the consensus skeleton with no work: timeslot, entropy, history and statistics transitions only. If these fail, nothing else can pass.",
+ "extrinsic": {
+  "tickets": 0,
+  "guarantees": [],
+  "assurance_votes": {
+   "core0": 0,
+   "core1": 0,
+   "count": 0
+  },
+  "preimages": []
+ },
+ "events": [],
+ "accumulated_now": [],
+ "service_stats": [],
+ "pre_state_entries": 21,
+ "post_state_entries": 21,
+ "diff": [
+  {
+   "key": "03000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c3",
+   "label": "C(3) recent history (beta)",
+   "desc": "Last H=8 block hashes, state roots, MMR",
+   "change": "modified",
+   "pre_len": 99,
+   "post_len": 229,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "06000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c6",
+   "label": "C(6) entropy (eta)",
+   "desc": "Entropy accumulator (4 x 32 bytes)",
+   "change": "modified",
+   "pre_len": 128,
+   "post_len": 128,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0b000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c11",
+   "label": "C(11) timeslot (tau)",
+   "desc": "Most recent block's slot (u32)",
+   "change": "modified",
+   "pre_len": 4,
+   "post_len": 4,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0d000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c13",
+   "label": "C(13) statistics (pi)",
+   "desc": "Validator, core and service activity counters",
+   "change": "modified",
+   "pre_len": 305,
+   "post_len": 305,
+   "first_diff_byte": 0
+  }
+ ]
+}

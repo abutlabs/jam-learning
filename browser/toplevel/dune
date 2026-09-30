@@ -1,0 +1,11 @@
+; Build the OCaml REPL for browser execution
+; This creates toplevel.js which can be loaded in a web page
+
+(executable
+ (name toplevel)
+ (libraries js_of_ocaml js_of_ocaml-toplevel)
+ (modes js)
+ (preprocess (pps js_of_ocaml-ppx))
+ (link_flags (:standard -linkall))
+ (js_of_ocaml
+  (flags (:standard --toplevel))))

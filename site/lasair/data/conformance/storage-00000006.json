@@ -1,0 +1,171 @@
+{
+ "family": "storage",
+ "block": "00000006",
+ "slot": 6,
+ "why": "The first real accumulation in the storage family. Two work reports become available (enough validators assured them), the service's accumulate code runs in the PVM for 478,680 gas, writes storage, and the accumulated-set ring C(15) records the package hashes.",
+ "family_explainer": "The storage family runs a real service that stress-tests service storage. Each block: (1) new work reports are guaranteed onto cores, (2) validators assure availability of earlier reports, (3) once a report has a super-majority of assurances it becomes available and the service's ACCUMULATE entry point executes in the PVM \u2014 reading, writing and deleting storage keys via host calls, metered by gas. The post-state root certifies every byte: storage entries, the service's octet/item footprint, gas statistics, the accumulated-set ring and the ready queue.",
+ "extrinsic": {
+  "tickets": 0,
+  "guarantees": [
+   {
+    "core": 0,
+    "package": "a93f2452",
+    "bundle_len": 1090,
+    "digests": [
+     {
+      "service": 0,
+      "gas_limit": 10000000,
+      "result": "ok"
+     }
+    ],
+    "prerequisites": [
+     "585fd824",
+     "a80fc6bb"
+    ]
+   },
+   {
+    "core": 1,
+    "package": "31bf7582",
+    "bundle_len": 4125,
+    "digests": [
+     {
+      "service": 0,
+      "gas_limit": 2000000,
+      "result": "ok"
+     },
+     {
+      "service": 0,
+      "gas_limit": 2000000,
+      "result": "ok"
+     },
+     {
+      "service": 0,
+      "gas_limit": 2000000,
+      "result": "ok"
+     },
+     {
+      "service": 0,
+      "gas_limit": 2000000,
+      "result": "ok"
+     },
+     {
+      "service": 0,
+      "gas_limit": 2000000,
+      "result": "ok"
+     }
+    ],
+    "prerequisites": [
+     "585fd824",
+     "a80fc6bb",
+     "a93f2452"
+    ]
+   }
+  ],
+  "assurance_votes": {
+   "core0": 5,
+   "core1": 6,
+   "count": 6
+  },
+  "preimages": []
+ },
+ "events": [
+  "Core 0: package a93f2452\u2026 guaranteed (1 work item(s), bundle 1090 bytes) \u2014 declares prerequisite 585fd824\u2026. It now waits on this core for availability assurances.",
+  "Core 1: package 31bf7582\u2026 guaranteed (5 work item(s), bundle 4125 bytes) \u2014 declares prerequisite 585fd824\u2026. It now waits on this core for availability assurances.",
+  "6 validator assurance(s): core 0 has 5, core 1 has 6 vote(s). A report becomes AVAILABLE when votes exceed 2/3 of 6 validators (i.e. \u2265 5).",
+  "ACCUMULATION: package(s) 585fd824\u2026, a80fc6bb\u2026 became available and were accumulated \u2014 the service's accumulate entry point ran inside the PVM. The accumulated-set ring C(15) records them (sorted, ring 11), aging out after 12 blocks.",
+  "Service 0 statistics: 3 work item(s) accumulated for 478,680 gas (exact PVM metering \u2014 every instruction costs 1, host calls cost 10, log costs 10)."
+ ],
+ "accumulated_now": [
+  "585fd824cfbaf850",
+  "a80fc6bbd6336895"
+ ],
+ "service_stats": [
+  {
+   "service": 0,
+   "provided_count": 0,
+   "provided_size": 0,
+   "refine_count": 6,
+   "refine_gas": 341696,
+   "imports": 0,
+   "xt_count": 33,
+   "xt_size": 1958,
+   "exports": 0,
+   "acc_count": 3,
+   "acc_gas": 478680
+  }
+ ],
+ "pre_state_entries": 21,
+ "post_state_entries": 21,
+ "diff": [
+  {
+   "key": "03000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c3",
+   "label": "C(3) recent history (beta)",
+   "desc": "Last H=8 block hashes, state roots, MMR",
+   "change": "modified",
+   "pre_len": 779,
+   "post_len": 1004,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "06000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c6",
+   "label": "C(6) entropy (eta)",
+   "desc": "Entropy accumulator (4 x 32 bytes)",
+   "change": "modified",
+   "pre_len": 128,
+   "post_len": 128,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0a000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c10",
+   "label": "C(10) pending reports (rho)",
+   "desc": "Per-core: guaranteed report awaiting assurances",
+   "change": "modified",
+   "pre_len": 1417,
+   "post_len": 2458,
+   "first_diff_byte": 1
+  },
+  {
+   "key": "0b000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c11",
+   "label": "C(11) timeslot (tau)",
+   "desc": "Most recent block's slot (u32)",
+   "change": "modified",
+   "pre_len": 4,
+   "post_len": 4,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0d000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c13",
+   "label": "C(13) statistics (pi)",
+   "desc": "Validator, core and service activity counters",
+   "change": "modified",
+   "pre_len": 305,
+   "post_len": 334,
+   "first_diff_byte": 16
+  },
+  {
+   "key": "0f000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c15",
+   "label": "C(15) accumulated (xi)",
+   "desc": "12-ring history of accumulated package hashes",
+   "change": "modified",
+   "pre_len": 12,
+   "post_len": 76,
+   "first_diff_byte": 11
+  },
+  {
+   "key": "ff000000000000000000000000000000000000000000000000000000000000",
+   "kind": "account",
+   "label": "service 0 account",
+   "desc": "Code hash, balance, gas minimums, storage footprint (octets/items), gratis, timestamps",
+   "change": "modified",
+   "pre_len": 89,
+   "post_len": 89,
+   "first_diff_byte": 81
+  }
+ ]
+}

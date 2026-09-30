@@ -1,0 +1,192 @@
+/* Conformance Explorer */
+
+.conformance-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    max-width: 1400px;
+    margin: 0 auto;
+    gap: var(--space-xl);
+    padding: var(--space-xl);
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .conformance-layout { grid-template-columns: 1fr; }
+}
+
+.vector-picker {
+    position: sticky;
+    top: 80px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+}
+
+.vector-picker h2 { margin: 0 0 var(--space-sm); font-size: 1.1rem; }
+.picker-intro { color: var(--text-secondary); font-size: 0.85rem; line-height: 1.5; }
+.picker-footer { margin-top: var(--space-md); font-size: 0.75rem; }
+.picker-footer a { color: var(--text-muted); }
+
+.vector-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
+    margin-bottom: var(--space-sm);
+    cursor: pointer;
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    transition: border-color var(--transition-fast);
+}
+.vector-item:hover { border-color: var(--accent-primary); }
+.vector-item.selected { border-color: var(--accent-primary); background: var(--bg-code); }
+.vector-item .vi-title { font-family: var(--font-mono); font-size: 0.85rem; }
+.vector-item .vi-family {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 1px 8px;
+    border-radius: 10px;
+    background: var(--bg-primary);
+    color: var(--accent-secondary);
+    margin-right: var(--space-sm);
+}
+.vector-item .vi-hook {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    margin-top: 4px;
+    line-height: 1.35;
+}
+
+.vector-view { min-width: 0; }
+
+.vv-header h1 { margin: 0; font-size: 1.5rem; }
+.vv-header .vv-slot { color: var(--text-muted); font-family: var(--font-mono); }
+.vv-why {
+    background: var(--bg-secondary);
+    border-left: 3px solid var(--accent-primary);
+    border-radius: var(--radius-sm);
+    padding: var(--space-md) var(--space-lg);
+    margin: var(--space-md) 0;
+    line-height: 1.6;
+}
+.vv-family-note { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; }
+
+.vv-section { margin-top: var(--space-xl); }
+.vv-section h2 {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: var(--space-xs);
+}
+
+/* lifecycle pipeline */
+.pipeline {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+    flex-wrap: wrap;
+    margin: var(--space-md) 0;
+}
+.pipe-stage {
+    flex: 1;
+    min-width: 130px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    padding: var(--space-sm) var(--space-md);
+    position: relative;
+    text-align: center;
+}
+.pipe-stage:first-child { border-radius: var(--radius-md) 0 0 var(--radius-md); }
+.pipe-stage:last-child { border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+.pipe-stage.active { border-color: var(--accent-primary); background: var(--bg-code); }
+.pipe-stage .ps-name { font-weight: 600; font-size: 0.85rem; }
+.pipe-stage .ps-detail { color: var(--text-muted); font-size: 0.72rem; margin-top: 2px; }
+.pipe-stage.active .ps-detail { color: var(--accent-secondary); }
+
+/* extrinsic anatomy */
+.anatomy { display: flex; gap: var(--space-md); flex-wrap: wrap; }
+.anatomy-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
+    min-width: 140px;
+}
+.anatomy-card .ac-label { color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase; }
+.anatomy-card .ac-value { font-family: var(--font-mono); font-size: 1.1rem; margin-top: 2px; }
+.anatomy-card .ac-sub { color: var(--text-secondary); font-size: 0.75rem; }
+
+/* event timeline */
+.timeline { list-style: none; padding: 0; margin: var(--space-md) 0 0; }
+.timeline li {
+    position: relative;
+    padding: 0 0 var(--space-md) var(--space-xl);
+    line-height: 1.55;
+    font-size: 0.92rem;
+}
+.timeline li::before {
+    content: "";
+    position: absolute;
+    left: 7px; top: 6px;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+}
+.timeline li::after {
+    content: "";
+    position: absolute;
+    left: 11px; top: 18px; bottom: 0;
+    width: 1px;
+    background: var(--border-color);
+}
+.timeline li:last-child::after { display: none; }
+
+/* diff table */
+.diff-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.diff-table th {
+    text-align: left;
+    color: var(--text-muted);
+    font-weight: 500;
+    padding: var(--space-xs) var(--space-sm);
+    border-bottom: 1px solid var(--border-color);
+}
+.diff-table td {
+    padding: var(--space-xs) var(--space-sm);
+    border-bottom: 1px solid var(--border-light);
+    vertical-align: top;
+}
+.diff-key { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); word-break: break-all; }
+.diff-label { font-weight: 600; }
+.diff-desc { color: var(--text-secondary); font-size: 0.78rem; line-height: 1.4; }
+.chip {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-family: var(--font-mono);
+    padding: 1px 8px;
+    border-radius: 10px;
+}
+.chip.added { background: rgba(63, 185, 80, 0.15); color: var(--success); }
+.chip.removed { background: rgba(248, 81, 73, 0.15); color: var(--error); }
+.chip.modified { background: rgba(210, 153, 34, 0.15); color: var(--warning); }
+.diff-size { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; }
+
+.gas-banner {
+    display: flex;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
+    background: var(--bg-code);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--space-md) var(--space-lg);
+    margin-top: var(--space-md);
+    font-family: var(--font-mono);
+}
+.gas-banner .gb-item .gb-num { font-size: 1.2rem; color: var(--accent-secondary); }
+.gas-banner .gb-item .gb-label { font-size: 0.72rem; color: var(--text-muted); }

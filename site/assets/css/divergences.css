@@ -1,0 +1,119 @@
+/* The Divergence Lab — mirrors the Mutation Lab layout, uses the site tokens. */
+
+.dv-main { max-width: var(--max-width); margin: 0 auto; padding: var(--space-2xl) var(--space-xl); }
+
+.dv-hero { margin-bottom: var(--space-2xl); }
+.dv-hero h1 { font-size: 2.2rem; margin: 0 0 var(--space-md); }
+.dv-sub { color: var(--text-secondary); font-size: 1.05rem; line-height: 1.7; max-width: 60ch; }
+.dv-sub em { color: var(--text-primary); font-style: italic; }
+.dv-sub strong { color: var(--accent-primary); }
+
+/* scoreboard */
+.dv-scoreboard { margin-bottom: var(--space-2xl); }
+.dv-score-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--space-md); }
+.dv-score { background: var(--bg-secondary); border: 1px solid var(--border-color);
+  border-radius: var(--radius-md); padding: var(--space-lg); text-align: center; }
+.ds-num { font-size: 1.9rem; font-weight: 700; color: var(--accent-primary); font-family: var(--font-mono); }
+.ds-label { color: var(--text-secondary); font-size: 0.82rem; margin-top: var(--space-xs); }
+.dv-score-foot { color: var(--text-secondary); font-size: 0.9rem; margin-top: var(--space-md); line-height: 1.7; }
+.ds-chip { display: inline-block; background: var(--bg-tertiary); border: 1px solid var(--border-color);
+  border-radius: 999px; padding: 1px 9px; font-size: 0.76rem; font-family: var(--font-mono);
+  color: var(--text-primary); margin: 2px; }
+
+/* how-to */
+.dv-howto { margin-bottom: var(--space-2xl); }
+.dv-howto h2, .dv-explorer h2, .dv-run h2 { font-size: 1.3rem; margin: 0 0 var(--space-md); }
+.dv-section-intro { color: var(--text-secondary); line-height: 1.7; max-width: 60ch; }
+.dv-howto-list { color: var(--text-secondary); line-height: 1.8; max-width: 70ch; padding-left: 1.2em; }
+.dv-howto-list strong { color: var(--text-primary); }
+.dv-howto-list code, .dv-report code, .dv-section-intro code { font-family: var(--font-mono);
+  background: var(--bg-code); padding: 1px 5px; border-radius: var(--radius-sm); font-size: 0.85em; }
+
+/* explorer: picker + view */
+.dv-explorer { display: grid; grid-template-columns: 300px 1fr; gap: var(--space-xl);
+  margin-bottom: var(--space-2xl); align-items: start; }
+.dv-picker { position: sticky; top: var(--space-lg); }
+.dv-picker h2 { font-size: 1rem; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text-muted); margin-bottom: var(--space-md); }
+#div-list { display: flex; flex-direction: column; gap: var(--space-xs); }
+
+.dv-item { display: flex; gap: var(--space-sm); width: 100%; text-align: left; background: none;
+  border: 1px solid transparent; cursor: pointer; padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md); color: var(--text-secondary); transition: all var(--transition-fast); }
+.dv-item:hover { background: var(--bg-secondary); }
+.dv-item.active { background: var(--bg-secondary); border-color: var(--accent-primary); }
+.dv-item-id { font-family: var(--font-mono); font-weight: 700; color: var(--accent-primary); flex: 0 0 auto; }
+.dv-item-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.dv-item-title { color: var(--text-primary); font-size: 0.9rem; line-height: 1.3; }
+.dv-item-cls { color: var(--text-muted); font-size: 0.74rem; font-family: var(--font-mono); }
+
+/* detail view */
+.dv-view { background: var(--bg-secondary); border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg); padding: var(--space-xl); min-height: 400px; }
+.dv-loading { color: var(--text-muted); text-align: center; padding: var(--space-3xl); }
+.dv-vhead { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md);
+  flex-wrap: wrap; }
+.dv-vtitle { font-size: 1.35rem; font-weight: 700; color: var(--text-primary); }
+.dv-id { font-family: var(--font-mono); color: var(--accent-primary); margin-right: var(--space-sm); }
+.dv-axis { font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 999px;
+  letter-spacing: 0.05em; text-transform: uppercase; }
+.dv-axis-ordering   { background: color-mix(in srgb, var(--warning) 18%, transparent); color: var(--warning); }
+.dv-axis-existence  { background: color-mix(in srgb, var(--accent-primary) 18%, transparent); color: var(--accent-primary); }
+.dv-axis-value      { background: color-mix(in srgb, var(--success) 18%, transparent); color: var(--success); }
+.dv-axis-privilege  { background: color-mix(in srgb, #a371f7 22%, transparent); color: #a371f7; }
+.dv-class { color: var(--text-secondary); margin-top: var(--space-sm); font-size: 0.9rem; }
+.dv-class strong { color: var(--text-primary); }
+.dv-report { color: var(--text-secondary); margin-top: var(--space-xs); font-size: 0.9rem; }
+.dv-roots { display: flex; gap: var(--space-lg); margin-top: var(--space-sm); flex-wrap: wrap; }
+
+.dv-h { font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);
+  margin: var(--space-xl) 0 var(--space-sm); border-bottom: 1px solid var(--border-light); padding-bottom: var(--space-xs); }
+.dv-body { color: var(--text-secondary); line-height: 1.75; max-width: 70ch; }
+
+/* the diff blocks — the heart of the lesson */
+.dv-diff { background: var(--bg-code); border: 1px solid var(--border-color); border-radius: var(--radius-md);
+  padding: var(--space-md); margin-bottom: var(--space-md); }
+.dv-diff-head { display: flex; justify-content: space-between; gap: var(--space-md); flex-wrap: wrap;
+  margin-bottom: var(--space-sm); }
+.dv-comp { font-weight: 700; color: var(--text-primary); font-size: 0.9rem; }
+.dv-keymeta { color: var(--text-muted); font-size: 0.78rem; font-family: var(--font-mono); }
+.dv-hexrow { display: flex; gap: var(--space-sm); align-items: baseline; margin-top: 4px; }
+.dv-hexrow code { font-family: var(--font-mono); font-size: 0.8rem; word-break: break-all; color: var(--text-secondary); flex: 1; }
+.dv-hexlbl { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+  flex: 0 0 64px; padding-top: 1px; }
+.dv-exp { color: var(--success); }
+.dv-got { color: var(--error); }
+.dv-byte { background: var(--error); color: #fff; border-radius: 2px; padding: 0 1px; font-weight: 700; }
+.dv-nodiff { color: var(--text-muted); font-style: italic; background: var(--bg-code);
+  border: 1px dashed var(--border-color); border-radius: var(--radius-md); padding: var(--space-md); }
+
+.dv-twocol { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xl); }
+@media (max-width: 720px) { .dv-twocol { grid-template-columns: 1fr; } .dv-explorer { grid-template-columns: 1fr; } }
+
+.dv-lesson { margin-top: var(--space-xl); background: color-mix(in srgb, var(--accent-primary) 8%, transparent);
+  border-left: 3px solid var(--accent-primary); border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg); color: var(--text-primary); line-height: 1.7; }
+.dv-lesson-lbl { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--accent-primary); font-weight: 700; margin-bottom: var(--space-xs); }
+
+/* the fix, in code — before/after */
+.dv-fc-cap { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);
+  margin-bottom: var(--space-sm); }
+.dv-fc { border-radius: var(--radius-md); padding: var(--space-md); margin: 0 0 var(--space-sm);
+  overflow-x: auto; border: 1px solid var(--border-color); position: relative; }
+.dv-fc code { font-family: var(--font-mono); font-size: 0.8rem; white-space: pre; line-height: 1.6;
+  color: var(--text-primary); display: block; }
+.dv-fc-lbl { display: inline-block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.05em; margin-bottom: var(--space-xs); }
+.dv-fc-before { background: color-mix(in srgb, var(--error) 8%, transparent);
+  border-color: color-mix(in srgb, var(--error) 35%, var(--border-color)); }
+.dv-fc-before .dv-fc-lbl { color: var(--error); }
+.dv-fc-after { background: color-mix(in srgb, var(--success) 8%, transparent);
+  border-color: color-mix(in srgb, var(--success) 35%, var(--border-color)); }
+.dv-fc-after .dv-fc-lbl { color: var(--success); }
+
+/* run-it-yourself */
+.dv-run { margin-bottom: var(--space-2xl); }
+.dv-cmd { background: var(--bg-code); border: 1px solid var(--border-color); border-radius: var(--radius-md);
+  padding: var(--space-lg); overflow-x: auto; }
+.dv-cmd code { font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-secondary); line-height: 1.7; }

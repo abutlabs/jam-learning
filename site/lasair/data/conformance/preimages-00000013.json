@@ -1,0 +1,142 @@
+{
+ "family": "preimages",
+ "block": "00000013",
+ "slot": 13,
+ "why": "The bootstrap service deliberately panics (it tries to forget a request that is not yet expungeable). Per the Graypaper the panic discards every state change the invocation made \u2014 but the gas it burned still lands in the statistics.",
+ "family_explainer": "The preimages family exercises JAM's data-availability contract for service code and data. The service SOLICITS hashes it wants (host call 23), the chain later receives matching blobs in the block body (the E_P extrinsic), lookups serve them back (host call 2), and FORGET (24) begins the two-step expunge dance governed by the D=32-slot turnaround period.",
+ "extrinsic": {
+  "tickets": 0,
+  "guarantees": [
+   {
+    "core": 1,
+    "package": "5dba0167",
+    "bundle_len": 1917,
+    "digests": [
+     {
+      "service": 0,
+      "gas_limit": 12326,
+      "result": "ok"
+     },
+     {
+      "service": 0,
+      "gas_limit": 12326,
+      "result": "ok"
+     },
+     {
+      "service": 0,
+      "gas_limit": 12326,
+      "result": "ok"
+     }
+    ],
+    "prerequisites": [
+     "429cc8ed"
+    ]
+   }
+  ],
+  "assurance_votes": {
+   "core0": 6,
+   "core1": 5,
+   "count": 6
+  },
+  "preimages": []
+ },
+ "events": [
+  "Core 1: package 5dba0167\u2026 guaranteed (3 work item(s), bundle 1917 bytes) \u2014 declares prerequisite 429cc8ed\u2026. It now waits on this core for availability assurances.",
+  "6 validator assurance(s): core 0 has 6, core 1 has 5 vote(s). A report becomes AVAILABLE when votes exceed 2/3 of 6 validators (i.e. \u2265 5).",
+  "ACCUMULATION: package(s) 46546cd6\u2026, 743202d7\u2026 became available and were accumulated \u2014 the service's accumulate entry point ran inside the PVM. The accumulated-set ring C(15) records them (sorted, ring 11), aging out after 12 blocks.",
+  "Service 0 statistics: 8 work item(s) accumulated for 159,672 gas (exact PVM metering \u2014 every instruction costs 1, host calls cost 10, log costs 10)."
+ ],
+ "accumulated_now": [
+  "46546cd67be26469",
+  "743202d7302581f8"
+ ],
+ "service_stats": [
+  {
+   "service": 0,
+   "provided_count": 0,
+   "provided_size": 0,
+   "refine_count": 3,
+   "refine_gas": 24331,
+   "imports": 0,
+   "xt_count": 12,
+   "xt_size": 987,
+   "exports": 0,
+   "acc_count": 8,
+   "acc_gas": 159672
+  }
+ ],
+ "pre_state_entries": 63,
+ "post_state_entries": 63,
+ "diff": [
+  {
+   "key": "03000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c3",
+   "label": "C(3) recent history (beta)",
+   "desc": "Last H=8 block hashes, state roots, MMR",
+   "change": "modified",
+   "pre_len": 1486,
+   "post_len": 1582,
+   "first_diff_byte": 1
+  },
+  {
+   "key": "06000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c6",
+   "label": "C(6) entropy (eta)",
+   "desc": "Entropy accumulator (4 x 32 bytes)",
+   "change": "modified",
+   "pre_len": 128,
+   "post_len": 128,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0a000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c10",
+   "label": "C(10) pending reports (rho)",
+   "desc": "Per-core: guaranteed report awaiting assurances",
+   "change": "modified",
+   "pre_len": 1562,
+   "post_len": 690,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0b000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c11",
+   "label": "C(11) timeslot (tau)",
+   "desc": "Most recent block's slot (u32)",
+   "change": "modified",
+   "pre_len": 4,
+   "post_len": 4,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "0d000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c13",
+   "label": "C(13) statistics (pi)",
+   "desc": "Validator, core and service activity counters",
+   "change": "modified",
+   "pre_len": 334,
+   "post_len": 330,
+   "first_diff_byte": 16
+  },
+  {
+   "key": "0f000000000000000000000000000000000000000000000000000000000000",
+   "kind": "c15",
+   "label": "C(15) accumulated (xi)",
+   "desc": "12-ring history of accumulated package hashes",
+   "change": "modified",
+   "pre_len": 364,
+   "post_len": 428,
+   "first_diff_byte": 0
+  },
+  {
+   "key": "ff000000000000000000000000000000000000000000000000000000000000",
+   "kind": "account",
+   "label": "service 0 account",
+   "desc": "Code hash, balance, gas minimums, storage footprint (octets/items), gratis, timestamps",
+   "change": "modified",
+   "pre_len": 89,
+   "post_len": 89,
+   "first_diff_byte": 81
+  }
+ ]
+}

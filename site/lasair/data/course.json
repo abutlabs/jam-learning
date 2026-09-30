@@ -1,0 +1,704 @@
+{
+ "title": "Learning Lasair",
+ "graypaper": "0.8.0",
+ "conformance": {
+  "passing": 406,
+  "total": 406,
+  "traces": 1000
+ },
+ "tracks": [
+  {
+   "id": "00-introduction",
+   "title": "Introduction",
+   "landing": false,
+   "lessons": [
+    {
+     "id": "welcome",
+     "title": "Welcome to Learning Lasair"
+    }
+   ]
+  },
+  {
+   "id": "001-ocaml-foundations",
+   "number": "0.1",
+   "title": "OCaml Foundations",
+   "elective": true,
+   "qualifier": "elective",
+   "description": "Types, functions, pattern matching, modules, and functors — taught through lasair code. For readers who want to follow the OCaml examples closely or contribute to lasair. Skip if you're building in another language.",
+   "lessons": [
+    {
+     "id": "01-types-and-values",
+     "title": "Types and Values"
+    },
+    {
+     "id": "02-functions",
+     "title": "Functions"
+    },
+    {
+     "id": "03-pattern-matching",
+     "title": "Pattern Matching"
+    },
+    {
+     "id": "04-records-variants",
+     "title": "Records and Variants"
+    },
+    {
+     "id": "05-modules",
+     "title": "Modules and Signatures"
+    },
+    {
+     "id": "06-functors",
+     "title": "Functors"
+    }
+   ]
+  },
+  {
+   "id": "002-functional-patterns",
+   "number": "0.2",
+   "title": "Functional Patterns",
+   "elective": true,
+   "qualifier": "elective",
+   "description": "Higher-order functions, immutable state, error handling, and recursion patterns. Skip if familiar.",
+   "lessons": [
+    {
+     "id": "01-immutable-state",
+     "title": "Immutable State"
+    },
+    {
+     "id": "02-higher-order",
+     "title": "Higher-Order Functions"
+    },
+    {
+     "id": "03-error-handling",
+     "title": "Error Handling"
+    },
+    {
+     "id": "04-recursion",
+     "title": "Recursion and Tail Calls"
+    }
+   ]
+  },
+  {
+   "id": "01-jam-protocol",
+   "number": "1",
+   "title": "JAM Protocol",
+   "description": "Understand the protocol before the code. State model, blocks, consensus, and work packages.",
+   "lessons": [
+    {
+     "id": "01-what-is-jam",
+     "title": "What is JAM?"
+    },
+    {
+     "id": "02-state-and-blocks",
+     "title": "State and Blocks"
+    },
+    {
+     "id": "03-consensus",
+     "title": "Consensus and Validators"
+    },
+    {
+     "id": "04-work-packages",
+     "title": "Work and Services"
+    }
+   ]
+  },
+  {
+   "id": "011-graypaper-lectures",
+   "number": "1.1",
+   "title": "Graypaper Lectures",
+   "qualifier": "video",
+   "collapsible": true,
+   "description": "Watch Gavin Wood explain the JAM protocol section by section, with notes connecting each idea to lasair's implementation.",
+   "sections": [
+    {
+     "id": "1",
+     "title": "1. Introduction",
+     "lessons": [
+      {
+       "id": "01-nomenclature",
+       "title": "1.1 Nomenclature"
+      },
+      {
+       "id": "02-driving-factors",
+       "title": "1.2 Driving Factors"
+      },
+      {
+       "id": "03-size-synchrony",
+       "title": "1.3 Size-Synchrony Antagonism"
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "2. Prior Work",
+     "lessons": [
+      {
+       "id": "04-polkadot",
+       "title": "2.1 Polkadot"
+      },
+      {
+       "id": "05-ethereum",
+       "title": "2.2 Ethereum"
+      },
+      {
+       "id": "06-fragmented-networks",
+       "title": "2.3 Fragmented Meta-Networks"
+      },
+      {
+       "id": "07-high-performance",
+       "title": "2.4 High-Performance Networks"
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "3. Notation",
+     "lessons": [
+      {
+       "id": "08-typography",
+       "title": "3.1 Typography"
+      },
+      {
+       "id": "09-functions-operators",
+       "title": "3.2 Functions & Operators"
+      },
+      {
+       "id": "10-sets",
+       "title": "3.3 Sets"
+      },
+      {
+       "id": "11-numbers",
+       "title": "3.4 Numbers"
+      },
+      {
+       "id": "12-dictionaries",
+       "title": "3.5 Dictionaries"
+      },
+      {
+       "id": "13-tuples",
+       "title": "3.6 Tuples"
+      },
+      {
+       "id": "14-sequencers",
+       "title": "3.7 Sequencers"
+      },
+      {
+       "id": "15-cryptography",
+       "title": "3.8 Cryptography"
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "4. Overview",
+     "lessons": [
+      {
+       "id": "16-overview",
+       "title": "4.0 Overview"
+      },
+      {
+       "id": "17-the-block",
+       "title": "4.1 The Block"
+      },
+      {
+       "id": "18-the-state",
+       "title": "4.2 The State"
+      },
+      {
+       "id": "19-dependency-graph",
+       "title": "4.2.1 Dependency Graph"
+      },
+      {
+       "id": "20-best-block",
+       "title": "4.5 Best Block"
+      },
+      {
+       "id": "21-pvm-gas",
+       "title": "4.7 VM and Gas"
+      }
+     ]
+    },
+    {
+     "id": "5",
+     "title": "5. The Header",
+     "lessons": [
+      {
+       "id": "22-the-header",
+       "title": "5.0 The Header"
+      },
+      {
+       "id": "23-epoch-markers",
+       "title": "5.1 Epoch & Ticket Markers"
+      }
+     ]
+    },
+    {
+     "id": "6",
+     "title": "6. Safrole",
+     "lessons": [
+      {
+       "id": "24-timekeeping",
+       "title": "6.1 Timekeeping"
+      },
+      {
+       "id": "25-key-rotation",
+       "title": "6.3 Key Rotation"
+      },
+      {
+       "id": "26-sealing-entropy",
+       "title": "6.4 Sealing & Entropy"
+      },
+      {
+       "id": "27-slot-key-sequence",
+       "title": "6.5 Slot Key Sequence"
+      },
+      {
+       "id": "28-the-markers",
+       "title": "6.6 The Markers"
+      },
+      {
+       "id": "29-extrinsic-tickets",
+       "title": "6.7 Tickets Extrinsic"
+      }
+     ]
+    },
+    {
+     "id": "7",
+     "title": "7. Recent History",
+     "lessons": [
+      {
+       "id": "30-recent-history",
+       "title": "7.0 Recent History"
+      }
+     ]
+    },
+    {
+     "id": "8",
+     "title": "8. Authorization",
+     "lessons": [
+      {
+       "id": "31-authorization",
+       "title": "8.0 Authorization"
+      },
+      {
+       "id": "31b-auth-pool-queue",
+       "title": "8.1-8.2 Pool & Queue Deep Dive"
+      }
+     ]
+    },
+    {
+     "id": "9",
+     "title": "9. Accounts",
+     "lessons": [
+      {
+       "id": "32-accounts",
+       "title": "9.0 Service Accounts"
+      },
+      {
+       "id": "32d-code-and-gas",
+       "title": "9.1 Code and Gas"
+      },
+      {
+       "id": "32b-preimage-lookups",
+       "title": "9.2 Preimage Lookups"
+      },
+      {
+       "id": "32e-account-footprint",
+       "title": "9.3 Account Footprint"
+      },
+      {
+       "id": "32c-service-privileges",
+       "title": "9.4 Service Privileges"
+      }
+     ]
+    },
+    {
+     "id": "10",
+     "title": "10. Judgments",
+     "lessons": [
+      {
+       "id": "33-judgments",
+       "title": "10.0 Judgments"
+      },
+      {
+       "id": "33b-judgments-state",
+       "title": "10.1 Judgments State"
+      }
+     ]
+    },
+    {
+     "id": "11",
+     "title": "11. Reporting & Assurance",
+     "lessons": [
+      {
+       "id": "34-reporting",
+       "title": "11.0 Reporting & Assurance"
+      },
+      {
+       "id": "34b-work-reports",
+       "title": "11.1 Work Reports Deep Dive"
+      },
+      {
+       "id": "34d-availability-assurances",
+       "title": "11.2 Availability Assurances"
+      },
+      {
+       "id": "34c-guarantor-assignments",
+       "title": "11.3 Guarantor Assignments"
+      },
+      {
+       "id": "34e-work-report-guarantees",
+       "title": "11.4 Work Report Guarantees"
+      },
+      {
+       "id": "34f-contextual-validity",
+       "title": "11.4.1 Contextual Validity"
+      }
+     ]
+    },
+    {
+     "id": "12",
+     "title": "12. Accumulation",
+     "lessons": [
+      {
+       "id": "35-accumulation",
+       "title": "12.0 Accumulation"
+      },
+      {
+       "id": "35a-preimage-integration",
+       "title": "12.1 Preimage Integration"
+      },
+      {
+       "id": "35b-gas-accounting",
+       "title": "12.2 Gas Accounting"
+      },
+      {
+       "id": "35c-wrangling",
+       "title": "12.3 Wrangling"
+      },
+      {
+       "id": "35d-invocation",
+       "title": "12.4 Invocation"
+      }
+     ]
+    },
+    {
+     "id": "13",
+     "title": "13. Statistics",
+     "lessons": [
+      {
+       "id": "36-statistics",
+       "title": "13.0 Validator Statistics"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "02-lasair-core",
+   "number": "2",
+   "title": "Lasair Core",
+   "description": "How a real client implements the data layer: notation, protocol constants, the JAM codec, Merklization, and block structure.",
+   "lessons": [
+    {
+     "id": "01-notation",
+     "title": "Notation Module"
+    },
+    {
+     "id": "02-definitions",
+     "title": "Definitions Module"
+    },
+    {
+     "id": "03-serialization",
+     "title": "The JAM Codec"
+    },
+    {
+     "id": "04-merklization",
+     "title": "Merklization"
+    },
+    {
+     "id": "05-blocks",
+     "title": "Headers and Blocks"
+    }
+   ]
+  },
+  {
+   "id": "03-mastery",
+   "number": "3",
+   "title": "Mastery",
+   "description": "The full system. PVM interpreter (verified bit-identical to reference polkavm), host calls, and the block import pipeline.",
+   "lessons": [
+    {
+     "id": "01-pvm-architecture",
+     "title": "PVM Architecture"
+    },
+    {
+     "id": "02-host-calls",
+     "title": "Host Calls"
+    },
+    {
+     "id": "03-block-import",
+     "title": "Block Import Pipeline"
+    },
+    {
+     "id": "04-contributing",
+     "title": "Contributing to Lasair"
+    }
+   ]
+  },
+  {
+   "id": "04-conformance",
+   "number": "4",
+   "title": "Conformance Lab",
+   "description": "How a client proves itself. Test vector shapes, the binary codec oracle, the STF suites, and full block-import traces — the part every JAM implementer lives in.",
+   "lessons": [
+    {
+     "id": "01-overview",
+     "title": "How Every Client Proves Itself"
+    },
+    {
+     "id": "02-pure-functions",
+     "title": "Shuffle, Codec, Trie, Erasure"
+    },
+    {
+     "id": "03-stf-basics",
+     "title": "STF I: History, Stats, Authorizations"
+    },
+    {
+     "id": "04-stf-consensus",
+     "title": "STF II: Safrole, Disputes, Assurances"
+    },
+    {
+     "id": "05-stf-work",
+     "title": "STF III: Reports, Preimages, Accumulate"
+    },
+    {
+     "id": "06-traces",
+     "title": "Traces: Full Block Import"
+    },
+    {
+     "id": "07-binary-codec",
+     "title": "The Binary Codec: An Oracle in Every Vector"
+    },
+    {
+     "id": "08-borrowed-failures",
+     "title": "Borrowed Failures: the Seed Campaign"
+    },
+    {
+     "id": "09-mutation-engine",
+     "title": "Becoming the Examiner: the Mutation Engine"
+    },
+    {
+     "id": "10-live-fuzzer",
+     "title": "The Live Fuzzer: Anatomy of a Divergence"
+    },
+    {
+     "id": "11-divergence-field-guide",
+     "title": "A Field Guide to Divergence Classes"
+    }
+   ]
+  },
+  {
+   "id": "05-networking",
+   "number": "5",
+   "title": "JAMNP-S Networking",
+   "description": "How lasair speaks the JAM Simple Networking Protocol on the wire: TLS/QUIC identity, the Preferred Initiator, the block-propagation grid, and the stream catalogue — with an honest conformance matrix.",
+   "lessons": [
+    {
+     "id": "01-overview",
+     "title": "JAMNP-S — The Simple Networking Protocol"
+    },
+    {
+     "id": "02-identity-certs-alpn",
+     "title": "Identity — Certificates, N(k), and ALPN"
+    },
+    {
+     "id": "03-connectivity-preferred-initiator",
+     "title": "Connectivity and the Preferred Initiator"
+    },
+    {
+     "id": "04-grid-propagation",
+     "title": "The Block-Propagation Grid"
+    },
+    {
+     "id": "05-streams-messages-sync",
+     "title": "Streams, Messages, and the Protocol Catalogue"
+    }
+   ]
+  },
+  {
+   "id": "06-m1-exam",
+   "number": "6",
+   "title": "M1 Understanding",
+   "qualifier": "self-test",
+   "collapsible": true,
+   "description": "What a JAM block importer (M1) must get right, for anyone learning the chain: a guide and self-test questions for every Graypaper chapter from 3 to 13, and timed self-tests.",
+   "sections": [
+    {
+     "id": "0",
+     "title": "How the exam works",
+     "lessons": [
+      {
+       "id": "00-how-the-exam-works",
+       "title": "The M1 Examination: rules, grades, strategy"
+      }
+     ]
+    },
+    {
+     "id": "foundations",
+     "title": "Foundations: JAM for Ethereum developers",
+     "lessons": [
+      {
+       "id": "f00-start-here",
+       "title": "F0 · Start here: JAM in five minutes"
+      },
+      {
+       "id": "f01-ethereum-to-jam",
+       "title": "F1 · The Ethereum → JAM dictionary"
+      },
+      {
+       "id": "f02-the-service",
+       "title": "F2 · One order's journey: the service"
+      },
+      {
+       "id": "f03-the-work-package",
+       "title": "F3 · One order's journey: the work-package"
+      },
+      {
+       "id": "f04-refine",
+       "title": "F4 · One order's journey: refine on a core"
+      },
+      {
+       "id": "f05-guarantee",
+       "title": "F5 · One order's journey: the guarantee lands"
+      },
+      {
+       "id": "f06-availability",
+       "title": "F6 · One order's journey: availability"
+      },
+      {
+       "id": "f07-accumulate",
+       "title": "F7 · One order's journey: accumulate"
+      },
+      {
+       "id": "f08-audits-and-disputes",
+       "title": "F8 · One order's journey: audits and disputes"
+      },
+      {
+       "id": "f09-the-chain-around-it",
+       "title": "F9 · The chain around it: blocks, Safrole, finality"
+      },
+      {
+       "id": "f10-symbol-card",
+       "title": "F10 · Symbol card: every Greek letter in plain English"
+      }
+     ]
+    },
+    {
+     "id": "random",
+     "title": "Random pool: Graypaper ch. 3–13",
+     "lessons": [
+      {
+       "id": "ch04-overview",
+       "title": "Ch. 4 Overview (large)"
+      },
+      {
+       "id": "ch03-notation",
+       "title": "Ch. 3 Notation (large)"
+      },
+      {
+       "id": "ch05-header",
+       "title": "Ch. 5 The Header (small)"
+      },
+      {
+       "id": "ch07-recent-history",
+       "title": "Ch. 7 Recent History (small)"
+      },
+      {
+       "id": "ch08-authorization",
+       "title": "Ch. 8 Authorization (small)"
+      },
+      {
+       "id": "ch06-safrole",
+       "title": "Ch. 6 Safrole (large)"
+      },
+      {
+       "id": "ch09-accounts",
+       "title": "Ch. 9 Service Accounts"
+      },
+      {
+       "id": "ch13-statistics",
+       "title": "Ch. 13 Statistics (small)"
+      },
+      {
+       "id": "ch11-reporting-assurance",
+       "title": "Ch. 11 Reporting & Assurance (large)"
+      },
+      {
+       "id": "ch10-disputes",
+       "title": "Ch. 10 Disputes"
+      },
+      {
+       "id": "ch12-accumulation",
+       "title": "Ch. 12 Accumulation (large)"
+      }
+     ]
+    },
+    {
+     "id": "fixed",
+     "title": "Fixed portions: C, D, E",
+     "lessons": [
+      {
+       "id": "c-architecture",
+       "title": "C · JAM architecture"
+      },
+      {
+       "id": "d-rationale",
+       "title": "D · Design rationale"
+      },
+      {
+       "id": "e-pvm",
+       "title": "E · PVM (Appendix A)"
+      },
+      {
+       "id": "e-invocations",
+       "title": "E · PVM invocations & host calls (Appendix B)"
+      },
+      {
+       "id": "e-codec-merklization",
+       "title": "E · Serialization & Merklization (App. C/D)"
+      }
+     ]
+    },
+    {
+     "id": "refs",
+     "title": "References",
+     "lessons": [
+      {
+       "id": "delta-072-080",
+       "title": "What changed: GP 0.7.2 → 0.8.0"
+      },
+      {
+       "id": "war-stories",
+       "title": "War stories, by chapter"
+      }
+     ]
+    },
+    {
+     "id": "mocks",
+     "title": "Mock exams",
+     "lessons": [
+      {
+       "id": "mock-1",
+       "title": "Mock exam 1"
+      },
+      {
+       "id": "mock-2",
+       "title": "Mock exam 2"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

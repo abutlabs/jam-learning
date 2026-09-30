@@ -1,0 +1,4 @@
+(executable
+ (name exercise)
+ (ocamlopt_flags (:standard -w -27-32))
+ (ocamlc_flags (:standard -w -27-32)))

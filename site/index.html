@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="jam-learning: free courses on the JAM protocol from abutlabs. Learn to build a JAM client with lasair, and learn to observe a JAM network with any mix of clients.">
+    <title>jam-learning — Build and Observe JAM</title>
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" href="assets/icons/icon-192.png" type="image/png">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <nav id="site-nav" class="top-nav" aria-label="Main navigation"></nav>
+    <script src="assets/js/nav.js"></script>
+
+    <main class="landing" id="main">
+        <section class="hero">
+            <h1>Learn JAM by<br>building and watching it.</h1>
+            <p class="hero-subtitle">
+                Two courses from abutlabs, grounded in running code: how a JAM client is built,
+                and how to see what a JAM network is doing. Free, open, and checked against the
+                Graypaper and the JAM Implementer Proposals.
+            </p>
+            <a href="lasair/index.html" class="cta-button">Build a JAM client</a>
+            <a href="observability/index.html" class="cta-button cta-secondary">Observe a JAM network</a>
+        </section>
+
+        <section class="tracks">
+            <h2>The courses</h2>
+            <div>
+                <div class="track">
+                    <div class="track-header">
+                        <span class="track-number" aria-hidden="true">&#x1F525;</span>
+                        <h3><a href="lasair/index.html">Learning Lasair</a></h3>
+                        <span class="track-status">Graypaper 0.8.0</span>
+                    </div>
+                    <p>
+                        The Graypaper tells you what a JAM client must do; this course shows how one
+                        does it, with lasair, an OCaml client that passes every published 0.8.0
+                        conformance vector, as the executable reference. The protocol, the codec and
+                        Merklization, the state transitions, the PVM, block import, conformance and
+                        networking, plus M1 Understanding: what a block importer must get right,
+                        chapter by chapter, with self-tests.
+                    </p>
+                    <div class="track-lessons">
+                        <a href="lasair/lesson.html?lesson=01-jam-protocol/01-what-is-jam">Start with JAM</a>
+                        <a href="lasair/exam.html">M1 Understanding</a>
+                        <a href="lasair/playground.html">OCaml playground</a>
+                    </div>
+                </div>
+                <div class="track">
+                    <div class="track-header">
+                        <span class="track-number" aria-hidden="true">&#x1F4E1;</span>
+                        <h3><a href="observability/index.html">Learning Observability</a></h3>
+                        <span class="track-status">any client</span>
+                    </div>
+                    <p>
+                        Run the observability stack, start a network of JAM validators yourself, and
+                        learn to read it: chain health, time to finality, work-package stages, logs,
+                        soak tests, and a real failure traced from its symptom to its cause. Every
+                        lab runs on the data you generate.
+                    </p>
+                    <div class="track-lessons">
+                        <a href="observability/lesson.html?lesson=00-welcome/01-why-observe">Start the course</a>
+                        <a href="observability/lesson.html?lesson=05-case-study/01-the-symptom">The case study</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about">
+            <h2>The abutlabs JAM stack</h2>
+            <p>
+                <strong>lasair</strong>: an independent OCaml JAM client. It passed M1 (block import)
+                on Graypaper 0.7.2, passes every published 0.8.0 vector, and is building M2: authoring,
+                JAMNP-S networking and GRANDPA finality. Its source is not public yet; the course quotes
+                the code it discusses. <a href="lasair/index.html">Its course</a>.
+            </p>
+            <p>
+                <strong><a href="https://github.com/abutlabs/jamswap" target="_blank" rel="noopener">jamswap</a></strong>:
+                an order-book DEX that runs as a JAM service. Its <code>lasair6</code> net is six lasair
+                validators from public images, the network the observability labs use.
+            </p>
+            <p>
+                <strong><a href="https://github.com/abutlabs/observability" target="_blank" rel="noopener">observability</a></strong>:
+                metrics, logs and dashboards for JAM networks with any mix of clients (MIT).
+                <a href="observability/index.html">Its course</a>.
+            </p>
+            <p>
+                The standards they follow: the <a href="https://graypaper.com" target="_blank" rel="noopener">Graypaper</a>
+                and the <a href="https://github.com/polkadot-fellows/JIPs" target="_blank" rel="noopener">JAM Implementer Proposals</a>.
+            </p>
+        </section>
+    </main>
+    <footer>
+        <p><a href="https://github.com/abutlabs/jam-learning">jam-learning on GitHub</a> · MIT license</p>
+    </footer>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>
