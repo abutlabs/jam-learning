@@ -241,7 +241,7 @@ if ('serviceWorker' in navigator && document.querySelector('link[rel="manifest"]
         });
         navigator.serviceWorker.register('sw.js').then((reg) => {
             reg.update().catch(() => {});
-            // After a deploy, ask the active worker to re-precache the lessons.
+            // Ask the active worker to re-precache the lessons (it does so at most once a day).
             if (reg.active) reg.active.postMessage('refresh-lessons');
         }).catch((err) => console.warn('service worker registration failed:', err));
     });

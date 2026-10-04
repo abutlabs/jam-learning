@@ -9,8 +9,9 @@
  *     cache when offline. Stylesheets and scripts carry ?v=<hash> (tools/stamp_assets.py).
  *   - navigation offline miss: fall back to index.html.
  *
- * Bump CACHE_VERSION when the shell changes shape; lesson/data updates flow through
- * stale-while-revalidate without a bump.
+ * Bump CACHE_VERSION when the shell changes shape. Lesson and data updates need no bump:
+ * a page read online refreshes its own cache entry, and the full re-precache that pages
+ * ask for ("refresh-lessons") runs at most once a day.
  */
 
 const CACHE_VERSION = "ll-v8";
@@ -94,6 +95,7 @@ self.addEventListener("install", (event) => {
     if (missedShell.length || missedLessons.length) {
       console.warn("[sw] precache misses", missedShell, missedLessons);
     }
+    await stampRefresh(cache);
     await self.skipWaiting();
   })());
 });
@@ -135,11 +137,22 @@ self.addEventListener("fetch", (event) => {
   })());
 });
 
-// The page can ask for a re-precache after a deploy (see app.js).
+// Every page asks for a re-precache (see app.js): about 125 uncached requests, so it runs
+// at most once a day. Per page view it got readers rate-limited by GitHub Pages.
+const REFRESH_STAMP = "sw-refreshed-at";
+const REFRESH_EVERY_MS = 24 * 60 * 60 * 1000;
+
+function stampRefresh(cache) {
+  return cache.put(REFRESH_STAMP, new Response(String(Date.now())));
+}
+
 self.addEventListener("message", (event) => {
   if (event.data === "refresh-lessons") {
     event.waitUntil((async () => {
       const cache = await caches.open(SHELL_CACHE);
+      const last = await cache.match(REFRESH_STAMP);
+      if (last && Date.now() - Number(await last.text()) < REFRESH_EVERY_MS) return;
+      await stampRefresh(cache);     // before the work, so pages opened meanwhile skip it
       try {
         const res = await fetch("data/course.json", { credentials: "same-origin", cache: "reload" });
         if (res.ok) {

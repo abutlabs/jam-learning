@@ -152,6 +152,14 @@ class Browser:
 
 
 class Quiet(http.server.SimpleHTTPRequestHandler):
+    served = 0                      # responses sent: what a page view costs the host
+    lock = threading.Lock()
+
+    def send_response(self, *args, **kwargs):
+        with Quiet.lock:
+            Quiet.served += 1
+        super().send_response(*args, **kwargs)
+
     def log_message(self, *args):
         pass
 
@@ -314,6 +322,17 @@ def offline(b, base, httpd):
                  return n; })()"""
     ok = b.wait("(%s).then(n => n >= %d)" % (cached, lessons), 60)
     check("the service worker caches the shell and every lesson", ok, "%s cached, %d lessons" % (b.js(cached), lessons))
+    # Online, a lesson costs a handful of requests: the worker re-downloads the course
+    # (about 125 requests) at most once a day, not on every page view (GitHub Pages
+    # rate-limits a reader who does).
+    views, before = listed("lasair")[:5], Quiet.served
+    for path in views:
+        b.go(base + "lasair/lesson.html?lesson=" + path)
+        b.wait("(document.getElementById('lesson-body') || {innerText: ''}).innerText.length > 200", 10)
+        time.sleep(1)
+    time.sleep(2)
+    per_view = (Quiet.served - before) / len(views)
+    check("reading a lesson online costs a handful of requests", per_view < 40, "%.0f per page view" % per_view)
     httpd.shutdown()
     httpd.server_close()
     b.go(base + "lasair/lesson.html?lesson=02-lasair-core/03-serialization")
