@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
 """Drive the site in a real browser (headless Chrome over the DevTools protocol) and check
-what a render sweep cannot: M1 Understanding's flashcards, timed self-test and ledger,
-the lasair section working offline, and the shared top bar at phone width.
+what a render sweep cannot: every page and every listed lesson works with no network,
+M1 Understanding's flashcards, timed self-test and ledger, the lasair section working
+offline, and the shared top bar at phone width.
 
-    python3 tools/test_browser.py        # serves site/ itself on a free local port
+    python3 tools/test_browser.py        # builds the site (tools/build.sh) and serves the
+                                         # build under /jam-learning/, as Pages does
 
-Needs Google Chrome (set CHROME to its path if it is not in the usual place). The offline
-check stops the local server and reloads pages, which only the service worker can then
-answer. Stdlib only. One line per check; exit 0 when every check passes.
+Needs Google Chrome (set CHROME to its path if it is not in the usual place). Chrome runs
+as if on a plane: no host but 127.0.0.1 resolves, so a page that needs the internet fails
+here. The offline check stops the local server and reloads pages, which only the service
+worker can then answer. Stdlib only. One line per check; exit 0 when every check passes.
 """
 import base64
 import functools
+import glob
 import http.server
 import json
 import os
@@ -94,6 +98,7 @@ class Browser:
         self.proc = subprocess.Popen(
             [CHROME, "--headless=new", "--use-mock-keychain", "--password-store=basic",
              "--disable-gpu", "--no-first-run", "--no-default-browser-check",
+             "--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1",     # no network
              "--user-data-dir=" + self.prof, "--remote-debugging-port=%d" % self.port, "about:blank"],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         for _ in range(100):
@@ -104,6 +109,7 @@ class Browser:
             except Exception:
                 time.sleep(0.2)
         self.n = 0
+        self.events = []        # what the page reported since the last go()
         self.cdp("Page.enable")
         self.cdp("Runtime.enable")
 
@@ -112,6 +118,8 @@ class Browser:
         self.ws.send(json.dumps({"id": self.n, "method": method, "params": params}))
         while True:
             m = json.loads(self.ws.recv())
+            if "method" in m:
+                self.events.append(m)
             if m.get("id") == self.n:
                 if "error" in m:
                     raise RuntimeError("%s: %s" % (method, m["error"]))
@@ -135,6 +143,7 @@ class Browser:
         return False
 
     def go(self, url):
+        self.events = []
         self.cdp("Page.navigate", url=url)
         return self.wait("document.readyState === 'complete'")
 
@@ -148,13 +157,73 @@ class Quiet(http.server.SimpleHTTPRequestHandler):
 
 
 def serve():
-    handler = functools.partial(Quiet, directory=SITE)
+    # test what readers get: the build, under the same sub-path as the Pages site
+    out = tempfile.mkdtemp(prefix="jam-learning-test-")
+    subprocess.run([os.path.join(ROOT, "tools", "build.sh"), os.path.join(out, "jam-learning")],
+                   check=True, stdout=subprocess.DEVNULL)
+    handler = functools.partial(Quiet, directory=out)
     httpd = http.server.ThreadingHTTPServer(("127.0.0.1", 0), handler)
     threading.Thread(target=httpd.serve_forever, daemon=True).start()
-    return httpd, "http://127.0.0.1:%d/" % httpd.server_address[1]
+    return httpd, "http://127.0.0.1:%d/jam-learning/" % httpd.server_address[1]
 
 
 # ---- the checks ------------------------------------------------------------------
+def listed(section):
+    course = json.load(open(os.path.join(SITE, section, "data", "course.json")))
+    return ["%s/%s" % (t["id"], l["id"]) for t in course["tracks"]
+            for l in t.get("lessons", []) + [l for s in t.get("sections", []) for l in s["lessons"]]]
+
+
+def pages(b, base):
+    # Every page as a reader on a plane gets it: no script error, no failed request, and no
+    # request to another host. The one exception: a lecture's YouTube video, which needs
+    # the internet by nature (its written notes must still load).
+    local = (base.split("/jam-learning/")[0] + "/", "data:", "blob:")
+    video = ("https://www.youtube.com/embed/",)
+    b.cdp("Network.enable")                 # only here: it reports every request
+    urls = ["lasair/lesson.html?lesson=011-graypaper-lectures/03-size-synchrony"]   # a lecture
+    for path in sorted(glob.glob(os.path.join(SITE, "**", "*.html"), recursive=True)):
+        page = os.path.relpath(path, SITE)
+        urls.append(page + ("?lesson=" + listed(os.path.dirname(page))[0] if page.endswith("lesson.html") else ""))
+    for page in urls:
+        b.go(base + page)
+        time.sleep(1.5)
+        b.js("0")                           # collect what the page reported meanwhile
+        sent = {e["params"]["requestId"]: e["params"]["request"]["url"]
+                for e in b.events if e["method"] == "Network.requestWillBeSent"}
+        problems = (["outside: " + u for u in sorted(set(sent.values()))
+                     if not u.startswith(local + video)]
+                    + ["failed: %s (%s)" % (sent.get(e["params"]["requestId"], "?"), e["params"]["errorText"])
+                       for e in b.events if e["method"] == "Network.loadingFailed"
+                       and not sent.get(e["params"]["requestId"], "").startswith(video)]
+                    + ["error: " + e["params"]["exceptionDetails"].get("exception", {}).get(
+                        "description", e["params"]["exceptionDetails"].get("text", "")).splitlines()[0]
+                       for e in b.events if e["method"] == "Runtime.exceptionThrown"])
+        check("no network: %s" % page, not problems, "; ".join(problems[:3]))
+    b.cdp("Network.disable")
+
+
+def lessons(b, base):
+    # A lesson that fails to load says so in a warning callout; a rendered one has a body.
+    rendered = """(() => { const b = document.getElementById('lesson-body');
+                   if (!b) return null; if (b.querySelector('.callout-warning .callout-title') &&
+                   /did not load|not found/i.test(b.innerText.slice(0, 300))) return 'failed';
+                   return b.innerText.trim().length > 200 ? 'ok' : null; })()"""
+    for section in ("lasair", "observability", "mixed-testnet"):
+        paths = listed(section)
+        bad = []
+        for path in paths:
+            b.go(base + section + "/lesson.html?lesson=" + path)
+            b.wait("(%s) !== null" % rendered, 10)
+            if b.js(rendered) != "ok":
+                bad.append(path)
+        check("every listed lesson renders: %s" % section, not bad,
+              "%d lessons%s" % (len(paths), "; failed: " + ", ".join(bad[:5]) if bad else ""))
+    # the sweep filled the worker's runtime cache: clear it so the offline check sees only
+    # what the worker precaches
+    b.go("about:blank")
+    b.cdp("Storage.clearDataForOrigin", origin=base.split("/jam-learning/")[0],
+          storageTypes="service_workers,cache_storage")
 def flashcards(b, base):
     b.go(base + "lasair/exam.html")
     check("M1 Understanding loads its chapters",
@@ -274,6 +343,8 @@ def main():
     httpd, base = serve()
     b = Browser()
     try:
+        pages(b, base)
+        lessons(b, base)
         flashcards(b, base)
         run_through(b)
         ledger(b)

@@ -3,7 +3,7 @@
  * Goal: the whole course, the exam-prep track and the Exam Room work offline on a
  * phone after one online visit. Strategy:
  *   - install: precache the app shell (pages, css, js, data) and EVERY lesson listed in
- *     data/course.json, plus the CDN scripts the pages load. The OCaml toplevel
+ *     data/course.json. The OCaml toplevel
  *     (playground) is excluded: ~8 MB and only useful with a keyboard.
  *   - fetch: network-first (always the current deploy when online), falling back to the
  *     cache when offline. Stylesheets and scripts carry ?v=<hash> (tools/stamp_assets.py).
@@ -13,7 +13,7 @@
  * stale-while-revalidate without a bump.
  */
 
-const CACHE_VERSION = "ll-v7";
+const CACHE_VERSION = "ll-v8";
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = SHELL_CACHE; // one cache, so refreshed entries replace stale ones
 
@@ -31,6 +31,7 @@ const SHELL = [
   "../assets/css/conformance.css",
   "../assets/css/mutation.css",
   "../assets/css/divergences.css",
+  "../assets/css/vendor/highlight-github-dark.min.css",
   "../assets/js/nav.js",
   "../assets/js/app.js",
   "../assets/js/lesson.js",
@@ -38,6 +39,9 @@ const SHELL = [
   "../assets/js/conformance.js",
   "../assets/js/mutation.js",
   "../assets/js/divergences.js",
+  "../assets/js/vendor/marked.min.js",
+  "../assets/js/vendor/highlight.min.js",
+  "../assets/js/vendor/highlight-ocaml.min.js",
   "data/course.json",
   "data/exam.json",
   "data/divergences.json",
@@ -45,13 +49,6 @@ const SHELL = [
   "../assets/icons/icon-192.png",
   "../assets/icons/icon-512.png",
   "../assets/icons/icon-maskable-512.png",
-];
-
-const CDN = [
-  "https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js",
-  "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js",
-  "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/ocaml.min.js",
-  "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css",
 ];
 
 const EXCLUDE = [/\/js\/toplevel\.js$/, /\/data\/conformance\//];
@@ -75,7 +72,7 @@ async function addAllTolerant(cache, urls, init) {
       // cache: "reload" bypasses the HTTP cache so a deploy never precaches stale
       // files (Netlify serves js/css with a one-year max-age).
       const res = await fetch(u, Object.assign({ cache: "reload" }, init));
-      if (res.ok || res.type === "opaque") await cache.put(u, res);
+      if (res.ok) await cache.put(u, res);
       else missed.push(u);
     } catch (e) {
       missed.push(u);
@@ -88,7 +85,6 @@ self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(SHELL_CACHE);
     const missedShell = await addAllTolerant(cache, SHELL, { credentials: "same-origin" });
-    await addAllTolerant(cache, CDN, { mode: "no-cors" });
     let lessons = [];
     try {
       const res = await cache.match("data/course.json") || await fetch("data/course.json", { cache: "reload" });
@@ -111,29 +107,26 @@ self.addEventListener("activate", (event) => {
 });
 
 function isExcluded(url) { return EXCLUDE.some((re) => re.test(url.pathname)); }
-function isCdn(url) { return url.origin === "https://cdnjs.cloudflare.com"; }
 
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
-  const sameOrigin = url.origin === self.location.origin;
-  if (!sameOrigin && !isCdn(url)) return;
-  if (sameOrigin && isExcluded(url)) return;
+  if (url.origin !== self.location.origin || isExcluded(url)) return;
 
   event.respondWith((async () => {
     // Network first: online you always get the current deploy; offline, the cache.
     // (Cache-first served stale styles and scripts after deploys.)
     try {
       const res = await fetch(req, { cache: "no-cache" });
-      if (res && (res.ok || res.type === "opaque")) {
+      if (res && res.ok) {
         const cache = await caches.open(RUNTIME_CACHE);
         cache.put(req, res.clone()).catch(() => {});
         return res;
       }
       if (res && res.status !== 401) return res;
     } catch (e) { /* offline: fall through to the cache */ }
-    const cached = await caches.match(req, { ignoreSearch: sameOrigin });
+    const cached = await caches.match(req, { ignoreSearch: true });
     if (cached) return cached;
     if (req.mode === "navigate") {
       return (await caches.match("index.html")) || new Response("Offline and not cached yet.", { status: 503 });

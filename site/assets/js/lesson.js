@@ -343,33 +343,14 @@ async function loadLesson(lessonPath) {
     document.getElementById('lesson-title').textContent = info.lesson.title;
     document.title = `${info.lesson.title} - ${COURSE_DATA.title || 'jam-learning'}`;
 
-    // Fetch markdown content
-    // Try multiple paths for flexibility in how site is served
-    const paths = [
-        `../content/${lessonPath}.md`,
-        `content/${lessonPath}.md`,
-        `/content/${lessonPath}.md`
-    ];
-
-    let response = null;
-    let contentPath = paths[0];
-
-    for (const path of paths) {
-        try {
-            const r = await fetch(path);
-            if (r.ok) {
-                response = r;
-                contentPath = path;
-                break;
-            }
-        } catch (e) {
-            // Try next path
-        }
-    }
+    // Every section keeps its lessons beside lesson.html, in content/ (the service worker
+    // precaches them under the same relative URL)
+    const contentPath = `content/${lessonPath}.md`;
 
     try {
-        if (!response || !response.ok) {
-            throw new Error('Content not found');
+        const response = await fetch(contentPath);
+        if (!response.ok) {
+            throw new Error(`Content not found (${response.status})`);
         }
 
         const markdown = await response.text();
@@ -439,15 +420,15 @@ async function loadLesson(lessonPath) {
     } catch (error) {
         console.error('Failed to load lesson:', error);
 
+        // Every listed lesson exists (tools/check.py), so a failure here is a loading problem:
+        // say what failed rather than pretend the lesson is unwritten
         document.getElementById('lesson-body').innerHTML = `
-            <div class="callout callout-info">
-                <div class="callout-title">Coming Soon</div>
-                <p>This lesson is currently being written. Check back soon!</p>
-                <p>In the meantime, the <a href="index.html">course overview</a> lists every lesson.</p>
+            <div class="callout callout-warning">
+                <div class="callout-title">This lesson did not load</div>
+                <p><code>${escapeHtml(contentPath)}</code>: ${escapeHtml(error.message || String(error))}</p>
+                <p>Reload the page. If it keeps failing, the <a href="index.html">course overview</a>
+                lists every lesson, and an issue on GitHub with this message helps us fix it.</p>
             </div>
-
-            <h2>What This Lesson Will Cover</h2>
-            <p><em>${info.lesson.title}</em> - Content coming soon.</p>
         `;
     }
 

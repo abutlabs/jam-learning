@@ -1,6 +1,28 @@
 # jam-learning
 
-**Read it online: https://abutlabs.github.io/jam-learning/**
+## Run it locally
+
+Needs only Python 3 (standard library; no packages, no Node). Once built it works with no
+internet: every page and lesson, everything but the YouTube lecture videos.
+
+```sh
+git clone https://github.com/abutlabs/jam-learning.git
+cd jam-learning
+tools/build.sh /tmp/preview/jam-learning
+
+cd /tmp/preview && python3 -m http.server 8000 --bind 127.0.0.1
+```
+
+Leave the server running and open in a browser:
+
+- the whole site: http://127.0.0.1:8000/jam-learning/
+- Learning Lasair: http://127.0.0.1:8000/jam-learning/lasair/
+
+`Ctrl-C` stops the server. Re-run `tools/build.sh` after changing anything under `site/`.
+While editing, skip the build: `cd site && python3 -m http.server 8000`, then open
+http://127.0.0.1:8000/lasair/.
+
+**Or read it online: https://abutlabs.github.io/jam-learning/**
 
 Free material from abutlabs for JAM client teams and service builders, grounded in
 running code:
@@ -29,30 +51,22 @@ The standards: the [Graypaper](https://graypaper.com) and the
 ```
 site/index.html               the front page: the three sections
 site/mixed-testnet/           a mixed-testnet JAM service: jamswap on mixed-client nets, bring your client or service
-site/assets/                  the one reader both courses share (css, js, icons, the OCaml toplevel)
+site/assets/                  the one reader both courses share (css, js, icons, the OCaml toplevel,
+                              and in */vendor/ the markdown and highlighting libraries)
 site/lasair/                  Learning Lasair: pages, data/course.json, content/<track>/<lesson>.md
 site/observability/           Learning Observability: pages, data/course.json, content/...
 exercises/lasair/             standalone dune projects for the lasair course
 browser/                      the source of the in-browser OCaml toplevel (site/assets/js/toplevel.js)
 tools/check.py                the checks a change must pass (links, lesson lists, public-site rules)
 tools/build.sh                check, copy, stamp: what the Pages workflow runs
-tools/test_browser.py         the interactive flows in real Chrome: M1 Understanding, offline, phone width
+tools/test_browser.py         the build in real Chrome with no internet: every page and lesson,
+                              M1 Understanding, offline, phone width
 tools/lasair/                 builders of the lasair section's data (M1 Understanding, the explorers)
 ```
 
 A lesson is plain markdown in `site/<section>/content/<track>/<lesson>.md`, listed in that
 section's `data/course.json`. The reader renders it in the browser; there is no build step
 beyond copying and stamping asset hashes.
-
-## Preview locally
-
-```sh
-tools/build.sh /tmp/preview/jam-learning
-(cd /tmp/preview && python3 -m http.server 8000 --bind 127.0.0.1)
-open http://127.0.0.1:8000/jam-learning/
-```
-
-While editing, `python3 -m http.server` in `site/` works too.
 
 ## Rules for content
 

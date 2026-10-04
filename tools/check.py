@@ -16,6 +16,8 @@
       /jam-learning/, so "/x" would leave it)
 - Every page has the one top bar: an empty <nav id="site-nav"> followed by the script
   assets/js/nav.js, which fills it, and no bar of its own (nav-links, a theme toggle).
+- No page loads a script or stylesheet from another host: the libraries live in
+  assets/*/vendor/, so a local preview needs only Python and works offline.
 
     python3 tools/check.py
 
@@ -44,6 +46,8 @@ ROOT_ABS = re.compile(r"""(?:href|src)\s*=\s*["']/(?!/)""")
 NAV_SLOT = '<nav id="site-nav" class="top-nav" aria-label="Main navigation"></nav>'
 SITE_NAV = re.compile(re.escape(NAV_SLOT) + r'\s*<script src="((?:\.\./)*)assets/js/nav\.js"></script>')
 OWN_BAR = re.compile(r'class="nav-links"|id="theme-toggle"|class="top-nav"')
+EXT = r'"((?:https?:)?//[^"]+)"'
+EXTERNAL = re.compile(r'<script[^>]*\ssrc=' + EXT + r'|<link(?=[^>]*rel="stylesheet")[^>]*\shref=' + EXT)
 
 
 def lessons(section):
@@ -122,6 +126,8 @@ def main():
                             % (rel, "../" * depth))
         if OWN_BAR.search(html.replace(NAV_SLOT, "")):
             problems.append("%s: writes its own top bar; assets/js/nav.js is the only one" % rel)
+        for m in EXTERNAL.finditer(html):
+            problems.append("%s: loads %s from another host (vendor it under assets/)" % (rel, m.group(1) or m.group(2)))
 
     for p in problems:
         print(p)
