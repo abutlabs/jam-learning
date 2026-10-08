@@ -248,9 +248,11 @@ if ('serviceWorker' in navigator && document.querySelector('link[rel="manifest"]
 }
 
 // ============================================
-// Symbol tooltips: every Greek letter explains itself (tap or hover)
+// Tooltips: symbols and terms explain themselves (hover, tap or focus)
 // ============================================
-// Names follow the Gray Paper 0.8.0 preamble. Tap a symbol on a phone to see it.
+// Every Greek letter, on every page; names follow the Gray Paper 0.8.0 preamble. Pages
+// that call useGlossary() (M1 Understanding) also get its terms and abbreviations, each
+// at its first use in a section.
 
 const SYMBOLS = {
     'σ': 'σ (sigma): the whole chain state',
@@ -275,53 +277,164 @@ const SYMBOLS = {
     'Ψ': 'Ψ (psi): a PVM run. Ψ_I is-authorized, Ψ_R refine, Ψ_A accumulate',
 };
 const SYMBOL_RE = new RegExp('[' + Object.keys(SYMBOLS).join('') + ']', 'g');
-// Buttons are skipped: tapping a symbol inside an answer option must select the option.
-const SYMBOL_SKIP = /^(PRE|CODE|SCRIPT|STYLE|SVG|TEXTAREA|SELECT|OPTION|BUTTON|A)$/;
+// Never inside these: tapping a tip in an answer option, a link or a <summary> must still
+// press it. Nor in a .no-tips element (a card's header). Terms also stay out of headings,
+// where a new section starts.
+const TIP_SKIP = /^(PRE|CODE|SCRIPT|STYLE|SVG|TEXTAREA|SELECT|OPTION|BUTTON|A|SUMMARY)$/;
+const HEADING = /^H[1-6]$/;
+const TIP_TARGETS = ['lesson-body', 'flash-card', 'mock-card', 'mock-result'];
 
-function annotateSymbols(root) {
-    if (!root || !root.ownerDocument) return;
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-        acceptNode(n) {
-            for (let p = n.parentNode; p && p !== root.parentNode; p = p.parentNode) {
-                if (p.nodeType === 1 && (SYMBOL_SKIP.test(p.nodeName.toUpperCase()) || p.classList.contains('sym'))) return NodeFilter.FILTER_REJECT;
-            }
-            SYMBOL_RE.lastIndex = 0;
-            return SYMBOL_RE.test(n.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
-        }
-    });
-    const nodes = [];
-    while (walker.nextNode()) nodes.push(walker.currentNode);
-    for (const n of nodes) {
-        const frag = document.createDocumentFragment();
-        let last = 0;
-        const text = n.nodeValue;
-        text.replace(SYMBOL_RE, (ch, i) => {
-            if (i > last) frag.appendChild(document.createTextNode(text.slice(last, i)));
+let TERMS = null;           // {re, byForm}, once useGlossary() has loaded the glossary
+
+// Wrap each match of re in root's text in <span class=cls data-tip>. lookup(match) gives
+// {key, tip}, or null to leave the match alone. once: a key only at its first match in
+// each section (a heading starts the next); spans from an earlier pass count as matches.
+function annotate(root, re, cls, lookup, once) {
+    const seen = new Set();
+    const wrap = (node) => {
+        const text = node.nodeValue;
+        let frag = null, last = 0, m;
+        re.lastIndex = 0;
+        while ((m = re.exec(text))) {
+            const hit = lookup(m);
+            if (!hit || (once && seen.has(hit.key))) continue;
+            seen.add(hit.key);
+            frag = frag || document.createDocumentFragment();
+            if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
             const span = document.createElement('span');
-            span.className = 'sym';
+            span.className = cls;
             span.tabIndex = 0;
-            span.dataset.tip = SYMBOLS[ch];
-            span.textContent = ch;
+            span.dataset.key = hit.key;
+            span.dataset.tip = hit.tip;
+            span.textContent = m[0];
             frag.appendChild(span);
-            last = i + 1;
-            return ch;
-        });
+            last = m.index + m[0].length;
+        }
+        if (!frag) return;
         if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
-        n.parentNode.replaceChild(frag, n);
-    }
+        node.parentNode.replaceChild(frag, node);
+    };
+    (function walk(el) {
+        for (let c = el.firstChild, next; c; c = next) {
+            next = c.nextSibling;
+            if (c.nodeType === Node.TEXT_NODE) wrap(c);
+            else if (c.nodeType !== Node.ELEMENT_NODE) continue;
+            else if (c.classList.contains(cls)) seen.add(c.dataset.key);
+            else if (once && HEADING.test(c.nodeName)) seen.clear();
+            else if (!TIP_SKIP.test(c.nodeName.toUpperCase()) && !c.matches('.sym, .term, .no-tips')) walk(c);
+        }
+    })(root);
 }
 
-// Watch the lesson body and the Exam Room cards; annotate whatever gets rendered.
-function watchSymbols() {
-    const targets = ['lesson-body', 'flash-card', 'mock-card', 'mock-result']
-        .map((id) => document.getElementById(id)).filter(Boolean);
-    let pending = false;
-    const run = () => { pending = false; targets.forEach(annotateSymbols); };
-    const obs = new MutationObserver(() => { if (!pending) { pending = true; setTimeout(run, 0); } }); // not rAF: paused in background tabs
-    targets.forEach((t) => obs.observe(t, { childList: true, subtree: true }));
-    run();
+// Glossary entries [{term, forms, tip}] (data/glossary.json) as one regex over every
+// form, longest first so "lookup anchor" beats "anchor". A form also matches
+// with a plural s, and a lower-case form also with a capital first letter. No letter,
+// digit, _ or - may come before a match ("in-core" is not "core"), nor a letter, digit,
+// _ or file extension after it ("header.tex" is a file). tools/lasair/
+// build_glossary_data.py counts uses with the same rule.
+function compileTerms(entries) {
+    const byForm = new Map();
+    for (const e of entries) {
+        const hit = { key: e.term, tip: `${e.term}: ${e.tip}` };
+        for (const f of e.forms) {
+            byForm.set(f, hit);
+            if (/^\p{Ll}/u.test(f)) byForm.set(f[0].toUpperCase() + f.slice(1), hit);
+        }
+    }
+    const alts = [...byForm.keys()].sort((a, b) => b.length - a.length)
+        .map((f) => f.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const re = new RegExp(`(?<![\\p{L}\\p{N}_-])(${alts.join('|')})(?:e?s)?(?![\\p{L}\\p{N}_]|\\.[\\p{L}\\p{N}])`, 'gu');
+    return { re, byForm };
 }
-document.addEventListener('DOMContentLoaded', watchSymbols);
+
+function annotateTips(root) {
+    if (!root || !root.ownerDocument) return;
+    annotate(root, SYMBOL_RE, 'sym', (m) => ({ key: m[0], tip: SYMBOLS[m[0]] }), false);
+    if (TERMS) annotate(root, TERMS.re, 'term', (m) => TERMS.byForm.get(m[1]), true);
+}
+
+function annotateWatched() {
+    if (tipOwner && !tipOwner.isConnected) hideTip();        // its card was replaced
+    TIP_TARGETS.map((id) => document.getElementById(id)).filter(Boolean).forEach(annotateTips);
+}
+
+// Watch the lesson body and M1 Understanding's cards; annotate whatever gets rendered.
+function watchTips() {
+    let pending = false;
+    const obs = new MutationObserver(() => {
+        if (pending) return;
+        pending = true;
+        setTimeout(() => { pending = false; annotateWatched(); }, 0);   // not rAF: paused in background tabs
+    });
+    TIP_TARGETS.map((id) => document.getElementById(id)).filter(Boolean)
+        .forEach((t) => obs.observe(t, { childList: true, subtree: true }));
+    annotateWatched();
+}
+document.addEventListener('DOMContentLoaded', watchTips);
+
+let glossaryLoad = null;
+function useGlossary() {
+    glossaryLoad = glossaryLoad || fetch('data/glossary.json')
+        .then((r) => {
+            if (!r.ok) throw new Error(`glossary.json: HTTP ${r.status}`);
+            return r.json();
+        })
+        .then((entries) => { TERMS = compileTerms(entries); annotateWatched(); })
+        .catch((err) => console.warn('glossary not loaded:', err));
+    return glossaryLoad;
+}
+
+// One floating tip for every span, kept inside the viewport: a CSS ::after tip ran off
+// the side of a phone and was clipped inside scrolling tables. Text before the first
+// ": " is the tip's bold name.
+let tipBox = null, tipOwner = null;
+
+function showTip(span) {
+    if (!tipBox) {
+        tipBox = document.createElement('div');
+        tipBox.id = 'tip';
+        tipBox.className = 'tip';
+        tipBox.setAttribute('role', 'tooltip');
+        document.body.appendChild(tipBox);
+    }
+    if (tipOwner && tipOwner !== span) tipOwner.removeAttribute('aria-describedby');
+    const text = span.dataset.tip, cut = text.indexOf(': ');
+    const name = document.createElement('b');
+    name.textContent = cut > 0 ? text.slice(0, cut) : '';
+    tipBox.replaceChildren(name, cut > 0 ? text.slice(cut + 1) : text);
+    tipOwner = span;
+    span.setAttribute('aria-describedby', 'tip');
+    tipBox.hidden = false;
+    placeTip();
+}
+
+function placeTip() {
+    const r = tipOwner.getBoundingClientRect(), gap = 6, edge = 8;
+    const vw = document.documentElement.clientWidth;
+    const w = tipBox.offsetWidth, h = tipBox.offsetHeight;
+    tipBox.style.left = Math.max(edge, Math.min(r.left + r.width / 2 - w / 2, vw - w - edge)) + 'px';
+    tipBox.style.top = (r.top - h - gap >= edge ? r.top - h - gap : r.bottom + gap) + 'px';
+}
+
+function hideTip() {
+    if (tipOwner) tipOwner.removeAttribute('aria-describedby');
+    tipOwner = null;
+    if (tipBox) tipBox.hidden = true;
+}
+
+const tipSpan = (el) => (el && el.closest ? el.closest('.sym, .term') : null);
+document.addEventListener('mouseover', (e) => { const s = tipSpan(e.target); if (s && s !== tipOwner) showTip(s); });
+document.addEventListener('mouseout', (e) => {
+    const s = tipSpan(e.target);
+    if (!s || s.contains(e.relatedTarget)) return;
+    const f = tipSpan(document.activeElement);      // a tapped or tabbed-to tip stays
+    if (f) showTip(f); else hideTip();
+});
+document.addEventListener('focusin', (e) => { const s = tipSpan(e.target); if (s) showTip(s); });
+document.addEventListener('focusout', (e) => { if (tipSpan(e.target) === tipOwner) hideTip(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && tipOwner) hideTip(); });
+window.addEventListener('scroll', () => { if (tipOwner) placeTip(); }, { capture: true, passive: true });
+window.addEventListener('resize', () => { if (tipOwner) placeTip(); });   // a phone's address bar comes and goes
 
 // Export for use in other scripts
 window.LearningLasair = {
@@ -335,6 +448,7 @@ window.LearningLasair = {
     isLessonComplete,
     getTrackProgress,
     trackLessons,
-    annotateSymbols,
+    annotateTips,
+    useGlossary,
     SYMBOLS
 };

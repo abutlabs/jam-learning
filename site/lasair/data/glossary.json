@@ -1,0 +1,1278 @@
+[
+ {
+  "term": "JAM (Join-Accumulate Machine)",
+  "forms": [
+   "JAM"
+  ],
+  "tip": "The protocol this course is about, specified in the Gray Paper. Work is split in two: a heavy part run in-core by a few validators, and a light part accumulated on-chain by every validator."
+ },
+ {
+  "term": "GP (Gray Paper)",
+  "forms": [
+   "GP",
+   "Gray Paper",
+   "Graypaper"
+  ],
+  "tip": "JAM's formal specification, by Gavin Wood. This course follows version 0.8.0. Names such as eq:valcount or sec:keyrotation are labels of its equations and sections."
+ },
+ {
+  "term": "M1 (milestone 1)",
+  "forms": [
+   "M1"
+  ],
+  "tip": "The first milestone of a JAM implementation: a block importer, which checks each block and computes the state it leads to. It covers Gray Paper chapters 3 to 13."
+ },
+ {
+  "term": "block importer",
+  "forms": [
+   "block importer",
+   "importer",
+   "block import"
+  ],
+  "tip": "A client that checks each incoming block and computes the state it leads to. M1 asks for exactly this."
+ },
+ {
+  "term": "lasair",
+  "forms": [
+   "lasair"
+  ],
+  "tip": "abutlabs' JAM client, written in OCaml. It passes every published Gray Paper 0.8.0 conformance vector, and the course uses its code and its bugs as examples."
+ },
+ {
+  "term": "PolkaJam",
+  "forms": [
+   "PolkaJam"
+  ],
+  "tip": "Parity's JAM client. lasair's results are compared with it byte for byte, and both run on shared test nets."
+ },
+ {
+  "term": "jamswap",
+  "forms": [
+   "jamswap"
+  ],
+  "tip": "abutlabs' order-book exchange that runs as a JAM service: refine matches the orders in a batch auction, accumulate settles the balances. The course's running example."
+ },
+ {
+  "term": "OCaml",
+  "forms": [
+   "OCaml"
+  ],
+  "tip": "A functional programming language with strong static types. lasair is written in it."
+ },
+ {
+  "term": "tiny (test configuration)",
+  "forms": [
+   "tiny"
+  ],
+  "tip": "The small parameter set of the test vectors: 6 validators, 2 cores and 12-slot epochs. \"full\" is the real one: up to 1,023 validators, 341 cores and 600-slot epochs."
+ },
+ {
+  "term": "fuzzer",
+  "forms": [
+   "fuzzer"
+  ],
+  "tip": "A tester that feeds a client many generated blocks and compares its state with a reference client's. The official conformance fuzzer found most of the lasair divergences this course studies."
+ },
+ {
+  "term": "RFC (request for comments)",
+  "forms": [
+   "RFC"
+  ],
+  "tip": "A numbered proposal or standard. RFC 7693 is the IETF document that defines Blake2; RFC-31, CoreJam, is the Polkadot Fellowship proposal JAM grew from."
+ },
+ {
+  "term": "CoreJam",
+  "forms": [
+   "CoreJam"
+  ],
+  "tip": "RFC-31, the Polkadot Fellowship proposal before the Gray Paper: a collect, refine, join and accumulate model, which JAM grew from."
+ },
+ {
+  "term": "PR (pull request)",
+  "forms": [
+   "PR"
+  ],
+  "tip": "A proposed change to a repository. \"GP PR #526\" is a change to the Gray Paper's text."
+ },
+ {
+  "term": "EOA (externally owned account)",
+  "forms": [
+   "EOA",
+   "externally owned account"
+  ],
+  "tip": "An Ethereum account controlled by a private key, such as a user's wallet. It signs transactions and has a nonce. JAM has none: every account is a service, run by its own code, and no user calls a service with a signed transaction."
+ },
+ {
+  "term": "nonce",
+  "forms": [
+   "nonce"
+  ],
+  "tip": "A counter in each Ethereum account: every transaction must carry the next number, so a signed transaction cannot be replayed. JAM services need none, since no secret key controls them."
+ },
+ {
+  "term": "smart contract",
+  "forms": [
+   "smart contract",
+   "contract account"
+  ],
+  "tip": "Code deployed on a chain, with its own storage and balance, run by every node when called. A JAM service is the closest match, but its code has two entry points, refine and accumulate."
+ },
+ {
+  "term": "EVM (Ethereum Virtual Machine)",
+  "forms": [
+   "EVM"
+  ],
+  "tip": "Ethereum's virtual machine: a 256-bit stack machine that charges gas per opcode. JAM's counterpart is the PVM."
+ },
+ {
+  "term": "mempool",
+  "forms": [
+   "mempool"
+  ],
+  "tip": "The pool of pending transactions that Ethereum nodes pass around until a block includes them. JAM has none: work-packages go straight to the 3 validators serving one core."
+ },
+ {
+  "term": "calldata",
+  "forms": [
+   "calldata"
+  ],
+  "tip": "The input data of an Ethereum transaction. Rollups once posted their batches as calldata."
+ },
+ {
+  "term": "rollup",
+  "forms": [
+   "rollup",
+   "roll-up"
+  ],
+  "tip": "A chain that runs its transactions off the main chain and posts the results there. Optimistic rollups allow fraud proofs during a challenge window; SNARK rollups post validity proofs. In JAM, the chain's own validators do the executing, on cores."
+ },
+ {
+  "term": "L2 (layer 2)",
+  "forms": [
+   "L2",
+   "L1"
+  ],
+  "tip": "A chain built on a base chain (layer 1, L1), which it relies on for security and settlement. Rollups are L2s."
+ },
+ {
+  "term": "sequencer",
+  "forms": [
+   "sequencer"
+  ],
+  "tip": "The operator that orders a rollup's transactions. JAM has no outside operator: a core's work is done by the chain's own validators."
+ },
+ {
+  "term": "fraud proof",
+  "forms": [
+   "fraud proof",
+   "fraud-proof"
+  ],
+  "tip": "Evidence that a posted result is wrong, which reverts it and punishes its poster. Optimistic rollups wait days for them; JAM's audits check within seconds, before finality."
+ },
+ {
+  "term": "RANDAO",
+  "forms": [
+   "RANDAO"
+  ],
+  "tip": "Ethereum's on-chain randomness: each proposer mixes in a value, and the mix helps pick future proposers. JAM's counterpart is the entropy pool, fed by block authors' VRF outputs."
+ },
+ {
+  "term": "Casper FFG",
+  "forms": [
+   "Casper FFG",
+   "FFG"
+  ],
+  "tip": "Ethereum's finality gadget (Friendly Finality Gadget): validators vote on checkpoints, and a two-thirds vote finalizes them. JAM's counterpart is GRANDPA."
+ },
+ {
+  "term": "ETH",
+  "forms": [
+   "ETH"
+  ],
+  "tip": "Ether, Ethereum's native token, divisible into 10¹⁸ wei."
+ },
+ {
+  "term": "DOT",
+  "forms": [
+   "DOT"
+  ],
+  "tip": "Polkadot's native token. In the jamswap examples, Alice buys DOT and pays in USDC."
+ },
+ {
+  "term": "USDC",
+  "forms": [
+   "USDC"
+  ],
+  "tip": "A token meant to stay worth one US dollar (a stablecoin). In the jamswap examples, the currency Alice pays in."
+ },
+ {
+  "term": "Polkadot",
+  "forms": [
+   "Polkadot"
+  ],
+  "tip": "The multi-chain network JAM grew out of. JAM reuses much of its machinery: ELVES auditing, GRANDPA finality, BEEFY for bridges."
+ },
+ {
+  "term": "parachain",
+  "forms": [
+   "parachain"
+  ],
+  "tip": "A chain secured by Polkadot's validators, attached to its main chain (the relay chain). The GP notes a parachain slot is procured with a substantial deposit, typically for 24 months. JAM offers services and coretime instead."
+ },
+ {
+  "term": "XCMP",
+  "forms": [
+   "XCMP"
+  ],
+  "tip": "Polkadot's cross-chain message passing between parachains. The GP calls it asynchronous and coarse-grained, one reason JAM rethinks how services work together."
+ },
+ {
+  "term": "BABE",
+  "forms": [
+   "BABE"
+  ],
+  "tip": "Polkadot's block production (Blind Assignment for Blockchain Extension): a VRF lottery per slot, so one slot can have more than one winner. JAM uses Safrole instead."
+ },
+ {
+  "term": "Sassafras",
+  "forms": [
+   "Sassafras"
+  ],
+  "tip": "A Polkadot block-production design with anonymous tickets and exactly one author per slot. Safrole is a simplified variant of it."
+ },
+ {
+  "term": "GRANDPA",
+  "forms": [
+   "GRANDPA"
+  ],
+  "tip": "The finality gadget JAM takes from Polkadot: validators vote on the best chain, and a two-thirds supermajority finalizes a block for good. In JAM it votes only for blocks whose work-reports have been audited."
+ },
+ {
+  "term": "BEEFY",
+  "forms": [
+   "BEEFY"
+  ],
+  "tip": "A finality protocol for bridges. For each finalized block, every validator makes a BLS signature over the latest accumulation-output commitment, so other chains can check JAM's finality cheaply."
+ },
+ {
+  "term": "light client",
+  "forms": [
+   "light client"
+  ],
+  "tip": "A node that follows a chain without importing every block, trusting signed proofs of finality instead."
+ },
+ {
+  "term": "WASM (WebAssembly)",
+  "forms": [
+   "WASM",
+   "WebAssembly"
+  ],
+  "tip": "A portable bytecode format, which Polkadot's parachains run in. JAM's PVM is based on RISC-V instead."
+ },
+ {
+  "term": "SNARK",
+  "forms": [
+   "SNARK"
+  ],
+  "tip": "A short proof that a computation was done correctly, quick to check (succinct non-interactive argument of knowledge). The GP does not use them for JAM's work: producing the proof is still far slower than running the code."
+ },
+ {
+  "term": "ZK (zero-knowledge)",
+  "forms": [
+   "ZK"
+  ],
+  "tip": "A proof that reveals nothing but the claim itself. \"ZK proofs\" here means SNARK-style validity proofs, which JAM replaces with auditing."
+ },
+ {
+  "term": "validator",
+  "forms": [
+   "validator"
+  ],
+  "tip": "A staked node that makes and checks blocks. A JAM set holds at most 1,023 (a multiple of 3, at least 6). Besides importing blocks, each one guarantees work on a core, assures availability and audits."
+ },
+ {
+  "term": "staking",
+  "forms": [
+   "staking",
+   "stake"
+  ],
+  "tip": "Locking tokens as a deposit to become a validator, so that misbehavior can cost them."
+ },
+ {
+  "term": "slashing",
+  "forms": [
+   "slashing"
+  ],
+  "tip": "Destroying part of a misbehaving validator's stake. The GP only records the offenders; staking and slashing are outside its scope."
+ },
+ {
+  "term": "finality",
+  "forms": [
+   "finality",
+   "finalized",
+   "finalised"
+  ],
+  "tip": "The point after which a block can never be reverted. In JAM, GRANDPA provides it, and only for blocks whose work-reports have been audited."
+ },
+ {
+  "term": "supermajority",
+  "forms": [
+   "supermajority"
+  ],
+  "tip": "More than two thirds of the validators. JAM's security assumes at least two thirds plus one are honest and live."
+ },
+ {
+  "term": "best block",
+  "forms": [
+   "best block"
+  ],
+  "tip": "The block a node builds on and votes for: it descends from the last finalized block, is audited, holds no equivocation, and has the most ancestors sealed with tickets."
+ },
+ {
+  "term": "equivocation",
+  "forms": [
+   "equivocation"
+  ],
+  "tip": "Two different valid blocks for the same timeslot. A node never picks as best a chain whose unfinalized part holds one."
+ },
+ {
+  "term": "timeslot",
+  "forms": [
+   "timeslot",
+   "slot"
+  ],
+  "tip": "A 6-second window in which at most one block can be made. τ counts them from the JAM Common Era."
+ },
+ {
+  "term": "epoch",
+  "forms": [
+   "epoch"
+  ],
+  "tip": "600 timeslots: one hour. Block authors and validator sets change at an epoch boundary. (Tiny test vectors use 12 slots.)"
+ },
+ {
+  "term": "JAM Common Era",
+  "forms": [
+   "JAM Common Era"
+  ],
+  "tip": "Time zero for JAM's timeslots: midday UTC on 1 January 2025."
+ },
+ {
+  "term": "UTC",
+  "forms": [
+   "UTC"
+  ],
+  "tip": "Coordinated Universal Time, the world's reference clock."
+ },
+ {
+  "term": "NTP (Network Time Protocol)",
+  "forms": [
+   "NTP"
+  ],
+  "tip": "How computers set their clocks over the internet. JAM assumes every node knows the time, and the GP calls relying on NTP for it pragmatic and resilient."
+ },
+ {
+  "term": "Safrole",
+  "forms": [
+   "Safrole"
+  ],
+  "tip": "JAM's block production: an anonymous ticket lottery picks each slot's author for the next epoch, so normally nobody knows an author until its block appears. If too few tickets are submitted, a fallback key sequence is used."
+ },
+ {
+  "term": "ticket",
+  "forms": [
+   "ticket"
+  ],
+  "tip": "An anonymous entry in Safrole's lottery for authoring a slot, proved with a ring VRF. The best tickets submitted in an epoch become the next epoch's author order."
+ },
+ {
+  "term": "fallback",
+  "forms": [
+   "fallback"
+  ],
+  "tip": "Safrole's backup: when too few tickets were submitted, the next epoch's authors are a known key sequence drawn with entropy, not tickets. Fallback blocks count for less in the best-block choice."
+ },
+ {
+  "term": "seal",
+  "forms": [
+   "seal",
+   "sealing",
+   "sealer"
+  ],
+  "tip": "The block author's Bandersnatch signature over the header (H_S). In ticket mode it also shows the author holds that slot's winning ticket."
+ },
+ {
+  "term": "entropy",
+  "forms": [
+   "entropy"
+  ],
+  "tip": "JAM's on-chain randomness (η): every block author's VRF output is mixed in. It drives Safrole, the fallback key sequence and which validators serve which core."
+ },
+ {
+  "term": "VRF (verifiable random function)",
+  "forms": [
+   "VRF"
+  ],
+  "tip": "A function whose output looks random and comes with a proof that a given key made it, so nobody can bias or forge it. JAM uses Bandersnatch VRFs in seals, entropy, tickets and audit selection."
+ },
+ {
+  "term": "ring VRF",
+  "forms": [
+   "ring VRF",
+   "ring root"
+  ],
+  "tip": "A VRF proof made on behalf of a group (ring) of keys without revealing which key: a ticket shows that some validator made it, not which one. The ring root commits to the epoch's keys."
+ },
+ {
+  "term": "Bandersnatch",
+  "forms": [
+   "Bandersnatch"
+  ],
+  "tip": "An elliptic curve used for JAM's VRFs: block seals, entropy and the ring VRF of tickets."
+ },
+ {
+  "term": "Ed25519",
+  "forms": [
+   "Ed25519"
+  ],
+  "tip": "A fast signature scheme. JAM validators sign guarantees, assurances and judgments with their Ed25519 keys, and offenders are recorded by these keys."
+ },
+ {
+  "term": "BLS (Boneh-Lynn-Shacham)",
+  "forms": [
+   "BLS",
+   "BLS12-381"
+  ],
+  "tip": "A signature scheme whose signatures can be combined into one. JAM uses it on the BLS12-381 curve for BEEFY, so bridges can check finality cheaply."
+ },
+ {
+  "term": "hash",
+  "forms": [
+   "hash"
+  ],
+  "tip": "A short fixed-size fingerprint of data: 32 bytes in JAM. Changing any bit of the data changes the hash completely, so a hash commits to its data."
+ },
+ {
+  "term": "Blake2b",
+  "forms": [
+   "Blake2b"
+  ],
+  "tip": "JAM's main hash function, with 256-bit output (RFC 7693). Headers, state keys and most commitments use it."
+ },
+ {
+  "term": "Keccak",
+  "forms": [
+   "Keccak"
+  ],
+  "tip": "Ethereum's hash function (Keccak-256). JAM uses it only where bridges need it: the accumulation-output belt and BEEFY."
+ },
+ {
+  "term": "preimage",
+  "forms": [
+   "preimage"
+  ],
+  "tip": "The data behind a hash: if h is the hash of d, then d is h's preimage. Services store data as preimages, looked up by hash; a service's code is the preimage of its code hash."
+ },
+ {
+  "term": "blob",
+  "forms": [
+   "blob"
+  ],
+  "tip": "A sequence of bytes treated as opaque data: a service's code, a preimage, a work-item's extrinsic data. (Ethereum's \"blobs\" are different: cheap temporary data for rollups.)"
+ },
+ {
+  "term": "Merkle tree",
+  "forms": [
+   "Merkle tree",
+   "Merkle"
+  ],
+  "tip": "A tree of hashes whose root commits to every leaf. A short proof (a path of hashes) shows that one leaf is in the tree."
+ },
+ {
+  "term": "trie",
+  "forms": [
+   "trie"
+  ],
+  "tip": "A tree keyed by the bits of each key. JAM's state is a binary Patricia Merkle trie, and its root hash is the state root."
+ },
+ {
+  "term": "Merklization",
+  "forms": [
+   "Merklization",
+   "Merklize",
+   "Merklized"
+  ],
+  "tip": "Computing the single root hash that commits to a structure, such as the whole state."
+ },
+ {
+  "term": "MMR (Merkle Mountain Range)",
+  "forms": [
+   "MMR"
+  ],
+  "tip": "An append-only list of hashes kept as a few perfect Merkle trees (the peaks). Appending and proving inclusion are both cheap."
+ },
+ {
+  "term": "MMB (Merkle Mountain Belt)",
+  "forms": [
+   "MMB",
+   "Merkle mountain belt"
+  ],
+  "tip": "JAM's variant of an MMR, kept in recent history (β_B): every block appends the root of its accumulation outputs, hashed with Keccak."
+ },
+ {
+  "term": "super-peak",
+  "forms": [
+   "super-peak"
+  ],
+  "tip": "The single hash that commits to all the peaks of an MMR or belt. The latest super-peak is what BEEFY signatures cover."
+ },
+ {
+  "term": "erasure coding",
+  "forms": [
+   "erasure coding",
+   "erasure code",
+   "erasure-code",
+   "erasure-coded",
+   "erasure-coding"
+  ],
+  "tip": "Splitting data into pieces so that any large enough subset rebuilds it. JAM makes one piece per validator, and any 342 of 1,023 suffice (Reed-Solomon over GF(2¹⁶))."
+ },
+ {
+  "term": "Reed-Solomon",
+  "forms": [
+   "Reed-Solomon"
+  ],
+  "tip": "The erasure code JAM uses, over the 16-bit field GF(2¹⁶)."
+ },
+ {
+  "term": "GF (Galois field)",
+  "forms": [
+   "GF"
+  ],
+  "tip": "A finite field. GF(2¹⁶) has 65,536 elements; Reed-Solomon coding does its arithmetic there."
+ },
+ {
+  "term": "chunk",
+  "forms": [
+   "chunk",
+   "shard"
+  ],
+  "tip": "One validator's piece of erasure-coded data. Each assurer keeps its chunks and checks them against the report's erasure root."
+ },
+ {
+  "term": "DA (data availability)",
+  "forms": [
+   "DA",
+   "data availability"
+  ],
+  "tip": "Making sure data can be fetched by whoever needs it. JAM spreads erasure-coded chunks over all validators: the Audit DA keeps work bundles until finality, a longer-lived store keeps exported segments for 28 days."
+ },
+ {
+  "term": "availability",
+  "forms": [
+   "availability"
+  ],
+  "tip": "A work-report is available once more than two thirds of the validators assure they hold its chunks. Only then can it be accumulated."
+ },
+ {
+  "term": "availability specification",
+  "forms": [
+   "availability specification",
+   "availability spec"
+  ],
+  "tip": "The part of a work-report that pins down its erasure-coded data: package hash, bundle length, erasure root, chunk count, segment root and segment count."
+ },
+ {
+  "term": "codec",
+  "forms": [
+   "codec",
+   "serialization",
+   "serialize",
+   "serialized",
+   "serializes"
+  ],
+  "tip": "The rules for turning values into bytes and back: the GP's ℰ. Fixed-width integers are little-endian; a variable-length sequence starts with its length as a compact natural."
+ },
+ {
+  "term": "compact natural",
+  "forms": [
+   "compact natural"
+  ],
+  "tip": "A variable-length integer encoding in the codec: small numbers take one byte, larger ones more, and the first byte says how many follow."
+ },
+ {
+  "term": "little-endian",
+  "forms": [
+   "little-endian"
+  ],
+  "tip": "Least significant byte first. 4,807 (hex 12C7) as 2 bytes is C7 12."
+ },
+ {
+  "term": "MSB (most significant bit)",
+  "forms": [
+   "MSB"
+  ],
+  "tip": "The highest bit of a byte. MSB-first means reading bits from the top, as the state trie does with keys."
+ },
+ {
+  "term": "service",
+  "forms": [
+   "service"
+  ],
+  "tip": "JAM's counterpart of a contract account: code, storage and a balance, identified by a 32-bit id. Its code has two entry points, refine and accumulate."
+ },
+ {
+  "term": "core",
+  "forms": [
+   "core"
+  ],
+  "tip": "A unit of JAM's parallel compute: not a CPU, but compute time served by 3 validators at a time. There are 341; a smaller validator set activates one per 3 validators."
+ },
+ {
+  "term": "in-core",
+  "forms": [
+   "in-core"
+  ],
+  "tip": "Done by the few validators serving one core, not by the whole chain: refine, guaranteeing, auditing. Its capacity grows with the number of cores."
+ },
+ {
+  "term": "on-chain",
+  "forms": [
+   "on-chain"
+  ],
+  "tip": "Done by every validator as part of importing a block: accumulate and every state change. Synchronous, but limited by what one node can do."
+ },
+ {
+  "term": "off-chain",
+  "forms": [
+   "off-chain"
+  ],
+  "tip": "Outside the chain's state transition: messages between nodes, refine, erasure coding, audits. An importer does not run it."
+ },
+ {
+  "term": "coretime",
+  "forms": [
+   "coretime"
+  ],
+  "tip": "The right to use a core, bought in advance and given to an authorizer. JAM's main resource, where Ethereum charges gas per transaction."
+ },
+ {
+  "term": "posterior (state)",
+  "forms": [
+   "posterior",
+   "prior state"
+  ],
+  "tip": "The state after a block or a step, written with a prime (σ′). The prior state is the one before it (σ)."
+ },
+ {
+  "term": "state root",
+  "forms": [
+   "state root"
+  ],
+  "tip": "The Merkle root of the whole state. A JAM header carries the parent's posterior state root, so an author can seal a block before computing its own."
+ },
+ {
+  "term": "STF (state-transition function)",
+  "forms": [
+   "STF",
+   "state transition",
+   "state-transition function"
+  ],
+  "tip": "The function Υ that takes a state and a block to the next state. M1 is implementing it; the test vectors check it piece by piece."
+ },
+ {
+  "term": "header",
+  "forms": [
+   "header"
+  ],
+  "tip": "A block's summary in ten fields: parent hash, prior state root, extrinsic hash, slot, epoch, tickets and offenders markers, author index, VRF signature and seal. The seal signs the rest."
+ },
+ {
+  "term": "extrinsic",
+  "forms": [
+   "extrinsic"
+  ],
+  "tip": "Data from outside the state. A block's extrinsic has 5 parts: tickets, disputes, preimages, assurances, guarantees; no user transactions. A work-item's extrinsics are blobs sent with its package."
+ },
+ {
+  "term": "recent history",
+  "forms": [
+   "recent history"
+  ],
+  "tip": "What the chain remembers of its last 8 blocks (β): header hashes, state roots and reported packages, plus the accumulation-output belt."
+ },
+ {
+  "term": "privileged service",
+  "forms": [
+   "privileged service",
+   "privileged",
+   "privileges"
+  ],
+  "tip": "One of the services named in χ with special powers: the manager, the per-core assigners, the delegator, the registrar, and the always-accumulate services."
+ },
+ {
+  "term": "manager",
+  "forms": [
+   "manager",
+   "manager service"
+  ],
+  "tip": "The privileged service that may change the privileges in χ and grant storage deposit credits (gratis storage)."
+ },
+ {
+  "term": "assigner",
+  "forms": [
+   "assigner"
+  ],
+  "tip": "A privileged service, one per core, that may set that core's authorizer queue."
+ },
+ {
+  "term": "delegator",
+  "forms": [
+   "delegator"
+  ],
+  "tip": "The privileged service that may set the staging validator keys ι, with the designate host call."
+ },
+ {
+  "term": "registrar",
+  "forms": [
+   "registrar"
+  ],
+  "tip": "The privileged service that alone may create services with ids below 2¹⁶, the protected range."
+ },
+ {
+  "term": "always-accumulate",
+  "forms": [
+   "always-accumulate"
+  ],
+  "tip": "The services named in χ that accumulate in every block, each with a basic gas allowance, whether or not a report names them."
+ },
+ {
+  "term": "designate",
+  "forms": [
+   "designate"
+  ],
+  "tip": "The host call by which the delegator sets the staging validator keys (ι), the validators queued for a later epoch."
+ },
+ {
+  "term": "gratis",
+  "forms": [
+   "gratis"
+  ],
+  "tip": "A service's gratis storage offset: an allowance, granted by the manager, subtracted from its threshold balance."
+ },
+ {
+  "term": "threshold balance",
+  "forms": [
+   "threshold balance"
+  ],
+  "tip": "The minimum balance a service must keep for its storage: 100, plus 10 per item, plus 1 per byte, minus its gratis offset."
+ },
+ {
+  "term": "footprint",
+  "forms": [
+   "footprint"
+  ],
+  "tip": "How much storage a service uses: its number of items and of bytes. It sets the threshold balance."
+ },
+ {
+  "term": "deposit",
+  "forms": [
+   "deposit"
+  ],
+  "tip": "The balance a service must keep per item and per byte it stores: the price of on-chain storage. See threshold balance."
+ },
+ {
+  "term": "expunge",
+  "forms": [
+   "expunge"
+  ],
+  "tip": "Delete for good: an unreferenced preimage may be removed once 19,200 slots have passed."
+ },
+ {
+  "term": "deferred transfer",
+  "forms": [
+   "deferred transfer"
+  ],
+  "tip": "A payment, with a 128-byte memo, that one service makes to another from accumulate. The receiver gets it in a later accumulation round, not as a synchronous call."
+ },
+ {
+  "term": "authorizer",
+  "forms": [
+   "authorizer"
+  ],
+  "tip": "Small code that decides which work-packages may use a core. Its hash must be in the core's authorizer pool, and the is-authorized invocation runs it."
+ },
+ {
+  "term": "authorizer pool",
+  "forms": [
+   "authorizer pool"
+  ],
+  "tip": "The up to 8 authorizer hashes a core accepts right now (α). Each block, the one used is removed and one comes in from the authorizer queue."
+ },
+ {
+  "term": "authorizer queue",
+  "forms": [
+   "authorizer queue"
+  ],
+  "tip": "The 80 upcoming authorizer hashes per core (φ), set by the core's assigner service."
+ },
+ {
+  "term": "is-authorized",
+  "forms": [
+   "is-authorized",
+   "Is-Authorized"
+  ],
+  "tip": "The PVM run of an authorizer's code on a work-package (Ψ_I), with 50 million gas: it decides whether the package may use the core."
+ },
+ {
+  "term": "work-package",
+  "forms": [
+   "work-package"
+  ],
+  "tip": "A bundle of 1 to 16 work-items for one core, with its authorization and a refinement context. JAM's counterpart of a batch of transactions."
+ },
+ {
+  "term": "work-item",
+  "forms": [
+   "work-item",
+   "work item"
+  ],
+  "tip": "One job inside a work-package: it names a service, carries a payload and gas limits, and lists the segments it imports and how many it exports."
+ },
+ {
+  "term": "work-report",
+  "forms": [
+   "work-report",
+   "work report"
+  ],
+  "tip": "What refining a work-package produces: one work-digest per item, plus the availability spec, context, core and authorizer. Guarantors sign it; accumulate applies it."
+ },
+ {
+  "term": "work-digest",
+  "forms": [
+   "work-digest",
+   "work-result"
+  ],
+  "tip": "One work-item's entry in a work-report: service, code hash, payload hash, accumulate gas limit and refine's result (a blob or an error), plus refine's gas used, imports, extrinsics and exports. The GP calls it this since 0.6.5; before, a work-result."
+ },
+ {
+  "term": "refine",
+  "forms": [
+   "refine"
+  ],
+  "tip": "A service's heavy entry point (Ψ_R, entry point 0): run in-core by one core's validators, stateless, with up to 5 billion gas per package. Its output goes into the work-report."
+ },
+ {
+  "term": "accumulate",
+  "forms": [
+   "accumulate",
+   "accumulation"
+  ],
+  "tip": "A service's on-chain entry point (Ψ_A, entry point 1): run by every validator to apply refine's results to the service's state. Light: 10 million gas per report."
+ },
+ {
+  "term": "refinement context",
+  "forms": [
+   "refinement context"
+  ],
+  "tip": "The chain a work-package was built against: an anchor block, a lookup-anchor block and any prerequisite packages. Checked when the report is guaranteed."
+ },
+ {
+  "term": "anchor",
+  "forms": [
+   "anchor"
+  ],
+  "tip": "The recent block a work-package says it was built against. It must be among the last 8 blocks in recent history, with matching state and BEEFY roots."
+ },
+ {
+  "term": "lookup anchor",
+  "forms": [
+   "lookup anchor",
+   "lookup-anchor"
+  ],
+  "tip": "The block whose state refine reads preimages from (historical lookup). It may be at most 14,400 slots (one day) old."
+ },
+ {
+  "term": "prerequisite",
+  "forms": [
+   "prerequisite"
+  ],
+  "tip": "A work-package that must be accumulated before this one. Prerequisites plus packages imported from count toward a limit of 8 dependencies."
+ },
+ {
+  "term": "segment",
+  "forms": [
+   "segment"
+  ],
+  "tip": "A 4,104-byte piece of data a work-item exports, kept erasure-coded by the validators for 28 days so later work-packages can import it. At most 3,072 imports and 3,072 exports per package."
+ },
+ {
+  "term": "bundle",
+  "forms": [
+   "bundle"
+  ],
+  "tip": "The work-package plus everything needed to re-run it: extrinsic data and imported segments with their proofs. At most 13,791,360 bytes; auditors fetch it from the Audit DA."
+ },
+ {
+  "term": "guarantee",
+  "forms": [
+   "guarantee",
+   "guarantor"
+  ],
+  "tip": "A work-report signed by 2 or 3 of the validators assigned to its core (the guarantors), put in a block. The guarantors are accountable if the report is wrong."
+ },
+ {
+  "term": "assurance",
+  "forms": [
+   "assurance",
+   "assurer"
+  ],
+  "tip": "A validator's signed statement, in a block, of which cores' chunks it holds. Once more than two thirds assure a report's chunks, the report is available."
+ },
+ {
+  "term": "ready queue",
+  "forms": [
+   "ready queue",
+   "accumulation queue"
+  ],
+  "tip": "Work-reports that are available but wait for a prerequisite to be accumulated (ω). Each is accumulated once its dependencies are."
+ },
+ {
+  "term": "auditing",
+  "forms": [
+   "auditing",
+   "auditor"
+  ],
+  "tip": "Re-running refine to check a work-report. After a report becomes available, a secret random sample of validators audits it, in 8-second tranches; a wrong result starts a dispute. Finality waits for audits."
+ },
+ {
+  "term": "tranche",
+  "forms": [
+   "tranche"
+  ],
+  "tip": "One 8-second round of audit selection. For each auditor who fails to deliver (a no-show), about two more validators join in the next tranche."
+ },
+ {
+  "term": "no-show",
+  "forms": [
+   "no-show"
+  ],
+  "tip": "An auditor who announced an audit but has not delivered its judgment in time. Each no-show brings in more auditors."
+ },
+ {
+  "term": "ELVES",
+  "forms": [
+   "ELVES"
+  ],
+  "tip": "Polkadot's auditing and judging scheme (ePrint 2024/961). JAM's is theoretically equivalent: its backing, approval and inclusion are JAM's guaranteeing, auditing and accumulation."
+ },
+ {
+  "term": "dispute",
+  "forms": [
+   "dispute"
+  ],
+  "tip": "The process that settles whether a work-report is valid. Validators sign judgments; a verdict in a block records the report as good, bad or wonky. A bad report is removed and its guarantors punished."
+ },
+ {
+  "term": "judgment",
+  "forms": [
+   "judgment"
+  ],
+  "tip": "One validator's signed vote that a work-report is valid or not. Enough judgments in a block form a verdict."
+ },
+ {
+  "term": "verdict",
+  "forms": [
+   "verdict"
+  ],
+  "tip": "A block's record of the judgments on one report: exactly two thirds plus one positive means good, zero means bad, one third means wonky."
+ },
+ {
+  "term": "wonky",
+  "forms": [
+   "wonky"
+  ],
+  "tip": "A verdict where exactly one third of the judgments are positive: the report's validity seems impossible to judge. Like a bad report, it is cleared from its core."
+ },
+ {
+  "term": "culprit",
+  "forms": [
+   "culprit"
+  ],
+  "tip": "A guarantor who signed a work-report that a verdict found bad. Recorded as an offender."
+ },
+ {
+  "term": "fault",
+  "forms": [
+   "fault",
+   "FAULT",
+   "page fault"
+  ],
+  "tip": "In disputes: a validator whose signed judgment contradicts the verdict, recorded as an offender. In the PVM: FAULT, the exit when the program touches memory it may not access."
+ },
+ {
+  "term": "offender",
+  "forms": [
+   "offender"
+  ],
+  "tip": "A validator found to have misbehaved, as a culprit or a fault. Its Ed25519 key is kept in ψ, and it is zeroed out of later validator sets."
+ },
+ {
+  "term": "PVM (Polkadot Virtual Machine)",
+  "forms": [
+   "PVM",
+   "Polkadot Virtual Machine"
+  ],
+  "tip": "JAM's virtual machine, based on RISC-V (RV64EM): 13 registers of 64 bits, paged memory, gas charged per basic block. It runs is-authorized, refine and accumulate."
+ },
+ {
+  "term": "RISC-V",
+  "forms": [
+   "RISC-V"
+  ],
+  "tip": "An open instruction set for real CPUs. The PVM is based on its RV64EM variant, which brings existing compilers such as LLVM."
+ },
+ {
+  "term": "RV64EM",
+  "forms": [
+   "RV64EM"
+  ],
+  "tip": "RISC-V's 64-bit base with the E (embedded: fewer registers) and M (multiply and divide) extensions."
+ },
+ {
+  "term": "ISA (instruction set architecture)",
+  "forms": [
+   "ISA"
+  ],
+  "tip": "The list of instructions a machine understands and what each one does."
+ },
+ {
+  "term": "LLVM",
+  "forms": [
+   "LLVM"
+  ],
+  "tip": "A compiler toolkit behind Rust's and many C and C++ compilers. Its existing RISC-V support is one reason the PVM is RISC-V."
+ },
+ {
+  "term": "CPU (central processing unit)",
+  "forms": [
+   "CPU"
+  ],
+  "tip": "A computer's processor. A JAM core is not a CPU."
+ },
+ {
+  "term": "ALU (arithmetic logic unit)",
+  "forms": [
+   "ALU"
+  ],
+  "tip": "The part of a CPU that does arithmetic. The PVM's gas model simulates a CPU with several kinds of units."
+ },
+ {
+  "term": "register",
+  "forms": [
+   "register"
+  ],
+  "tip": "One of the PVM's 13 64-bit working variables. A host call reads its arguments from registers and writes its result to register 7."
+ },
+ {
+  "term": "RA (return address)",
+  "forms": [
+   "RA"
+  ],
+  "tip": "Register 0. At the start it holds 2³² − 2¹⁶, so returning from the entry function halts the program."
+ },
+ {
+  "term": "SP (stack pointer)",
+  "forms": [
+   "SP"
+  ],
+  "tip": "Register 1. At the start it points to the top of the stack region."
+ },
+ {
+  "term": "decode slot",
+  "forms": [
+   "decode slot"
+  ],
+  "tip": "In the PVM gas model's simulated CPU, each cycle has 4 decode slots, and decoding an instruction uses 1 or more of them. Not a timeslot."
+ },
+ {
+  "term": "opcode",
+  "forms": [
+   "opcode"
+  ],
+  "tip": "The number that says which instruction this is."
+ },
+ {
+  "term": "basic block",
+  "forms": [
+   "basic block"
+  ],
+  "tip": "A run of PVM instructions entered only at its start and left only at its end. Since 0.8.0, the PVM charges a basic block's whole gas cost each time execution enters it."
+ },
+ {
+  "term": "bitmask",
+  "forms": [
+   "bitmask"
+  ],
+  "tip": "Part of a PVM program: one bit per byte of code, set where an instruction starts."
+ },
+ {
+  "term": "jump table",
+  "forms": [
+   "jump table"
+  ],
+  "tip": "The list of code addresses a PVM program may jump to indirectly. An indirect jump names a position in this table, never a raw address."
+ },
+ {
+  "term": "program blob",
+  "forms": [
+   "program blob"
+  ],
+  "tip": "A PVM program as bytes: its jump table, its code and its opcode bitmask."
+ },
+ {
+  "term": "gas",
+  "forms": [
+   "gas"
+  ],
+  "tip": "A budget of computation. Every PVM run gets a gas limit and stops, out of gas, when it runs out. JAM sells coretime, but still meters refine and accumulate in gas."
+ },
+ {
+  "term": "host call",
+  "forms": [
+   "host call",
+   "host-call"
+  ],
+  "tip": "A PVM program's request to its host, made with the ecalli instruction: read storage, look up a preimage, transfer, create a service. Each has a gas cost."
+ },
+ {
+  "term": "ecalli",
+  "forms": [
+   "ecalli"
+  ],
+  "tip": "The PVM instruction that makes a host call."
+ },
+ {
+  "term": "HALT",
+  "forms": [
+   "HALT",
+   "halt"
+  ],
+  "tip": "PVM exit: the program finished normally."
+ },
+ {
+  "term": "PANIC",
+  "forms": [
+   "PANIC",
+   "panic"
+  ],
+  "tip": "PVM exit: the program hit a trap or did something invalid. In refine the result becomes an error; in accumulate, changes since the last checkpoint are dropped."
+ },
+ {
+  "term": "OOG (out of gas)",
+  "forms": [
+   "OOG",
+   "out-of-gas"
+  ],
+  "tip": "PVM exit: the gas ran out. In refine the result becomes an error; in accumulate, changes since the last checkpoint are dropped."
+ },
+ {
+  "term": "HOST",
+  "forms": [
+   "HOST"
+  ],
+  "tip": "PVM exit: the program made a host call. The host handles it, then the program continues."
+ },
+ {
+  "term": "OK",
+  "forms": [
+   "OK"
+  ],
+  "tip": "Host-call result 0: success."
+ },
+ {
+  "term": "NONE",
+  "forms": [
+   "NONE"
+  ],
+  "tip": "Host-call result 2⁶⁴ − 1: the item does not exist."
+ },
+ {
+  "term": "WHAT",
+  "forms": [
+   "WHAT"
+  ],
+  "tip": "Host-call result 2⁶⁴ − 2: the host-call name is unknown."
+ },
+ {
+  "term": "OOB (out of bounds)",
+  "forms": [
+   "OOB"
+  ],
+  "tip": "Host-call result 2⁶⁴ − 3: the inner PVM's memory index is not accessible."
+ },
+ {
+  "term": "WHO",
+  "forms": [
+   "WHO"
+  ],
+  "tip": "Host-call result 2⁶⁴ − 4: the index (for example a service id) is unknown."
+ },
+ {
+  "term": "FULL",
+  "forms": [
+   "FULL"
+  ],
+  "tip": "Host-call result 2⁶⁴ − 5: storage is full, or the resource is already allocated."
+ },
+ {
+  "term": "CORE",
+  "forms": [
+   "CORE"
+  ],
+  "tip": "Host-call result 2⁶⁴ − 6: the core index is unknown."
+ },
+ {
+  "term": "CASH",
+  "forms": [
+   "CASH"
+  ],
+  "tip": "Host-call result 2⁶⁴ − 7: insufficient funds."
+ },
+ {
+  "term": "LOW",
+  "forms": [
+   "LOW"
+  ],
+  "tip": "Host-call result 2⁶⁴ − 8: the gas limit is too low."
+ },
+ {
+  "term": "HUH",
+  "forms": [
+   "HUH"
+  ],
+  "tip": "Host-call result 2⁶⁴ − 9: the operation is invalid. For example, the item is already solicited, cannot be forgotten, or the caller lacks the privilege."
+ },
+ {
+  "term": "FFI (foreign function interface)",
+  "forms": [
+   "FFI"
+  ],
+  "tip": "How a program in one language calls code written in another: lasair's OCaml calls its Ed25519 and Bandersnatch libraries this way."
+ },
+ {
+  "term": "ASN (ASN.1)",
+  "forms": [
+   "ASN"
+  ],
+  "tip": "The schema language the official test vectors are described in."
+ },
+ {
+  "term": "JAMNP (JAM networking protocol)",
+  "forms": [
+   "JAMNP",
+   "JAMNP-S"
+  ],
+  "tip": "How JAM nodes talk to each other. JAMNP-S is its simple first version."
+ }
+]

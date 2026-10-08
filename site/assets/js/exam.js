@@ -80,7 +80,7 @@
     const prev = latestGradeFor(opts.chapter.id, q.n);
     el.classList.remove("hidden");
     el.innerHTML = `
-      <div class="exam-card-head">
+      <div class="exam-card-head no-tips">
         <span class="exam-card-chapter">${esc(opts.portionLabel || opts.chapter.title)}</span>
         <span class="exam-card-count">${opts.index + 1} / ${opts.total}</span>
       </div>
@@ -358,7 +358,7 @@
     const n = item.chapter.sections.length;
     el.innerHTML = `
       ${progressBar()}
-      <div class="exam-card-head"><span class="exam-card-chapter">${esc(item.chapter.title)} · Learn</span>
+      <div class="exam-card-head no-tips"><span class="exam-card-chapter">${esc(item.chapter.title)} · Learn</span>
         <span class="exam-card-count">section ${item.si + 1} / ${n}</span></div>
       <h3 class="exam-read-title">${esc(item.section.title)}</h3>
       <div class="exam-read lesson-body">${md(item.section.md)}</div>
@@ -371,9 +371,9 @@
     const inline = (t) => (window.marked ? marked.parseInline(t) : esc(t));
     el.innerHTML = `
       ${progressBar()}
-      <div class="exam-card-head"><span class="exam-card-chapter">${esc(flash.chapter ? item.title : item.chapter.title)}</span>
+      <div class="exam-card-head no-tips"><span class="exam-card-chapter">${esc(flash.chapter ? item.title : item.chapter.title)}</span>
         <span class="exam-card-count">${flash.score.right}/${flash.score.total} right</span></div>
-      <div class="exam-mc-label">${esc(item.label)}</div>
+      <div class="exam-mc-label no-tips">${esc(item.label)}</div>
       <div class="exam-q">${inline(item.prompt)}</div>
       <div class="exam-options">
         ${item.options.map((o, i) => `<button class="exam-option" data-i="${i}"><span class="opt-key">${"ABCDE"[i]}</span> ${inline(o.text)}</button>`).join("")}
@@ -726,6 +726,7 @@
       console.error(e);
       return;
     }
+    window.LearningLasair.useGlossary();     // hard terms in the cards explain themselves
     initTabs();
     initFlash();
     initMock();

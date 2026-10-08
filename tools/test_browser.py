@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Drive the site in a real browser (headless Chrome over the DevTools protocol) and check
 what a render sweep cannot: every page and every listed lesson works with no network,
-M1 Understanding's flashcards, timed self-test and ledger, the lasair section working
-offline, and the shared top bar at phone width.
+M1 Understanding's flashcards, glossary tips, timed self-test and ledger, the lasair
+section working offline, and the shared top bar at phone width.
 
     python3 tools/test_browser.py        # builds the site (tools/build.sh) and serves the
                                          # build under /jam-learning/, as Pages does
@@ -112,6 +112,7 @@ class Browser:
         self.events = []        # what the page reported since the last go()
         self.cdp("Page.enable")
         self.cdp("Runtime.enable")
+        self.cdp("Emulation.setFocusEmulationEnabled", enabled=True)   # focus events, as in a front window
 
     def cdp(self, method, **params):
         self.n += 1
@@ -268,6 +269,61 @@ def flashcards(b, base):
           b.wait("(document.querySelector('#flash-card .exam-card-count') || {}).textContent !== %s" % json.dumps(before), 5))
 
 
+def glossary(b, base):
+    # The card from the report that asked for this: F2, level 3, first question. Its model
+    # answer ends "...and there are no EOAs."
+    b.go(base + "lasair/exam.html?chapter=f02-the-service&level=3")
+    b.wait("!!document.querySelector('#flash-card [data-act=\"reveal\"]')")
+    b.js("document.querySelector('#flash-card [data-act=\"reveal\"]').click()")
+    eoa = "#flash-card .exam-a .term[data-key^='EOA ']"
+    check("glossary: EOAs in a model answer is explained", b.wait("!!document.querySelector(%s)" % json.dumps(eoa), 10))
+    time.sleep(1)                           # the card's smooth scroll settles
+    b.js("const e = document.querySelector(%s); e.scrollIntoView({block: 'center', behavior: 'instant'}); e.focus()" % json.dumps(eoa))
+    tip = b.js("""(() => { const t = document.getElementById('tip'); if (!t || t.hidden) return null;
+                   const r = t.getBoundingClientRect();
+                   return {text: t.textContent, name: t.querySelector('b').textContent,
+                           inside: r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight}; })()""")
+    check("glossary: focusing a term shows its tip, inside the window",
+          bool(tip) and tip["name"] == "EOA (externally owned account)" and "private key" in tip["text"] and tip["inside"],
+          json.dumps(tip)[-160:])
+    b.js("document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}))")
+    check("glossary: Escape hides the tip", b.js("document.getElementById('tip').hidden"))
+    b.js("document.activeElement.blur(); document.querySelector(%s).dispatchEvent("
+         "new MouseEvent('mouseover', {bubbles: true}))" % json.dumps(eoa))
+    check("glossary: hovering a term shows its tip", b.js("!document.getElementById('tip').hidden"))
+    keys = b.js("[...document.querySelectorAll('#flash-card .term')].map(t => t.dataset.key)")
+    check("glossary: a term is explained once per card, not at every use",
+          len(keys) > 3 and len(keys) == len(set(keys)), "%d terms" % len(keys))
+    check("glossary: a card's question gets its terms, not the card's header",
+          b.js("!document.querySelector('#flash-card .exam-card-head .term') && "
+               "!!document.querySelector(\"#flash-card .exam-q .term[data-key='service']\")"))
+    # an answer option is a button: a tap must choose it, so nothing in it is annotated
+    b.go(base + "lasair/exam.html?chapter=f02-the-service&level=2")
+    b.wait("document.querySelectorAll('#flash-card .exam-option').length > 0")
+    time.sleep(0.5)
+    check("glossary: nothing inside an answer option", b.js(
+        "document.querySelectorAll('#flash-card .term').length > 0 && "
+        "document.querySelectorAll('#flash-card .exam-option .term, #flash-card .exam-option .sym').length === 0"))
+    # the track's lessons too; other lessons neither annotate terms nor fetch the glossary
+    b.go(base + "lasair/lesson.html?lesson=06-m1-exam/f01-ethereum-to-jam")
+    check("glossary: an M1 Understanding lesson explains its terms",
+          b.wait("!!document.querySelector(\"#lesson-body .term[data-key^='EOA ']\")", 10))
+    b.cdp("Network.enable")
+    b.go(base + "lasair/lesson.html?lesson=01-jam-protocol/01-what-is-jam")
+    b.wait("(document.getElementById('lesson-body') || {innerText: ''}).innerText.length > 200", 10)
+    time.sleep(1)
+    asked = [e for e in b.events if e["method"] == "Network.requestWillBeSent"
+             and "glossary.json" in e["params"]["request"]["url"]]
+    b.cdp("Network.disable")
+    check("glossary: other lessons leave it alone",
+          not asked and b.js("document.querySelectorAll('.term').length === 0"))
+    b.js("const s = document.querySelector('#lesson-body .sym'); s.scrollIntoView({block: 'center', behavior: 'instant'});"
+         "s.dispatchEvent(new MouseEvent('mouseover', {bubbles: true}))")
+    check("a Greek letter still explains itself, in the same tip",
+          b.js("!document.getElementById('tip').hidden && /\\(\\w+\\)$/.test(document.querySelector('#tip b').textContent)"),
+          b.js("(document.getElementById('tip') || {}).textContent"))
+
+
 def run_through(b):
     b.js("document.querySelector('.exam-tab[data-tab=\"mock\"]').click()")
     b.js("window.confirm = () => true; window.alert = () => {};")
@@ -342,6 +398,8 @@ def offline(b, base, httpd):
     b.go(base + "lasair/exam.html")
     check("offline: M1 Understanding still opens",
           b.wait("document.querySelectorAll('#flash-chapter option').length > 5", 20))
+    check("offline: and still has its glossary",
+          b.js("fetch('data/glossary.json').then(r => r.json()).then(g => g.length > 100, () => false)"))
 
 
 def phone(b, base):
@@ -355,6 +413,20 @@ def phone(b, base):
         opens = b.wait("document.getElementById('site-nav').classList.contains('open')", 3)
         check("phone width: %s fits and its menu opens" % page, bool(fits) and opens,
               "scrollWidth %s, innerWidth %s" % (b.js("document.documentElement.scrollWidth"), b.js("innerWidth")))
+    # a tip for the term nearest each edge stays on screen
+    b.go(base + "lasair/lesson.html?lesson=06-m1-exam/f01-ethereum-to-jam")
+    b.wait("document.querySelectorAll('#lesson-body .term').length > 20", 10)
+    edges = b.js("""(() => {
+        const ts = [...document.querySelectorAll('#lesson-body .term')].filter(t => t.getClientRects().length);
+        const x = (t) => t.getBoundingClientRect().left;
+        const out = [];
+        for (const t of [ts.reduce((a, c) => x(c) < x(a) ? c : a), ts.reduce((a, c) => x(c) > x(a) ? c : a)]) {
+            t.scrollIntoView({block: 'center', behavior: 'instant'}); t.focus();
+            const r = document.getElementById('tip').getBoundingClientRect();
+            out.push(r.left >= 0 && r.right <= innerWidth && r.width > 100);
+        }
+        return out; })()""")
+    check("phone width: a term's tip stays on screen at either edge", edges == [True, True], str(edges))
     b.cdp("Emulation.clearDeviceMetricsOverride")
 
 
@@ -367,6 +439,7 @@ def main():
         flashcards(b, base)
         run_through(b)
         ledger(b)
+        glossary(b, base)
         phone(b, base)
         offline(b, base, httpd)             # last: it stops the server
     finally:

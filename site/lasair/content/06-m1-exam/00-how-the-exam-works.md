@@ -81,3 +81,7 @@ chapter. They are the fastest way to see why a rule matters.
 When the chapters feel solid, the two
 [full run-throughs](lesson.html?lesson=06-m1-exam/mock-1) test all of it in one sitting,
 with a timer.
+
+A word with a dotted underline explains itself: hover over it, tap it or tab to it. Every
+Greek letter does, and on this track's pages and in the Exam Room so do the hard terms and
+abbreviations (EOA, DA, work-report, tranche...), each at its first use in a section.

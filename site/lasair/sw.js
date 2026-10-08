@@ -14,7 +14,7 @@
  * ask for ("refresh-lessons") runs at most once a day.
  */
 
-const CACHE_VERSION = "ll-v8";
+const CACHE_VERSION = "ll-v9";
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = SHELL_CACHE; // one cache, so refreshed entries replace stale ones
 
@@ -45,6 +45,7 @@ const SHELL = [
   "../assets/js/vendor/highlight-ocaml.min.js",
   "data/course.json",
   "data/exam.json",
+  "data/glossary.json",
   "data/divergences.json",
   "data/mutation.json",
   "../assets/icons/icon-192.png",
@@ -157,7 +158,7 @@ self.addEventListener("message", (event) => {
         const res = await fetch("data/course.json", { credentials: "same-origin", cache: "reload" });
         if (res.ok) {
           await cache.put("data/course.json", res.clone());
-          await addAllTolerant(cache, lessonUrls(await res.json()).concat(["data/exam.json"]), { credentials: "same-origin" });
+          await addAllTolerant(cache, lessonUrls(await res.json()).concat(["data/exam.json", "data/glossary.json"]), { credentials: "same-origin" });
         }
       } catch (e) { /* offline */ }
     })());

@@ -398,7 +398,9 @@ async function loadLesson(lessonPath) {
             lessonBody.classList.add('video-lesson');
         }
 
-        // M1 Understanding lessons link straight into their self-test flashcards
+        // M1 Understanding lessons explain their hard terms, and link straight into their
+        // self-test flashcards
+        if (lessonPath.startsWith('06-m1-exam/')) window.LearningLasair.useGlossary();
         let quizLink = '';
         if (lessonPath.startsWith('06-m1-exam/') && (/## Question bank/.test(content) || /^06-m1-exam\/f\d\d-/.test(lessonPath))) {
             const chapterId = lessonPath.split('/')[1];

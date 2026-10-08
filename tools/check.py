@@ -18,6 +18,8 @@
   assets/js/nav.js, which fills it, and no bar of its own (nav-links, a theme toggle).
 - No page loads a script or stylesheet from another host: the libraries live in
   assets/*/vendor/, so a local preview needs only Python and works offline.
+- M1 Understanding's glossary (content/06-m1-exam/_glossary.md) passes its builder's
+  checks, and site/lasair/data/glossary.json is what it builds.
 
     python3 tools/check.py
 
@@ -30,6 +32,8 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, "tools", "lasair"))
+import build_glossary_data  # noqa: E402
 SITE = os.path.join(ROOT, "site")
 SECTIONS = ("mixed-testnet", "lasair", "observability")
 EXAMPLE_NETS = {"mynet", "localnet", "example", "yournet", "your-net", "net"}
@@ -128,6 +132,17 @@ def main():
             problems.append("%s: writes its own top bar; assets/js/nav.js is the only one" % rel)
         for m in EXTERNAL.finditer(html):
             problems.append("%s: loads %s from another host (vendor it under assets/)" % (rel, m.group(1) or m.group(2)))
+
+    glossary, why = build_glossary_data.build()
+    problems += ["glossary: " + w for w in why]
+    try:
+        with open(build_glossary_data.OUT, encoding="utf-8") as fh:
+            built = json.load(fh)
+    except (OSError, ValueError):
+        built = None
+    if built != glossary:
+        problems.append("site/lasair/data/glossary.json is not what _glossary.md builds: "
+                        "run tools/lasair/build_glossary_data.py")
 
     for p in problems:
         print(p)

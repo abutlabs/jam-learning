@@ -1242,19 +1242,20 @@ footer {
     font-weight: 600;
 }
 
-/* Symbol tooltips (app.js annotateSymbols): tap or hover a Greek letter */
-.sym { position: relative; border-bottom: 1px dotted var(--accent-secondary); cursor: help; outline: none; }
-.sym:hover::after, .sym:focus::after {
-    content: attr(data-tip);
-    position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
-    width: max-content; max-width: 16rem; white-space: normal;
+/* Tooltips (app.js): hover, tap or focus a dotted Greek letter or glossary term */
+.sym, .term { border-bottom: 1px dotted var(--accent-secondary); cursor: help; outline: none; }
+.term { border-bottom-color: var(--text-muted); }
+.sym:focus, .term:focus { background: var(--bg-tertiary); border-radius: 2px; }
+.tip {
+    position: fixed; z-index: 1000; max-width: min(20rem, calc(100vw - 16px));
     background: var(--bg-tertiary); color: var(--text-primary);
     border: 1px solid var(--border-color); border-radius: var(--radius-sm);
-    padding: 4px 8px; font-size: 0.8rem; font-weight: 400; line-height: 1.35;
-    font-family: var(--font-sans); z-index: 20; box-shadow: 0 4px 12px rgba(0,0,0,.25);
+    padding: 6px 10px; font-size: 0.82rem; font-weight: 400; line-height: 1.4;
+    font-family: var(--font-sans); box-shadow: 0 4px 12px rgba(0,0,0,.25);
     pointer-events: none;
 }
-.sym:focus { background: var(--bg-tertiary); border-radius: 2px; }
+.tip[hidden] { display: none; }
+.tip b { font-weight: 700; }
 
 /* Foundations diagrams: inline SVG, phone-first, theme-aware */
 .fdiag { display: block; width: 100%; max-width: 420px; height: auto; margin: var(--space-lg) auto; }

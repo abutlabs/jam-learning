@@ -57,7 +57,8 @@ site/lasair/                  Learning Lasair: pages, data/course.json, content/
 site/observability/           Learning Observability: pages, data/course.json, content/...
 exercises/lasair/             standalone dune projects for the lasair course
 browser/                      the source of the in-browser OCaml toplevel (site/assets/js/toplevel.js)
-tools/check.py                the checks a change must pass (links, lesson lists, public-site rules)
+tools/check.py                the checks a change must pass (links, lesson lists, public-site rules,
+                              M1 Understanding's glossary)
 tools/build.sh                check, copy, stamp: what the Pages workflow runs
 tools/test_browser.py         the build in real Chrome with no internet: every page and lesson,
                               M1 Understanding, offline, phone width
