@@ -20,6 +20,8 @@
         ['Mixed testnet', 'mixed-testnet/index.html', /^mixed-testnet\//],
         ['Lasair', 'lasair/index.html', /^lasair\/(index\.html|lesson\.html)?$/],
         ['Observability', 'observability/index.html', /^observability\//],
+        // its own site and repository: no page here highlights it
+        ['Build a client', 'https://abutlabs.github.io/gray-tutorial/', /(?!)/],
         ['M1 Understanding', 'lasair/exam.html', /^lasair\/exam\.html$/],
         ['Playground', 'lasair/playground.html', /^lasair\/playground\.html$/],
         ['Labs', 'lasair/index.html#labs', /^lasair\/(conformance|mutation|divergences)\.html$/],
